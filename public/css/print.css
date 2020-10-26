@@ -1,0 +1,41 @@
+@media print {
+    th, tr, td {
+        font-size: x-small;
+    }
+
+    .panel {
+        border: 0;
+    }
+}
+
+.small_table {
+    font-size: small;
+}
+
+.small_table_tr {
+    line-height: 15px;
+}
+
+table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+td.group_cell {
+    padding-top: 0px !important;
+    padding-bottom: 2px !important;
+}
+
+td.center {
+    text-align: center;
+}
+
+tr.top_border {
+    border-top: thin solid black;
+}
+
+tr.bottom_border {
+    border-bottom: thin solid black;
+}
+

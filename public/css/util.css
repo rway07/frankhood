@@ -1,0 +1,15 @@
+.header {
+    font-weight: bold;
+}
+
+body {
+    font-family: Verdana;
+}
+
+.small_text {
+    font-size: small;
+}
+
+.error {
+    color: #ff0000;
+}
