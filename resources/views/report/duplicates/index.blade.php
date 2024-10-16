@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<script src="/js/report/late/index.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <div class="card">
     <div class="card-header bg-secondary text-white">

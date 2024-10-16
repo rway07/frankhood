@@ -1,19 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
+
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
 
+/**
+ *
+ */
 class EstimationController extends Controller
 {
     /**
      * Restituisce la vista per il calcolo del preventivo dei nuovi soci
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
             "select distinct year

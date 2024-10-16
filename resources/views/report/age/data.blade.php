@@ -10,6 +10,7 @@
                 <th> Anno nascita </th>
                 <th> Età </th>
                 <th> Comune </th>
+                <th> Telefono </th>
             </thead>
             <tbody>
             @foreach($data as $index=>$d)
@@ -19,6 +20,11 @@
                     <td> {{ $d->birth_year}}</td>
                     <td> {{ date('Y') - $d->birth_year }}</td>
                     <td> {{ $d->municipality}}</td>
+                    <td>
+                        {{ $d->phone }}
+                        {{ (($d->phone != null) && ($d->mobile_phone != null))? "-" : "" }}
+                        {{ $d->mobile_phone }}
+                    </td>
                 </tr>
             @endforeach
             </tbody>

@@ -2,13 +2,13 @@
  * @file deceased/index.js
  * @author kain rway07@gmail.com
  */
-
-$(document).ready(function() {
-    loadData($('#years').val());
-
-    $('#years').change(function() {
-        loadData($(this).val());
+$(() => {
+    const yearsSelector = $('#years');
+    yearsSelector.on('change', (event) => {
+        loadData(event.currentTarget.value);
     });
+
+    loadData(yearsSelector.val());
 });
 
 /**
@@ -16,18 +16,33 @@ $(document).ready(function() {
  * @param {number} year
  */
 function loadData(year) {
+    if (isNaN(year)) {
+        return false;
+    }
+
     $.ajax({
-        url: '/report/customers/deceased/' + year + '/list',
+        url: `/report/customers/deceased/${year}/list`,
         type: 'get',
-        error: function(data) {
-            console.log('Error:', data);
+        error(response) {
+            showGuruModal(response);
         },
-        success: function(data) {
-            $('#title_year').text(data.year);
-            $('#num_people_title').text(data.num_deceased);
-            $('#data_container')
-                .html('')
-                .append(data.view);
+        success(response) {
+            if ('error' in response) {
+                showModal(response.error.message);
+                return false;
+            }
+
+            if ('data' in response) {
+                $('#title_year').text(response.data.year);
+                $('#num_people_title').text(response.data.num_deceased);
+                $('#data_container').html('').append(response.data.view);
+
+                return true;
+            }
+
+            return false;
         },
     });
+
+    return true;
 }

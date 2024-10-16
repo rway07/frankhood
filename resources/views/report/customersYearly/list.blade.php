@@ -10,6 +10,7 @@
             <th> Socio</th>
             <th> Alias</th>
             <th> Data nascita</th>
+            <th></th>
             <th> Telefono</th>
         </tr>
     </thead>
@@ -17,31 +18,32 @@
     @foreach($data as $i => $n)
         <!-- customer row -->
         <tr class="top_border small_table_tr">
-            @if($extended == false)
-                @if($n['main']->late == 'True')
-                    <td>{{ $count }} - {{ $count }}</td>
+            <td class="upper_element">
+                @if($extended == false)
+                    @if($n['main']->late == 'True')
+                        {{ $count }} - {{ $count }}
+                    @else
+                        {{ $count }} - {{ $count + count($n['group']) -1 }}
+                    @endif
                 @else
-                    <td>{{ $count }} - {{ $count + count($n['group']) -1 }}</td>
-                @endif
-            @else
-                <td>
                     {{ $i + 1 }}
-                </td>
-            @endif
-
-            <td class="">
+                @endif
+            </td>
+            <td class="upper_element">
                 @if($n['main']->late == 'True')
                     [MOROSO]
                 @endif
-                {{ $n['main']->last_name . ' ' . $n['main']->first_name }}
+                <b>{{ $n['main']->last_name . ' ' . $n['main']->first_name }}</b>
             </td>
-            <td class="">
+            <td class="upper_element">
                 {{ $n['main']->alias }}
             </td>
-            <td>
+            <td class="upper_element">
                 {{ strftime("%d/%m/%Y", strtotime($n['main']->birth_date)) }}
             </td>
-            <td class="center">
+            <td class="upper_element space">
+            </td>
+            <td class="upper_element center">
                 @if($n['main']->phone != "")
                     {{ $n['main']->phone }}
                     @if($n['main']->mobile_phone != "")

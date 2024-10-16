@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Rates;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\RateRequest;
 use App\Models\Rates;
 use App\Models\Receipts;
-use App\Http\Requests\RateRequest;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use DB;
+use App\Util\RatesDataValidator;
 use Exception;
-use Redirect;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View as View;
 
 /**
  * Class RatesController
@@ -20,9 +22,9 @@ class RatesController extends Controller
     /**
      * Restituisce la vista con la liste dele tariffe
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $rates = Rates::select(['id', 'year', 'funeral_cost', 'quota'])
             ->get();
@@ -33,30 +35,36 @@ class RatesController extends Controller
     /**
      * Restituisce la vista per l'aggiunta di una tariffa
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('rates/create');
     }
 
     /**
-     * Restiuisce la vista per la modifica di una tariffa
+     *  Restiuisce la vista per la modifica di una tariffa
      *
      * @param $idRate
-     *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return RedirectResponse | View
      */
     public function edit($idRate)
     {
-        $current = Rates::select(['id', 'year', 'funeral_cost', 'quota'])
+        $validator = new RatesDataValidator();
+
+        if (!$validator->checkRateID($idRate)) {
+            return Redirect::to('rates/index')
+                ->withErrors($validator->getReturnMessage());
+        }
+
+        $currentRate = Rates::select(['id', 'year', 'funeral_cost', 'quota'])
             ->where('id', '=', $idRate)
             ->get();
 
         return view(
             'rates/create',
             [
-                'current' => $current->first()
+                'rate' => $currentRate->first()
             ]
         );
     }
@@ -64,15 +72,19 @@ class RatesController extends Controller
     /**
      * Salva un tariffa
      *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws Exception
+     * @param RateRequest $request
+     * @return RedirectResponse
      */
-    public function store(RateRequest $request)
+    public function store(RateRequest $request): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validatedData = $request->validated();
+
+            $validator = new RatesDataValidator();
+            if (!$validator->rateYearAvailable($validatedData['year'])) {
+                return Redirect::to('rates/create')->withErrors($validator->getReturnMessage());
+            }
+
             DB::beginTransaction();
             $rate = new Rates();
             $rate->year = $validatedData['year'];
@@ -82,84 +94,67 @@ class RatesController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('rates/create')->withErrors('Transazione fallita!');
+            return Redirect::to('rates/create')->withErrors($e->getMessage());
         }
 
-        return Redirect::to("rates/index");
+        return Redirect::to("rates/index")->with('status', 'Tariffa aggiunta.');
     }
 
     /**
-     * Aggiorna un tariffa
+     * Aggiorna una tariffa
      *
-     * @param Request $request
+     * @param RateRequest $request
      * @param $idRate
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws Exception
+     * @return RedirectResponse
      */
-    public function update(RateRequest $request, $idRate)
+    public function update(RateRequest $request, $idRate): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validator = new RatesDataValidator();
+            if (!$validator->checkRateID($idRate)) {
+                return Redirect::to('rates/index')->withErrors($validator->getReturnMessage());
+            }
+
+            $validatedData = $request->validated();
+
             DB::beginTransaction();
             $rate = Rates::find($idRate);
             $rate->year = $validatedData['year'];
             $rate->funeral_cost = $validatedData['funeral_cost'];
+            // Salvo la tariffa corrente per il l'aggiornamento delle ricevute
             $currentQuota = $rate->quota;
             $rate->quota = $validatedData['quota'];
             $rate->save();
 
-            //update receipts with the new rate
+            // Aggiorna le ricevute con la nuova tariffa
             $receipts = Receipts::select(['total'])
                 ->where('rates_id', '=', $rate->id)
                 ->get();
 
             foreach ($receipts as $receipt) {
+                // Ottengo il numero di persone nella ricevuta corrente usando la vecchia tariffa
                 $num = $receipt->total / $currentQuota;
+                // Calcolo il nuovo totale
                 $receipt->total = $num * $rate->quota;
                 $receipt->save();
             }
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('rates/create')->withErrors('Transazione fallita!');
+            return Redirect::to('rates/create')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('rates/index');
+        return Redirect::to('rates/index')->with('status', 'Tariffa aggiornata.');
     }
 
     /**
-     * Elimina una tariffa
+     * Elimina un tariffa
      *
-     * @param Rates $rate
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Throwable
+     * @return false
      */
-    public function destroy($idRate)
+    public function destroy()
     {
-        /*
-         * TODO Implementazione futura se necessaria
-        try {
-            $check = DB::select(
-                "select distinct r.id
-                from rates r
-                join receipts r2 on r.id = r2.rates_id
-                where r.id = ?;",
-                [
-                    $idRate
-                ]
-            );
-
-            if ($check[0]->id != null) {
-
-            } else {
-
-            }
-        } catch (Exception $e) {
-
-        }
-
-        return Redirect::to('rates');
-        */
+        // Amazing useless placeholder
+        return false;
     }
 }

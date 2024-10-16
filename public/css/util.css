@@ -1,15 +1,22 @@
+.banner {
+    background-color:#2196F3;
+    color: rgb(255 255 255);
+    height:80px;
+}
+
+.navbar, .dropdown-menu {
+    font-size: small;
+}
+
 .header {
     font-weight: bold;
 }
 
 body {
-    font-family: Verdana;
+    font-family: Verdana, serif;
 }
 
-.small_text {
-    font-size: small;
-}
 
 .error {
-    color: #ff0000;
+    color: #f00;
 }

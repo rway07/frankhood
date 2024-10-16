@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <script src="/js/report/customersYearly/index.js"></script>
-<link rel="stylesheet" href="/css/print.css">
+<link rel="stylesheet" href="/css/yearly/list.css">
 <div id="custom_style">
 
 </div>

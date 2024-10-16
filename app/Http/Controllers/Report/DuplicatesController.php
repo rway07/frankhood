@@ -1,13 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
 
+/**
+ *
+ */
 class DuplicatesController extends Controller
 {
-    public function index()
+    /**
+     * @return View
+     */
+    public function index(): View
     {
         $list = [];
 
@@ -32,7 +39,7 @@ class DuplicatesController extends Controller
             );
 
             if (count($dup) > 0) {
-                array_push($list, ['year' => $y->year, 'dup' => $dup]);
+                $list[] = ['year' => $y->year, 'dup' => $dup];
             }
         }
 

@@ -1,32 +1,36 @@
 /**
- * @file list.js
+ * @file customers/list.js
  * @author kain - rway07@gmail.com
  */
-$(document).ready(function() {
-    var tableData = null;
+$(() => {
+    /**
+     * La tabella dei soci è l'unica che viene popolata manualmente.
+     * Questo per permettere di aggiungere i MouseOver/MouseOut sulle righe
+     * dei soci revocati/deceduti.
+     */
     $('#panel_text').text('Caricamento...');
-    $.getJSON('/customers/data', function(data) {
-        tableData = data;
-        var table = $('#customers_table').DataTable({
+    $.getJSON('/customers/data', (response) => {
+        const tableData = response;
+        const selector = $('#customers_table');
+        const table = selector.DataTable({
             processing: true,
             pageLength: 100,
             data: tableData,
-            order: [
-                [1, 'asc'],
-            ],
-            createdRow: function(row, data) {
-                if (data['death_date'] != '') {
+            order: [[1, 'asc']],
+            // Evidenzia i soci deceduti/revocati
+            createdRow(row, data) {
+                if (data.death_date !== '') {
                     $(row).addClass('table-danger');
-                } else if (data['revocation_date'] != '') {
+                } else if (data.revocation_date !== '') {
                     $(row).addClass('table-warning');
                 }
             },
             columnDefs: [
                 {
                     targets: 3,
-                    render: function (data) {
+                    render(data) {
                         return convertDate(data);
-                    }
+                    },
                 },
                 {
                     targets: 5,
@@ -40,31 +44,65 @@ $(document).ready(function() {
                     targets: 7,
                     data: null,
                     className: 'fit',
-                    defaultContent: '<button type=\'button\' class=\'btn btn-info btn-sm\'> ' +
-                        '<i class=\'fa fa-btn fa-edit\'></i> Modifica</button>',
+                    defaultContent:
+                        "<button type='button' class='btn btn-primary btn-sm'> " +
+                        "<i class='fa fa-btn fa-info'></i> Info</button>",
                 },
                 {
                     targets: 8,
                     data: null,
                     className: 'fit',
-                    defaultContent: '<button type=\'button\' class=\'btn btn-primary btn-sm\'> ' +
-                        '<i class=\'fa fa-btn fa-users\'></i> Storico</button>',
+                    defaultContent:
+                        "<button type='button' class='btn btn-info btn-sm'> " +
+                        "<i class='fa fa-btn fa-edit'></i> Modifica</button>",
+                },
+                {
+                    targets: 9,
+                    data: null,
+                    className: 'fit',
+                    defaultContent:
+                        "<button type='button' class='btn btn-secondary btn-sm'> " +
+                        "<i class='fa fa-btn fa-users'></i> Storico</button>",
                 },
             ],
             columns: [
-                {data: 'id', name: 'id'},
-                {data: 'name', name: 'name'},
-                {data: 'alias', name: 'alias'},
-                {data: 'birth_date', name: 'birth_date'},
-                {data: 'enrollment_year', name: 'enrollment_year', searchable: false},
-                {data: 'death_date', name: 'death_date', searchable: false},
-                {data: 'revocation_date', name: 'revocation_date', searchable: false},
-                {data: 'Modifica', name: 'Modifica', orderable: false, searchable: false},
-                {data: 'Gruppo', name: 'Gruppo', orderable: false, searchable: false},
+                { data: 'id', name: 'id' },
+                { data: 'name', name: 'name' },
+                { data: 'alias', name: 'alias' },
+                { data: 'birth_date', name: 'birth_date' },
+                {
+                    data: 'enrollment_year',
+                    name: 'enrollment_year',
+                    searchable: false,
+                },
+                { data: 'death_date', name: 'death_date', searchable: false },
+                {
+                    data: 'revocation_date',
+                    name: 'revocation_date',
+                    searchable: false,
+                },
+                {
+                    data: 'Info',
+                    name: 'Info',
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'Modifica',
+                    name: 'Modifica',
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    data: 'Gruppo',
+                    name: 'Gruppo',
+                    orderable: false,
+                    searchable: false,
+                },
             ],
         });
 
-        $('#customers_table').on('draw.dt', function() {
+        selector.on('draw.dt', () => {
             addMouseEventListeners(table);
             addButtonEventListeners(table);
         });
@@ -78,110 +116,93 @@ $(document).ready(function() {
 });
 
 /**
+ *  Aggiunge gli Event Listeners ai pulsanti [Modifica] e [Gruppo]
  *
- * @param table
+ * @param {Object} table
  */
 function addButtonEventListeners(table) {
-    $('.btn-primary').off('click').on('click', function() {
-        var data = table.row( $(this).parents('tr') ).data();
-        group(data['id']);
-    });
+    $('.btn-secondary')
+        .off('click')
+        .on('click', (event) => {
+            const data = table.row($(event.currentTarget).parents('tr')).data();
+            if (data !== null) {
+                group(data.id);
+            }
+        });
 
-    $('.btn-info').off('click').on('click', function() {
-        var data = table.row( $(this).parents('tr') ).data();
-        edit(data['id']);
-    });
+    $('.btn-info')
+        .off('click')
+        .on('click', (event) => {
+            const data = table.row($(event.currentTarget).parents('tr')).data();
+            if (data !== null) {
+                edit('customers', data.id);
+            }
+        });
+
+    $('.btn-primary')
+        .off('click')
+        .on('click', (event) => {
+            const data = table.row($(event.currentTarget).parents('tr')).data();
+            if (data !== null) {
+                $(event.currentTarget).parents('tr').popover('hide');
+                customerInfo(data.id);
+            }
+        });
 }
 
 /**
+ *  Aggiunge gli Event Listeners per le righe dei soci revocati e
+ *  deceduti. Permette di visualizzare i popup con le date correlate.
  *
- * @param table
+ * @param {Object} table
  */
 function addMouseEventListeners(table) {
-    $('#customers_table > tbody > tr.table-warning').on('mouseover', function () {
-        var data = table.row($(this)).data();
-        if (data != null) {
-            $(this).popover({
+    const revocatedRowsSelector = $('#customers_table > tbody > tr.table-warning');
+    const deceasedRowsSelector = $('#customers_table > tbody > tr.table-danger');
+
+    // MouseOver per i soci revocati
+    revocatedRowsSelector.on('mouseover', (event) => {
+        const data = table.row(event.currentTarget).data();
+        if (data !== null) {
+            $(event.currentTarget).popover({
                 title: 'Data Revoca',
-                content: convertDate(data['revocation_date']),
-                placement: 'top'
+                content: convertDate(data.revocation_date),
+                placement: 'top',
             });
-            $(this).popover('show');
+            $(event.currentTarget).popover('show');
         }
     });
 
-    $('#customers_table > tbody > tr.table-warning').on('mouseout', function () {
-        $(this).popover('hide');
+    // MouseOut per i soci revocati
+    revocatedRowsSelector.on('mouseout', (event) => {
+        $(event.currentTarget).popover('hide');
     });
 
-    $('#customers_table > tbody > tr.table-danger').on('mouseover', function () {
-        var data = table.row($(this)).data();
-        if (data != null) {
-            $(this).popover({
+    // MouseOver per i soci deceduti
+    deceasedRowsSelector.on('mouseover', (event) => {
+        const data = table.row(event.currentTarget).data();
+        if (data !== null) {
+            $(event.currentTarget).popover({
                 title: 'Data Decesso',
-                content: convertDate(data['death_date']),
-                placement: 'top'
+                content: convertDate(data.death_date),
+                placement: 'top',
             });
-            $(this).popover('show');
+            $(event.currentTarget).popover('show');
         }
     });
 
-    $('#customers_table > tbody > tr.table-danger').on('mouseout', function () {
-        $(this).popover('hide');
+    // MouseOut per i soci deceduti
+    deceasedRowsSelector.on('mouseout', (event) => {
+        $(event.currentTarget).popover('hide');
     });
-}
-
-/**
- * Richiesta AJAX per l'eliminazione di un socio
- *
- * @param {number} id
- */
-function destroy(id) {
-  $.ajax({
-    type: 'DELETE',
-    url: '/customers/' + id + '/delete',
-
-    beforeSend: function(xhr) {
-      var token = $('meta[name=\'csrf_token\']').attr('content');
-      if (token) {
-        return xhr.setRequestHeader('X-CSRF-TOKEN', token);
-      }
-    },
-    success: function() {
-      window.location.reload();
-    },
-  });
-}
-
-/**
- * Apre il link per la modifica di un socio
- *
- * @param id
- */
-function edit(id) {
-  var url = '/customers/' + id + '/edit';
-  window.open(url, '_blank');
 }
 
 /**
  * Apre il link con la vista del gruppo familiare per socio
  *
- * @param id
+ * @param {Number} id
  */
 function group(id) {
-  var url = '/customers/' + id + '/summary';
-  window.open(url, '_blank');
-}
-
-/**
- *
- */
-function checkPageStatus() {
-    var status = $('#status').val();
-
-    if (status == 'updated') {
-        showToastSuccess('Socio aggiornato!');
-    } else if (status == 'saved') {
-        showToastSuccess('Socio salvato!');
-    }
+    const url = `/customers/${id}/summary`;
+    window.open(url, '_blank');
 }

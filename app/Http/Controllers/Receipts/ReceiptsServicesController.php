@@ -1,12 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Receipts;
 
+use App\Http\Controllers\Controller;
 use App\Models\Rates;
 use App\Models\Receipts;
-use App\Http\Controllers\Controller;
-use DB;
-use App;
+use App\Util\CustomersDataValidator;
+use App\Util\ReceiptDataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\App as App;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
 
 /**
  * Class ReceiptsServicesController
@@ -20,10 +25,15 @@ class ReceiptsServicesController extends Controller
      * @param $receiptNumber
      * @param $receiptYear
      * @return mixed
-     * @internal param $receiptId
      */
     public function printReceipt($receiptNumber, $receiptYear)
     {
+        $validator = new ReceiptDataValidator();
+
+        if (!$validator->checkReceiptNumber($receiptYear, $receiptNumber)) {
+            return Redirect::to('receipts/index')->withErrors($validator->getReturnMessage());
+        }
+
         $receipts = Receipts::where(
             [
                 ['receipts.number', '=', $receiptNumber],
@@ -71,36 +81,81 @@ class ReceiptsServicesController extends Controller
      * @param $idCustomer
      * @param $number
      * @param $year
-     * @return array
+     * @return JsonResponse
      */
-    public function customerQuota($idCustomer, $number, $year)
+    public function customerQuota($idCustomer, $number, $year): JsonResponse
     {
-        $quota = DB::select(
-            "select customers_id, quota
+        $validator = new CustomersDataValidator();
+        $receiptValidator = new ReceiptDataValidator();
+
+        if (!$receiptValidator->checkReceiptNumber($year, $number)) {
+            return response()->json(
+                ['error' => ['message' => $receiptValidator->getReturnMessage()]]
+            );
+        }
+
+        if (is_numeric($idCustomer) && $idCustomer > 0) {
+            if (!$validator->checkCustomerID($idCustomer)) {
+                return response()->json(
+                    ['error' => ['message' => $validator->getReturnMessage()]]
+                );
+            }
+        }
+
+        if ($idCustomer == 0) {
+            $data = DB::select(
+                "select customers_id, quota
+                from customers_receipts
+                where number = {$number} and year = {$year};"
+            );
+
+            if (count($data) == 0) {
+                $data = [];
+            }
+        } else {
+            $data = DB::select(
+                "select customers_id, quota
             from customers_receipts
             where number = ? and year = ? and customers_id = ?;",
+                [
+                    $number,
+                    $year,
+                    $idCustomer
+                ]
+            );
+
+            (count($data) > 0) ? $data = $data[0] : $data = [];
+        }
+
+
+
+        return response()->json(
             [
-                $number,
-                $year,
-                $idCustomer
+                'data' => $data
             ]
         );
-
-        return $quota;
     }
 
     /**
      * Restiuisce una vista con le informazioni sulla ricevuta selezionata
      *
      * @param $receiptNumber
-     * @param $receiptsYear
-     * @return array
+     * @param $receiptYear
+     * @return JsonResponse
      */
-    public function info($receiptNumber, $receiptsYear)
+    public function info($receiptNumber, $receiptYear): JsonResponse
     {
+        $validator = new ReceiptDataValidator();
+
+        if (!$validator->checkReceiptNumber($receiptYear, $receiptNumber)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
         $receipt = Receipts::where([
             ['receipts.number', '=', $receiptNumber],
-            ['receipts.year', '=', $receiptsYear]
+            ['receipts.year', '=', $receiptYear]
         ])
         ->join('rates', 'rates_id', '=', 'rates.id')
         ->join('customers', 'customers_id', '=', 'customers.id')
@@ -121,41 +176,64 @@ class ReceiptsServicesController extends Controller
         $customers = DB::table('customers_receipts')
             ->where([
                 ['customers_receipts.number', '=', $receiptNumber],
-                ['customers_receipts.year', '=', $receiptsYear]
+                ['customers_receipts.year', '=', $receiptYear]
             ])
             ->join('customers', 'customers_receipts.customers_id', '=', 'customers.id')
             ->select('first_name', 'last_name', 'quota')
             ->get();
 
-        //return view("receipts/util/info", ['receipt' => $receipt, 'customers' => $customers]);
-        return [
-            'receipt' => $receipt,
-            'customers' => $customers
-        ];
+        return response()->json(
+            [
+                'data' => [
+                    'receipt' => $receipt,
+                    'customers' => $customers
+                ]
+            ]
+        );
     }
 
     /**
-     *
+     * Controlla se il socio ha una ricevuta per l'anno selezionato
      *
      * @param $idCustomer
      * @param $year
-     * @return mixed
-     * @internal param $receiptId
+     * @return JsonResponse
      */
-    public function years($idCustomer, $year)
+    public function years($idCustomer, $year): JsonResponse
     {
-        $yearId = Rates::where('year', '=', $year)->select('id')->get()->first();
+        $validator = new CustomersDataValidator();
 
-        $years = DB::select(
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
+        if (!$validator->checkCustomerID($idCustomer)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
+        $idYear = Rates::where('year', '=', $year)->select('id')->get()->first();
+
+        $data = DB::select(
             "select receipts.rates_id
             from customers_receipts
             join receipts on receipts.number = customers_receipts.number and receipts.year = customers_receipts.year
             where customers_receipts.customers_id = ? and receipts.rates_id = ?;",
             [
                 $idCustomer,
-                $yearId->id
+                $idYear->id
             ]
         );
-        return $years;
+
+        (count($data) > 0) ? $data = $data[0] : $data = [];
+
+        return response()->json(
+            [
+                'data' => $data
+            ]
+        );
     }
 }

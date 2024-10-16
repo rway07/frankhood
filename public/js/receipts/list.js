@@ -1,56 +1,81 @@
-var table = null;
-$(document).ready(function() {
-    table = $("#receipts_table").DataTable({
+/**
+ * @file receipts/list.js
+ * @author kain rway07@gmail.com
+ */
+
+const ID_YEAR_START = 0;
+const ID_YEAR_END = 4;
+const ID_NUMBER_START = 5;
+
+$(() => {
+    $('#receipts_table').DataTable({
         processing: true,
         serverSide: true,
         pageLength: 100,
-        ajax: "/receipts/0/0/data",
+        ajax: '/receipts/0/0/data',
         columns: [
-            { data: 'receipt_number', name: 'receipt_number'},
+            { data: 'receipt_number', name: 'receipt_number' },
             { data: 'date', name: 'receipts.date' },
-            { data: 'name', name: 'name'},
-            { data: 'year', name: 'rates.year'},
-            { data: 'total', name: 'receipts.total'},
-            { data: 'description', name: 'payment_types.description'},
-            { data: 'Info', name: 'Info', orderable:false, searchable:false},
-            { data: 'Stampa', name: 'Stampa', orderable:false, searchable:false},
-            { data: 'Modifica', name: 'Modifica', orderable:false, searchable:false},
-            { data: 'Elimina', name: 'Elimina', orderable:false, searchable:false},
+            { data: 'name', name: 'name' },
+            { data: 'year', name: 'rates.year' },
+            { data: 'total', name: 'receipts.total' },
+            {
+                data: 'description',
+                name: 'payment_types.description',
+                searchable: false,
+            },
+            { data: 'Info', name: 'Info', orderable: false, searchable: false },
+            {
+                data: 'Stampa',
+                name: 'Stampa',
+                orderable: false,
+                searchable: false,
+            },
+            {
+                data: 'Modifica',
+                name: 'Modifica',
+                orderable: false,
+                searchable: false,
+            },
+            {
+                data: 'Elimina',
+                name: 'Elimina',
+                orderable: false,
+                searchable: false,
+            },
         ],
         columnDefs: [
             {
                 targets: 6,
-                className: "fit",
+                className: 'fit',
             },
             {
                 targets: 7,
-                className: "fit",
+                className: 'fit',
             },
             {
                 targets: 8,
-                className: "fit",
+                className: 'fit',
             },
             {
                 targets: 9,
-                className: "fit",
+                className: 'fit',
             },
         ],
     });
 
-    $("#years").change(function() {
-        var year = $('#years').val();
-        var type = $('#payment_types').val();
-
-        var url = '/receipts/' + year + '/' + type + '/data';
+    $('#years').on('change', () => {
+        const year = $('#years').val();
+        const type = $('#payment_types').val();
+        const url = `/receipts/${year}/${type}/data`;
 
         $('#receipts_table').DataTable().ajax.url(url).load();
     });
 
-    $('#payment_types').change(function() {
-        var type = $('#payment_types').val();
-        var year = $('#years').val();
-
-        var url = '/receipts/' + year + '/' + type + '/data';
+    $('#payment_types').on('change', () => {
+        const type = $('#payment_types').val();
+        const year = $('#years').val();
+        const url = `/receipts/${year}/${type}/data`;
 
         $('#receipts_table').DataTable().ajax.url(url).load();
     });
@@ -58,80 +83,43 @@ $(document).ready(function() {
     checkPageStatus();
 });
 
-function edit(number, year){
-    var url = '/receipts/' + number + '/' + year + '/edit';
-    window.open(url, "_blank")
+/**
+ *
+ * @param {Number} number
+ * @param {Number} year
+ */
+function printReceipt(number, year) {
+    const url = `/api/receipts/${number}/${year}/print`;
+    window.open(url, '_blank');
 }
 
-function print(number, year){
-    var url = '/api/receipts/' + number + '/' + year + '/print';
-    window.open(url, "_blank")
-}
+/**
+ *  Elimina una ricevuta
+ *
+ *  Per permettere l'uso di una vista unificata comune, il numero e l'anno
+ *  della ricevuta sono combinati in unico ID che viene separato successivamente
+ *
+ * @param {String} combinedIdentifier
+ */
+function destroyReceipt(combinedIdentifier) {
+    const year = combinedIdentifier.slice(ID_YEAR_START, ID_YEAR_END);
+    const number = combinedIdentifier.slice(ID_NUMBER_START);
 
-function info(number, year){
-    var url = '/api/receipts/' + number + '/' + year + '/info';
-
-    $.get(url, function (data) {
-        var customQuotas = data['receipt']['custom_quotas'];
-
-        $('#date').text(convertDate(data['receipt']['date']));
-        $('#number').text(data['receipt']['number']);
-        $('#year').text(data['receipt']['year']);
-        if (customQuotas == true) {
-            $('#quota').text('Alternativa');
-        } else {
-            $('#quota').text(data['receipt']['quota']).append(" &euro;");
-        }
-        $('#total').text(data['receipt']['total']).append(" &euro;");
-        $('#payment').text(data['receipt']['description']);
-        $('#head').text(data['receipt']['first_name'] + ' ' + data['receipt']['last_name']);
-
-        $('#customers').html('');
-        data['customers'].forEach((element) => {
-            $('#customers').append(
-                '<h6>' + element['first_name'] + ' ' + element['last_name'] +
-                ((customQuotas == true) ? ' (' + element['quota'] + ' &euro;)' : '') +'</h6>'
-            );
-        });
-
-        $('#receipt_details_modal').modal('show');
-    });
-}
-
-function destroy(number, year){
     $.ajax({
-        url: '/receipts/' + number + '/' + year + '/delete',
+        url: `/receipts/${number}/${year}/delete`,
         type: 'DELETE',
-
-        beforeSend: function (xhr) {
-            var token = $('meta[name="csrf_token"]').attr('content');
+        beforeSend(xhr) {
+            const token = $("meta[name='csrf_token']").attr('content');
             if (token) {
                 return xhr.setRequestHeader('X-CSRF-TOKEN', token);
             }
         },
-        error: function (data) {
-            console.log('Error:', data);
-            var msg = 'Errore interno! (' + data.status + ' : ' + data.statusText + ')';
-            showToastError(msg);
+        error(data) {
+            ajaxDeleteError(data);
         },
-        success: function(data) {
-            if (data.status != 'error') {
-                showToastSuccess('Ricevuta eliminata.');
-                var button = '#' + number + '_' + year;
-                $(button).closest('tr').remove();
-            } else {
-                showToastError('Errore nell\'eliminazione della ricevuta.')
-            }
-        }
+        success(data) {
+            const idRow = `${year}-${number}`;
+            ajaxDeleteSuccess(data, idRow);
+        },
     });
-}
-
-function checkPageStatus() {
-    var status = $('#status').val();
-
-    if (status == 'updated') {
-        showToastSuccess('Ricevuta aggiornata!');
-    } else if (status == 'saved') {
-        showToastSuccess('Ricevuta salvata!')
-    }
 }

@@ -1,4 +1,7 @@
-function edit(id){
-    var url = '/rates/' + id + '/edit';
-    window.open(url, "_self")
-}
+/**
+ * @file rates/index.js
+ * @author kain rway07@gmail.com
+ */
+$(() => {
+    checkPageStatus();
+});

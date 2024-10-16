@@ -1,18 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
+
+/**
+ *
+ */
 class DeceasedController extends Controller
 {
     /**
      * Restituisce i dati per la vista riguardante i soci deceduti
      *
-     * @return mixed
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
             "select distinct strftime('%Y', death_date) as year
@@ -25,11 +32,21 @@ class DeceasedController extends Controller
     }
 
     /**
+     * Restituisce la vista contenente la lista dei soci deceduti
+     *
      * @param $year
-     * @return array
+     * @return JsonResponse
      */
-    public function listData($year)
+    public function listData($year): JsonResponse
     {
+        $validator = new DataValidator();
+
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['erroro' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
         $beginDate = $year . '-01-01';
         $endDate = $year . '-12-31';
 
@@ -90,10 +107,14 @@ class DeceasedController extends Controller
             ]
         )->render();
 
-        return [
-                'year' => $year,
-                'num_deceased' => count($deceasedCustomers),
-                'view' => $view
-            ];
+        return response()->json(
+            [
+                'data' => [
+                    'years' => $year,
+                    'num_deceased' => count($deceasedCustomers),
+                    'view' => $view
+                ]
+            ]
+        );
     }
 }

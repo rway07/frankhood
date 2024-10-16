@@ -12,14 +12,12 @@
 
     <div class="card-body">
         @include('common.errors')
-
         @if (isset($expense))
             <form id="create_expense_form" action="/expenses/{{ $expense->id }}/update" method="POST" class="form-horizontal">
                 {{ method_field('PUT') }}
         @else
             <form id="create_expense_form" action="/expenses/store" method="POST" class="form-horizontal">
         @endif
-
             {{ csrf_field() }}
 
             <div class="row mb-3">

@@ -1,11 +1,9 @@
 @extends('layouts.app')
 @section('content')
 <!-- Selectize.js -->
-<link href="/css/common/selectize/selectize.bootstrap3.css" rel="stylesheet" />
-<link href="/css/common/selectize/selectize.css" rel="stylesheet" />
-<script src="/js/common/selectize/selectize.js"></script>
+@include('include.selectize')
 <!-- Custom -->
-<script type="text/javascript" src="/js/receipts/create.js"></script>
+<script type="module" src="/js/receipts/create/main.js" defer></script>
 <div class="card card-primary">
     <div class="card-header bg-secondary text-white">
         @if (isset($receipts))
@@ -14,10 +12,8 @@
             NUOVA RICEVUTA
         @endif
     </div>
-
     <div class="card-body">
         @include('common.errors')
-
         @if (isset($receipts))
             <form id="create_receipt_form" action="/receipts/{{ $receipts->number }}/{{ $receipts->year }}/update" method="POST" target="_blank"
                   class="form-horizontal">
@@ -35,9 +31,9 @@
                 <div class="col-md-2">
                     <label class="col-form-label-sm">Data Emissione</label>
                     @if (isset($receipts))
-                        <input type="date" name="issue_date" id="issue_date" class="form-control form-control-sm" value="{{ $receipts->date }}">
+                        <input type="date" name="issue-date" id="issue-date" class="form-control form-control-sm" value="{{ $receipts->date }}">
                     @else
-                        <input type="date" name="issue_date" id="issue_date" class="form-control form-control-sm" value="{{ $date }}">
+                        <input type="date" name="issue-date" id="issue-date" class="form-control form-control-sm" value="{{ $date }}">
                     @endif
                 </div>
                 <div id="rates_div" class="col-md-2">
@@ -86,7 +82,7 @@
                     <label class="col-form-label-sm"> Tipo Quota </label>
                     <select id="quota_type" name="quota_type" class="custom-select custom-select-sm">
                         @if(isset($receipts))
-                            @if($receipts->custom_quotas == true)
+                            @if($receipts->custom_quotas)
                                 <option value="0">Normale</option>
                                 <option value="1" selected>Alternative</option>
                             @else
@@ -114,7 +110,8 @@
                         <div class="input-group-prepend">
                             <div class="input-group-text">&euro;</div>
                         </div>
-                        <input type="text" class="form-control form-control-sm" id="total" name="total" placeholder="Totale" value="" readonly>
+                        <input type="text" class="form-control form-control-sm" id="total" name="total"
+                               placeholder="Totale" value="0" readonly>
                     </div>
                 </div>
             </div>
@@ -131,31 +128,32 @@
                 </div>
                 <div class="col-md-8">
                     <label class="col-form-label-sm"> Persone </label>
-                    <input type="text" id="people" name="people" class="form-control form-control-sm" />
+                    <input type="text" id="people" name="people" class="form-control form-control-sm"/>
                 </div>
             </div>
             <div id="quote_alternative_div">
 
             </div>
             <br>
-            <div class="mb-3">
-                <button id="receipt_button" type="submit" class="btn btn-primary btn-sm float-right">
-                    @if (isset($receipts))
-                        <i id="button_icon" class="fa fa-edit"></i> Modifica Ricevuta
-                    @else
-                        <i id="button_icon" class="fa fa-plus"></i> Aggiungi Ricevuta
-                    @endif
-                </button>
-                <span id="alert" class="label"> </span>
+            <div class="row mb-2">
+                <div id="warning_div" class="col-md-10">
+                    <h5><span id="alert" class="badge"> </span></h5>
+                </div>
+                <div class="col-md-2">
+                    <button id="receipt_button" type="submit" class="btn btn-primary btn-sm float-right">
+                        @if (isset($receipts))
+                            <i id="button_icon" class="fa fa-edit"></i> Modifica Ricevuta
+                        @else
+                            <i id="button_icon" class="fa fa-plus"></i> Aggiungi Ricevuta
+                        @endif
+                    </button>
+                </div>
             </div>
             <!-- -->
-            <div id="error_div" class="col-sm-offset-2 col-sm-7">
-
-            </div>
         </form>
         <form id="done_form" action="/receipts/done" method="POST" target="_self">
             {{ csrf_field() }}
-            <input type="hidden" id="status" name="status" value="idle">
+            <input type="hidden" id="status" name="status" value="">
         </form>
     </div>
 </div>

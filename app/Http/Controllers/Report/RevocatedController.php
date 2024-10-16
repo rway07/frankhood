@@ -1,18 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
+
+/**
+ *
+ */
 class RevocatedController extends Controller
 {
     /**
      * Restituisce la vista per la selezione dell'anno in cui ricercare i soci revocati
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
             "select distinct strftime('%Y', revocation_date) as year
@@ -25,11 +32,21 @@ class RevocatedController extends Controller
     }
 
     /**
+     * Restituisce la vista con la lista dei soci revocati
+     *
      * @param $year
-     * @return array
+     * @return JsonResponse
      */
-    public function listData($year)
+    public function listData($year): JsonResponse
     {
+        $validator = new DataValidator();
+
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
         $beginDate = $year . '-01-01';
         $endDate = $year . '-12-31';
 
@@ -51,10 +68,14 @@ class RevocatedController extends Controller
             ]
         )->render();
 
-        return [
-                'year' => $year,
-                'num_revocated' => count($revocated),
-                'view' => $view
-            ];
+        return response()->json(
+            [
+                'data' => [
+                    'year' => $year,
+                    'num_revocated' => count($revocated),
+                    'view' => $view
+                ]
+            ]
+        );
     }
 }

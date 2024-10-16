@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
 <script src="/js/report/new/index.js"></script>
-<link href="/css/print.css" rel="stylesheet" type="text/css">
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <div class="card">
     <div class="card-header bg-secondary text-white">
@@ -21,6 +20,10 @@
         </div>
         <h6> Numero: <span id="num_people_title">??</span></h6>
     </div>
+    <?php
+        $count = 1;
+        $total = 0;
+    ?>
     <div class="card-body">
         <div id="data_container">
 

@@ -1,26 +1,37 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use DB;
-use Exception;
-use Redirect;
-use App\Models\Expenses;
 use App\Http\Requests\ExpenseRequest;
-use Illuminate\Http\Request;
-use yajra\Datatables\Datatables;
+use App\Models\Expenses;
+use App\Util\DataValidator;
+use App\Util\ExpensesDataValidator;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\App as App;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View;
+use yajra\Datatables\DataTables;
 
+/**
+ *
+ */
 class ExpensesController extends Controller
 {
     /**
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Restituisce la vista con la lista delle spese
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
-            "select distinct strftime('%Y', date) as year
+            'select distinct strftime(\'%Y\', date) as year
             from expenses
-            order by year desc;"
+            order by year desc;'
         );
 
         return view(
@@ -32,10 +43,27 @@ class ExpensesController extends Controller
     }
 
     /**
+     * Restituisce i dati per il DataTable nella vista principale
+     *
+     * @param $year
      * @return mixed
+     * @throws Exception
      */
     public function data($year)
     {
+        $validator = new DataValidator();
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                [
+                    'draw' => 0,
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => $validator->getReturnMessage()
+                ]
+            );
+        }
+
         $beginDate = $year . '-01-01';
         $endDate = $year . '-12-31';
 
@@ -46,33 +74,51 @@ class ExpensesController extends Controller
             $expenses = $expenses->whereBetween('date', [$beginDate, $endDate]);
         }
 
-        return Datatables::of($expenses)
-            ->editColumn('date', '{{ strftime("%d/%m/%Y", strtotime($date)) }}')
+        return DataTables::of($expenses)
+            ->editColumn('date', '{{ strftime(\'%d/%m/%Y\', strtotime($date)) }}')
             ->editColumn('amount', '{{ $amount }} €')
-            ->addColumn('Modifica', function ($val) {
-                return "<button type='button' class='btn btn-info btn-sm' onclick='edit(" . $val->id . ")'>
-                                    <i class='fa fa-btn fa-edit'> </i> Modifica</button>";
+            ->addColumn('Stampa', function ($entry) {
+                return view('common.print', ['subject' => 'expenses', 'idSubject' => $entry->id]);
             })
-            ->addColumn('Elimina', function ($val) {
-                return "<button id='ex_" . $val->id . "' type='button' class='btn btn-danger btn-sm'
-                    onclick='destroy(" . $val->id . ")'>
-                    <i class='fa fa-btn fa-trash'> </i> Elimina</button>";
+            ->addColumn('Modifica', function ($entry) {
+                return view('common.edit', ['subject' => 'expenses', 'idSubject' => $entry->id]);
             })
-            ->rawColumns(['Modifica', 'Elimina'])
+            ->addColumn('Elimina', function ($entry) {
+                return view(
+                    'common.delete',
+                    [
+                        'subject' => 'expenses',
+                        'idSubject' => $entry->id
+                    ]
+                );
+            })
+            ->rawColumns(['Stampa', 'Modifica', 'Elimina'])
             ->make(true);
     }
 
-    public function create()
+    /**
+     * Restituisce la vista per l'aggiunta di una nuova spesa
+     *
+     * @return View
+     */
+    public function create(): View
     {
         return view('expenses.create');
     }
 
     /**
+     * Restituisce la vista per la modifica di una spesa esistente
+     *
      * @param $idExpense
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View | RedirectResponse
      */
     public function edit($idExpense)
     {
+        $validator = new ExpensesDataValidator();
+        if (!$validator->checkExpenseID($idExpense)) {
+            return Redirect::to('expenses/index')->withErrors($validator->getReturnErrorMessage());
+        }
+
         $expense = Expenses::select(['id', 'description', 'date', 'amount'])
             ->where('id', $idExpense)
             ->get()
@@ -82,16 +128,12 @@ class ExpensesController extends Controller
     }
 
     /**
-     * TODO Error handling
-     *
-     * @param Request $request
+     * @param $data
      * @param $idExpense
-     * @return bool
+     * @return void
      */
     private function saveExpense($data, $idExpense)
     {
-        $expense = null;
-
         if ($idExpense == 0) {
             $expense = new Expenses();
         } else {
@@ -102,31 +144,47 @@ class ExpensesController extends Controller
         $expense->date = $data['date'];
         $expense->amount = $data['amount'];
         $expense->save();
-
-        return true;
     }
 
-    public function store(ExpenseRequest $request)
+    /**
+     * Salva una nuova spesa
+     *
+     * @param ExpenseRequest $request
+     * @return RedirectResponse
+     */
+    public function store(ExpenseRequest $request): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validatedData = $request->validated();
+
             DB::beginTransaction();
             $this->saveExpense($validatedData, 0);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('expenses/index')->withErrors('Transazione fallitta!');
+            return Redirect::to('expenses/index')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('expenses/index');
+        return Redirect::to('expenses/index')->with('status', 'Spesa aggiunta.');
     }
 
-    public function update(ExpenseRequest $request, $idExpense)
+    /**
+     * Aggiorna una nuova spesa
+     *
+     * @param ExpenseRequest $request
+     * @param $idExpense
+     * @return RedirectResponse
+     */
+    public function update(ExpenseRequest $request, $idExpense): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validator = new ExpensesDataValidator();
+            if (!$validator->checkExpenseID($idExpense)) {
+                return Redirect::to('expenses/index')->withErrors($validator->getReturnErrorMessage());
+            }
+
+            $validatedData = $request->validated();
+
             DB::beginTransaction();
             $this->saveExpense($validatedData, $idExpense);
             DB::commit();
@@ -135,27 +193,67 @@ class ExpensesController extends Controller
             return Redirect::to('expenses/index')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('expenses/index');
+        return Redirect::to('expenses/index')->with('status', 'Spesa aggiornata.');
     }
 
-    public function destroy($idExpense)
+    /**
+     * Elimina una spesa
+     *
+     * @param $idExpense
+     * @return JsonResponse
+     */
+    public function destroy($idExpense): JsonResponse
     {
         try {
+            $validator = new ExpensesDataValidator();
+            if (!$validator->checkExpenseID($idExpense)) {
+                return response()->json(
+                    ['error' => ['message' => $validator->getReturnErrorMessage()]]
+                );
+            }
+
             DB::beginTransaction();
-
             Expenses::destroy($idExpense);
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => $e->getMessage()
-                ]
+                ['error' => ['message' => $e->getMessage()]]
             );
         }
 
-        return response()->json(['status' => 'OK', 'message' => 'Spesa eliminata']);
+        return response()->json(
+            ['data' => ['message' => 'Spesa eliminata.']]
+        );
+    }
+
+    /**
+     * Stampa una spesa
+     *
+     * @param $idExpense
+     * @return mixed
+     */
+    public function printReceipt($idExpense)
+    {
+        $validator = new ExpensesDataValidator();
+        if (!$validator->checkExpenseID($idExpense)) {
+            return Redirect::to('expenses/index')->withErrors($validator->getReturnErrorMessage());
+        }
+
+        $data = DB::select(
+            "select id, description, date, amount
+            from expenses
+            where id = {$idExpense};"
+        );
+
+        $pdf = App::make('snappy.pdf.wrapper');
+        $pdf->loadView(
+            'expenses/print',
+            [
+                'expense' => $data[0]
+            ]
+        );
+
+        return $pdf->inline();
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,17 +13,47 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('api')->group(function() {
+Route::middleware('api')->group(function () {
     // Customers API routes
-    Route::get('/customers/names/{year}', 'App\Http\Controllers\Customers\CustomersServicesController@names');
-    Route::get('/customers/recipient/{id}', 'App\Http\Controllers\Customers\CustomersServicesController@recipient');
-    Route::get('/customers/{customer}/{year}/{edit}/getgroup', 'App\Http\Controllers\Customers\CustomersServicesController@getGroup');
+    Route::get(
+        '/customers/{year}/{exclude}/names',
+        'App\Http\Controllers\Customers\CustomersServicesController@customersNamesPerYear'
+    );
+    Route::get('/customers/{id}/recipient', 'App\Http\Controllers\Customers\CustomersServicesController@recipient');
+    Route::get(
+        '/customers/{customer}/{year}/{edit}/group',
+        'App\Http\Controllers\Customers\CustomersServicesController@getGroup'
+    );
+    Route::get('/customers/{customer}/info', 'App\Http\Controllers\Customers\CustomersServicesController@customerInfo');
+
     // Receipts API routes
-    Route::get('/receipts/{number}/{year}/info', 'App\Http\Controllers\Receipts\ReceiptsServicesController@info');
-    Route::get('/receipts/{id}/{number}/{year}/quota', 'App\Http\Controllers\Receipts\ReceiptsServicesController@customerQuota');
-    Route::get('/receipts/years/{id}/{year}', 'App\Http\Controllers\Receipts\ReceiptsServicesController@years');
-    Route::get('/receipts/{number}/{year}/print', 'App\Http\Controllers\Receipts\ReceiptsServicesController@printReceipt');
+    Route::get(
+        '/receipts/{number}/{year}/info',
+        'App\Http\Controllers\Receipts\ReceiptsServicesController@info'
+    );
+    Route::get(
+        '/receipts/{id}/{number}/{year}/quota',
+        'App\Http\Controllers\Receipts\ReceiptsServicesController@customerQuota'
+    );
+    Route::get(
+        '/receipts/years/{id}/{year}',
+        'App\Http\Controllers\Receipts\ReceiptsServicesController@years'
+    );
+    Route::get(
+        '/receipts/{number}/{year}/print',
+        'App\Http\Controllers\Receipts\ReceiptsServicesController@printReceipt'
+    );
+
     // Rates API routes
     Route::get('/rates/{id}/quota', 'App\Http\Controllers\Rates\RatesServicesController@quota');
-    Route::get('/rates/exceptions/{year}/customers', 'App\Http\Controllers\Rates\FuneralExceptionsController@deadCustomers');
+    Route::get(
+        '/rates/exceptions/{year}/customers',
+        'App\Http\Controllers\Rates\FuneralExceptionsServicesController@deadCustomers'
+    );
+
+    // Offers API routes
+    Route::get('/offers/{id}/print', 'App\Http\Controllers\OffersController@printReceipt');
+
+    // Expenses API routes
+    Route::get('/expenses/{id}/print', 'App\Http\Controllers\ExpensesController@printReceipt');
 });

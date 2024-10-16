@@ -1,8 +1,52 @@
+@media print {
+    @page {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+    }
+
+    table, th, tr, td {
+        font-size: large;
+    }
+
+    thead, tfoot {
+        display: table-row-group;
+    }
+
+    .panel {
+        border: 0;
+    }
+
+    .card-header {
+        color: black !important;
+        font-size: xx-large;
+    }
+
+    h5 {
+        font-size: xx-large;
+    }
+
+    h6 {
+        font-size: x-large;
+    }
+}
+
 table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
     font-size: small;
 }
 
 .fit {
     white-space: nowrap;
     width: 1%;
+}
+
+.fiftyfive {
+    width: 55%;
+}
+
+.fifteen {
+    text-align: right;
+    width: 15%;
 }

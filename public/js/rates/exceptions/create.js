@@ -1,31 +1,34 @@
-$(document).ready(function() {
+/**
+ * @file rates/exceptions/create.js
+ * @author kain rway07@gmail.com
+ */
+$(() => {
     $('#create_exception').validate({
         rules: {
-            dead_customers: {required: true},
-            quota: {required: true},
-            year: {required: true},
+            dead_customers: { required: true },
+            quota: { required: true, number: true },
+            year: { required: true, digits: true },
         },
         messages: {
-            year: {required: 'Inserire l\'anno'},
-            quota: {required: 'Inserire il costo del funerale'},
+            year: { required: "Inserire l'anno" },
+            quota: { required: 'Inserire il costo del funerale' },
             dead_customers: 'Inserire il socio deceduto',
         },
     });
 
-    //getCustomers();
-
-    $('#year').change(function () {
-        loadCustomers($(this).val());
+    $('#year').on('change', (event) => {
+        loadCustomers(event.currentTarget.value);
     });
 });
 
 /**
- *
+ *  Carica i soci deceduti in base all'anno
  */
 function getCustomers() {
-    var year = $('#year').val();
+    const year = $('#year').val();
 
-    if (year != null) {
+    // FIXME Check year
+    if (!isNaN(year)) {
         loadCustomers(year);
     }
 }
@@ -37,16 +40,26 @@ function getCustomers() {
  */
 function loadCustomers(year) {
     $.ajax({
-        url: '/api/rates/exceptions/' + year + '/customers',
+        url: `/api/rates/exceptions/${year}/customers`,
         type: 'get',
-        error: function (data) {
-            console.log(data);
+        error(response) {
+            showGuruModal(response);
         },
-        success: function (data) {
-            $('#dead_customers').empty();
-            $.each(data, function(i, item) {
-                $('#dead_customers').append(new Option(item.first_name + ' ' + item.last_name, item.id));
-            });
+        success(response) {
+            if ('error' in response) {
+                showModal(response.error.message);
+                return false;
+            }
+            if ('data' in response) {
+                $('#dead_customers').empty();
+                $.each(response.data.customers, (index, item) => {
+                    $('#dead_customers').append(new Option(`${item.first_name} ${item.last_name}`, item.id));
+                });
+
+                return true;
+            }
+
+            return false;
         },
     });
 }

@@ -29,4 +29,22 @@ class OfferRequest extends FormRequest
             'amount' => 'required|numeric'
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'date.required' => 'Date is required.',
+            'date.date' => 'Date is not valid.',
+            'description.required' => 'Description is required.',
+            'description.string' => 'Description is not valid.',
+            'amount.required' => 'Amount is required.',
+            'amount.numeric' => 'Amount must be a number.',
+
+        ];
+    }
 }

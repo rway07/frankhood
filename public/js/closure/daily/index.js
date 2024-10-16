@@ -1,21 +1,49 @@
-var dates = [];
-var num_people = [];
-var totals = [];
+/**
+ * @file daily/index.js
+ * @author kain rway07@gmail.com
+ */
+let dates = [];
+let numPeople = [];
+let totals = [];
 
-$(document).ready(function() {
-    loadData($('#years').val());
+$(() => {
+    const years = $('#years');
 
-    $('#years').change(function() {
-        loadData($(this).val());
+    loadData(years.val());
+
+    years.on('change', (event) => {
+        loadData(event.currentTarget.value);
     });
 
-    $('#show_graph').click(function() {
+    $('#show_graph').on('click', () => {
         showGraph();
+    });
+
+    $('#show_extra').on('click', () => {
+        showExtra();
     });
 });
 
+/**
+ * Abilita / Disabilita la sezione extra nella stampa
+ */
+function showExtra() {
+    const extraDiv = $('#extra_div');
+
+    if (extraDiv.hasClass('d-print-none')) {
+        extraDiv.removeClass('d-print-none');
+        $('#show_extra_text').text('Nascondi sezione extra nella stampa');
+    } else {
+        extraDiv.addClass('d-print-none');
+        $('#show_extra_text').text('Mostra sezione extra nella stampa');
+    }
+}
+
+/**
+ * Abilita / Disabilita la visualizzazione del grafico nella stampa
+ */
 function showGraph() {
-    var div = $('#graph_div');
+    const div = $('#graph_div');
 
     if (div.hasClass('d-print-none')) {
         div.removeClass('d-print-none');
@@ -26,43 +54,52 @@ function showGraph() {
     }
 }
 
+/**
+ * Carica il grafico
+ */
 function loadChart() {
-    $('.date').each(function () {
-        dates.push($(this).text());
+    dates = [];
+    $('.date').each((index, element) => {
+        dates.push(element.textContent);
     });
 
-    $('.num_total').each(function () {
-        num_people.push($(this).text());
+    numPeople = [];
+    $('.num_total').each((index, element) => {
+        numPeople.push(element.textContent);
     });
 
-    $('.total').each(function() {
-        var temp = $(this).text();
+    totals = [];
+    $('.total').each((index, element) => {
+        let temp = element.textContent;
         temp = temp.replace('€', '').replace('&euro;', '');
         totals.push(temp);
     });
 
-    var chartData = {
+    const chartData = {
         labels: dates,
-        datasets: [{
-            label: 'Numero persone',
-            borderColor: 'rgba(255, 0, 0, 1)',
-            backgroundColor: 'rgba(255, 0, 0, 1)',
-            fill: false,
-            data: num_people,
-            borderWidth: 2,
-            yAxisID: 'y-axis-1',
-        }, {
-            label: 'Totale pagato €',
-            borderColor: 'rgba(0, 0, 255, 1)',
-            backgroundColor: 'rgba(0, 0, 255, 1)',
-            fill: false,
-            data: totals,
-            borderWidth: 2,
-            yAxisID: 'y-axis-2',
-        }]
+        datasets: [
+            {
+                label: 'Numero persone',
+                borderColor: 'rgba(255, 0, 0, 1)',
+                backgroundColor: 'rgba(255, 0, 0, 1)',
+                fill: false,
+                data: numPeople,
+                borderWidth: 2,
+                yAxisID: 'y-axis-1',
+            },
+            {
+                label: 'Totale pagato €',
+                borderColor: 'rgba(0, 0, 255, 1)',
+                backgroundColor: 'rgba(0, 0, 255, 1)',
+                fill: false,
+                data: totals,
+                borderWidth: 2,
+                yAxisID: 'y-axis-2',
+            },
+        ],
     };
 
-    var ctx = document.getElementById('test').getContext('2d');
+    const ctx = document.getElementById('test').getContext('2d');
     if (ctx) {
         new Chart(ctx, {
             type: 'line',
@@ -72,41 +109,60 @@ function loadChart() {
                 hoverMode: 'index',
                 stacked: false,
                 scales: {
-                    yAxes: [{
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: 'left',
-                        id: 'y-axis-1',
-                    }, {
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: 'right',
-                        id: 'y-axis-2',
-
-                        // grid line settings
-                        gridLines: {
-                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    yAxes: [
+                        {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            id: 'y-axis-1',
                         },
-                    }],
-                }
-            }
+                        {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            id: 'y-axis-2',
+
+                            // Grid line settings
+                            gridLines: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                    ],
+                },
+            },
         });
     }
 }
 
+/**
+ * Carica i dati della chiusura giornaliera
+ *
+ * @param year
+ */
 function loadData(year) {
     $.ajax({
-        url: '/closure/daily/' + year + '/list',
+        url: `/closure/daily/${year}/list`,
         type: 'get',
-
-        error: function (data) {
-            console.log('Error:', data);
+        error(response) {
+            showGuruModal(response);
         },
-        success: function (data) {
-            $('#data_container')
-                .html('')
-                .append(data);
-            loadChart();
-        }
+        success(response) {
+            // Controllo se la risposta contiene errori
+            if ('error' in response) {
+                showModal(response.error.message);
+                return false;
+            }
+
+            // Controllo se la risposta contiene dati
+            if ('data' in response) {
+                $('#data_container').html('').append(response.data.view);
+                $('#title_year').text(response.data.year);
+                loadChart();
+
+                return true;
+            }
+
+            return false;
+        },
     });
 }

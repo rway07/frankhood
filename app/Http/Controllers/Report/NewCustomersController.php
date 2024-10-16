@@ -1,18 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
+
+/**
+ *
+ */
 class NewCustomersController extends Controller
 {
     /**
      * Restituisce la vista per la selezione dell'anno in cui ricercare i nuovi soci iscritti
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
             "select distinct enrollment_year as year
@@ -24,13 +31,23 @@ class NewCustomersController extends Controller
     }
 
     /**
+     * Restituisce la vista con la lista dei nuovi soci
+     *
      * @param $year
-     * @return array
+     * @return JsonResponse
      */
-    public function listData($year)
+    public function listData($year): JsonResponse
     {
+        $validator = new DataValidator();
+
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
         $newCustomers = DB::select(
-            "select first_name, last_name, birth_date, quota, cr.number
+            "select first_name, last_name, birth_date, quota, cr.number, phone, mobile_phone
             from customers c
             join customers_receipts cr on c.id = cr.customers_id
             where enrollment_year = ? and cr.year = ?
@@ -48,10 +65,12 @@ class NewCustomersController extends Controller
             ]
         )->render();
 
-        return [
-            'year' => $year,
-            'num_new' => count($newCustomers),
-            'view' => $view
-        ];
+        return response()->json(
+            ['data' => [
+                'year' => $year,
+                'num_new' => count($newCustomers),
+                'view' => $view
+            ]]
+        );
     }
 }

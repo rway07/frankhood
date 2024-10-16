@@ -25,20 +25,20 @@
             <div class="row mb-3">
                 <div class="col-md-2">
                     <label for="date" class="col-form-label-sm">Data</label>
-                    @if (isset($expense))
-                        <input type="date" name="date" id="date" class="form-control form-control-sm" value="{{ $expense->date }}">
+                    @if (isset($offer))
+                        <input type="date" name="date" id="date" class="form-control form-control-sm" value="{{ $offer->date }}">
                     @else
                         <input type="date" name="date" id="date" class="form-control form-control-sm" value="{{ old('date') }}">
                     @endif
                 </div>
                 <div class="col-md-2">
                     <label class="col-form-label-sm">Totale</label>
-                    @if (isset($expense))
+                    @if (isset($offer))
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">&euro;</div>
                             </div>
-                            <input type="text" class="form-control form-control-sm" id="amount" name="amount" placeholder="Totale" value="{{ $expense->amount }}">
+                            <input type="text" class="form-control form-control-sm" id="amount" name="amount" placeholder="Totale" value="{{ $offer->amount }}">
                         </div>
                     @else
                         <div class="input-group input-group-sm">
@@ -51,8 +51,8 @@
                 </div>
                 <div class="col-md-8">
                     <label class="col-form-label-sm">Descrizione</label>
-                    @if (isset($expense))
-                        <input type="text" name="description" id="description" class="form-control form-control-sm" value="{{ $expense->description }}">
+                    @if (isset($offer))
+                        <input type="text" name="description" id="description" class="form-control form-control-sm" value="{{ $offer->description }}">
                     @else
                         <input type="text" name="description" id="description" class="form-control form-control-sm" value="{{ old('description') }}">
                     @endif
@@ -60,7 +60,7 @@
             </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary btn-sm float-right">
-                    @if (isset($expense))
+                    @if (isset($offer))
                         <i class="fa fa-edit"></i> Modifica Offerta
                     @else
                         <i class="fa fa-plus"></i> Aggiungi Offerta

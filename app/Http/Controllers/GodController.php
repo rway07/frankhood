@@ -1,8 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
-use DB;
 
+use Illuminate\Support\Facades\DB as DB;
+
+/**
+ *
+ */
 class GodController extends Controller
 {
     public function normalizeReceiptsNumPeople()

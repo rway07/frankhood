@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <script type="text/javascript">
-$(document).ready(function() {
+$(function() {
     $('#estimation_form').validate({
         rules: {
             first_name: { required:true },

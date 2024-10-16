@@ -1,13 +1,12 @@
 @extends('layouts.app')
 @section('content')
-<meta name="csrf_token" content="{{ csrf_token() }}" />
-<script type="text/javascript" src="/js/receipts/list.js"></script>
-<script type="text/javascript" src="/js/common/util.js"></script>
-<link href="/css/tables.css" rel="stylesheet" type="text/css">
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+@include('include.toastr')
+@include('include.datatables')
 @include('receipts.util.info')
+<meta name="csrf_token" content="{{ csrf_token() }}" />
+<script src="/js/common/util.js" type="text/javascript"></script>
+<script type="text/javascript" src="/js/receipts/list.js"></script>
+<link href="/css/tables.css" rel="stylesheet" type="text/css">
 <div class="card">
     <div class="card-header text-white bg-secondary clearfix">
         <h5> LISTA RICEVUTE </h5>
@@ -36,11 +35,7 @@
     </div>
 
     @include('common.errors')
-    @if(isset($status))
-        <input id="status" type="hidden" value="{{ $status }}">
-    @else
-        <input id="status" type="hidden" value="idle">
-    @endif
+    @include('common.status')
     <div class="card-body">
         <table class="table table-striped table-sm" id="receipts_table">
             <thead class="thead-dark">

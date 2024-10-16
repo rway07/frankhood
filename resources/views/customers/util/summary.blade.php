@@ -1,14 +1,16 @@
 @extends('layouts.app')
 @section('content')
-<script src="/js/customers/summary.js" type="text/javascript"></script>
+<script src="/js/common/util.js" type="text/javascript"></script>
 <link href="/css/util.css" rel="stylesheet" type="text/css">
 @if (count($data) > 0)
+    @include('receipts.util.info')
+    @include('customers.util.info')
     <div class="card">
         <div class="card-header bg-secondary text-white">
             RICEVUTE E GRUPPO FAMILIARE PER {{ $customer->name }}
         </div>
         <div class="card-body">
-            <div class="container-fluid small_text">
+            <div class="container-fluid small">
                 <div class="row header">
                     <div class="col-md-3">
                         Anno
@@ -41,7 +43,12 @@
                         </div>
                         <div class="col-md-2">
                             <h6>
-                                <button type='button' class='btn btn-primary btn-sm' onclick="receiptInfo({{ $item['number'] }}, {{ $item['year'] }})">
+                                <button type="button" class="btn btn-sm btn-info"
+                                    onclick="edit('receipts', '{{ $item['number'] }}/{{ $item['year'] }}')">
+                                    <i class="fa fa-btn fa-edit"></i> Modifica
+                                </button>
+                                <button type='button' class='btn btn-primary btn-sm'
+                                        onclick="receiptInfo({{ $item['number'] }}, {{ $item['year'] }})">
                                     <i class='fa fa-btn fa-info'></i> Info
                                 </button>
                             </h6>
@@ -50,7 +57,7 @@
                     @foreach ($item['customers'] as $i)
                         <div class="row">
                             <div class="col-md-1"></div>
-                            <div class="col-md-9 small_text">
+                            <div class="col-md-9">
                                 @if($i->id == $item['head'])
                                     <span class="badge badge-success">Capo</span> {{ $i->name }} - ({{ $i->alias }})
                                 @else
@@ -58,7 +65,12 @@
                                 @endif
                             </div>
                             <div class="col-md-2">
-                                <button type='button' class='btn btn-info btn-sm' onclick="customerInfo({{ $i->id }})">
+                                <button type="button" class="btn btn-sm btn-info"
+                                    onclick="edit('customers', {{ $i->id }})">
+                                    <i class="fa fa-btn fa-edit"></i> Modifica
+                                </button>
+                                <button type='button' class='btn btn-primary btn-sm'
+                                        onclick="customerInfo({{ $i->id }})">
                                     <i class='fa fa-btn fa-info'></i> Info
                                 </button>
                             </div>

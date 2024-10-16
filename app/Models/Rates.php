@@ -18,6 +18,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Rates whereQuota($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Rates whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Rates whereUpdatedAt($value)
+ * @property float $funeral_cost
+ * @method static \Illuminate\Database\Eloquent\Builder|Rates newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Rates newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Rates query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Rates whereFuneralCost($value)
  * @mixin \Eloquent
  */
 class Rates extends Model

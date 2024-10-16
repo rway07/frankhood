@@ -1,25 +1,37 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
-use DB;
-use Exception;
-use Redirect;
-use App\Models\Offers;
-use App\Http\Requests\OfferRequest;
-use Illuminate\Http\Request;
-use yajra\Datatables\Datatables;
 
+use App\Http\Requests\OfferRequest;
+use App\Models\Offers;
+use App\Util\DataValidator;
+use App\Util\OffersDataValidator;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\App as App;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View as View;
+use yajra\Datatables\DataTables;
+
+/**
+ *
+ */
 class OffersController extends Controller
 {
     /**
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Restituisce la vista con la lista delle offerte
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         $years = DB::select(
-            "select distinct strftime('%Y', date) as year
+            'select distinct strftime(\'%Y\', date) as year
             from offers
-            order by year desc;"
+            order by year desc;'
         );
 
         return view(
@@ -30,11 +42,29 @@ class OffersController extends Controller
         );
     }
 
+
     /**
-     * @return mixed
+     * Restituisce i dati per il DataTable nella vista principale
+     *
+     * @param $year
+     * @return JsonResponse
+     * @throws Exception
      */
-    public function data($year)
+    public function data($year): JsonResponse
     {
+        $validator = new DataValidator();
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                [
+                    'draw' => 0,
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => $validator->getReturnMessage()
+                ]
+            );
+        }
+
         $beginDate = $year . '-01-01';
         $endDate = $year . '-12-31';
 
@@ -45,53 +75,66 @@ class OffersController extends Controller
             $offers = $offers->whereBetween('date', [$beginDate, $endDate]);
         }
 
-        return Datatables::of($offers)
-            ->editColumn('date', '{{ strftime("%d/%m/%Y", strtotime($date)) }}')
-            ->editColumn('amount', '{{ $amount }} &euro;')
-            ->addColumn('Modifica', function ($val) {
-                return "<button type='button' class='btn btn-info btn-sm' onclick='edit(". $val->id .")'>
-                                    <i class='fa fa-btn fa-edit'> </i> Modifica</button>";
+        return DataTables::of($offers)
+            ->editColumn('date', '{{ strftime(\'%d/%m/%Y\', strtotime($date)) }}')
+            ->editColumn('amount', '{{ $amount }} €')
+            ->addColumn('Stampa', function ($entry) {
+                return view('common.print', ['subject' => 'offers', 'idSubject' => $entry->id]);
             })
-            ->addColumn('Elimina', function ($val) {
-                return "<button id='ex_" . $val->id . "' type='button' class='btn btn-danger btn-sm'
-                    onclick='destroy(". $val->id .")'>
-                    <i class='fa fa-btn fa-trash'> </i> Elimina</button>";
+            ->addColumn('Modifica', function ($entry) {
+                return view('common.edit', ['subject' => 'offers', 'idSubject' => $entry->id]);
             })
-            ->rawColumns(['Modifica', 'Elimina'])
+            ->addColumn('Elimina', function ($entry) {
+                return view(
+                    'common.delete',
+                    [
+                        'subject' => 'offers',
+                        'idSubject' => $entry->id
+                    ]
+                );
+            })
+            ->rawColumns(['Stampa', 'Modifica', 'Elimina'])
             ->make(true);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * Restituisce la vista per l'aggiunta di una nuova offerta
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('offers.create');
     }
 
     /**
+     * Restituisce la vista per la modifica di un'offerta esistente
+     *
      * @param $idOffer
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View | RedirectResponse
      */
     public function edit($idOffer)
     {
+        $validator = new OffersDataValidator();
+        if (!$validator->checkOfferID($idOffer)) {
+            return Redirect::to('offers/index')->withErrors($validator->getReturnMessage());
+        }
+
         $offer = Offers::select(['id', 'description', 'date', 'amount'])
             ->where('id', $idOffer)
             ->get()
             ->first();
 
-        return view('offers.create', ['offers' => $offer]);
+        return view('offers.create', ['offer' => $offer]);
     }
 
     /**
      * @param $data
      * @param $idOffer
-     * @return bool
+     * @return void
      */
     private function saveOffer($data, $idOffer)
     {
-        $offer = null;
-
         if ($idOffer == 0) {
             $offer = new Offers();
         } else {
@@ -102,40 +145,47 @@ class OffersController extends Controller
         $offer->date = $data['date'];
         $offer->amount = $data['amount'];
         $offer->save();
-
-        return true;
     }
 
     /**
+     * Salva una nuova offerta
+     *
      * @param OfferRequest $request
-     * @return mixed
+     * @return RedirectResponse
      */
-    public function store(OfferRequest $request)
+    public function store(OfferRequest $request): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validatedData = $request->validated();
+
             DB::beginTransaction();
             $this->saveOffer($validatedData, 0);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('offers/index')->withErrors('Transazione fallitta!');
+            return Redirect::to('offers/index')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('offers/index');
+        return Redirect::to('offers/index')->with('status', 'Offerta aggiunta.');
     }
 
     /**
+     * Aggiorna una nuova offerta
+     *
      * @param OfferRequest $request
      * @param $idOffer
-     * @return mixed
+     * @return RedirectResponse
      */
-    public function update(OfferRequest $request, $idOffer)
+    public function update(OfferRequest $request, $idOffer): RedirectResponse
     {
-        $validatedData = $request->validated();
-
         try {
+            $validator = new OffersDataValidator();
+            if (!$validator->checkOfferID($idOffer)) {
+                return Redirect::to('offers/index')->withErrors($validator->getReturnMessage());
+            }
+
+            $validatedData = $request->validated();
+
             DB::beginTransaction();
             $this->saveOffer($validatedData, $idOffer);
             DB::commit();
@@ -144,31 +194,70 @@ class OffersController extends Controller
             return Redirect::to('offers/index')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('offers/index');
+        return Redirect::to('offers/index')->with('status', 'Offerta aggiornata');
     }
 
     /**
+     * Elimina un'offerta
+     *
      * @param $idOffer
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy($idOffer)
+    public function destroy($idOffer): JsonResponse
     {
         try {
+            $validator = new OffersDataValidator();
+            if (!$validator->checkOfferID($idOffer)) {
+                return response()->json(
+                    ['error' => ['message' => $validator->getReturnMessage()]]
+                );
+            }
+
             DB::beginTransaction();
-
             Offers::destroy($idOffer);
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => $e->getMessage()
-                ]
+                ['error' => ['message' => $e->getMessage()]]
             );
         }
 
-        return response()->json(['status' => 'OK', 'message' => 'Offerta eliminata']);
+        return response()->json(
+            ['data' => ['message' => 'Offerta eliminata.']]
+        );
+    }
+
+    /**
+     * Stampa un'offerta
+     *
+     * @param $idOffer
+     * @return mixed
+     */
+    public function printReceipt($idOffer)
+    {
+        $validator = new OffersDataValidator();
+        if (!$validator->checkOfferID($idOffer)) {
+            return Redirect::to('offers/index')->withErrors($validator->getReturnMessage());
+        }
+
+        $data = DB::select(
+            'select id, description, date, amount
+            from offers
+            where id = ?;',
+            [
+                $idOffer
+            ]
+        );
+
+        $pdf = App::make('snappy.pdf.wrapper');
+        $pdf->loadView(
+            'offers/print',
+            [
+                'offer' => $data[0]
+            ]
+        );
+
+        return $pdf->inline();
     }
 }

@@ -1,11 +1,25 @@
 @media print {
     th, tr, td {
-        font-size: x-small;
+        font-size: medium;
+        padding-right: 4px;
     }
 
     .panel {
         border: 0;
     }
+}
+
+td.space {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+td.upper_element {
+    line-height: 1.2;
+    font-size: large;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 7px;
 }
 
 .small_table {
@@ -23,8 +37,8 @@ table {
 }
 
 td.group_cell {
-    padding-top: 0px !important;
-    padding-bottom: 2px !important;
+    padding-top: 3px !important;
+    padding-bottom: 5px !important;
 }
 
 td.center {
@@ -38,4 +52,3 @@ tr.top_border {
 tr.bottom_border {
     border-bottom: thin solid black;
 }
-

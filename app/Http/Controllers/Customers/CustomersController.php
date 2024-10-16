@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Customers;
 
-use App;
-use App\Models\Customers;
-use App\Models\Receipts;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerRequest;
-use DB;
-use Exception;
-use Illuminate\Http\Request;
-use Redirect;
+use App\Models\Customers;
+use App\Models\Receipts;
+use App\Util\CustomersDataValidator;
+use Exception as Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View as View;
+
 
 /**
  * Class CustomersController
@@ -21,7 +23,6 @@ class CustomersController extends Controller
     /**
      * Restituisce la vista con la lista dei soci
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
@@ -29,9 +30,11 @@ class CustomersController extends Controller
     }
 
     /**
-     * @return mixed
+     * Restituisce i dati per il Datatable dei soci
+     *
+     * @return string
      */
-    public function data()
+    public function data(): string
     {
         $customers = Customers::select(
             [
@@ -51,9 +54,9 @@ class CustomersController extends Controller
     /**
      * Restituisce la vista per l'aggiunta di un nuovo socio
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('customers/create');
     }
@@ -62,35 +65,42 @@ class CustomersController extends Controller
      * Salva un nuovo socio
      *
      * @param CustomerRequest $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return RedirectResponse
      */
-    public function store(CustomerRequest $request)
+    public function store(CustomerRequest $request): RedirectResponse
     {
         try {
+            // Validazione input
             $validatedData = $request->validated();
 
             DB::beginTransaction();
             $this->saveCustomer($validatedData, 0);
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('customers/create')
-                ->withErrors('[customers.store] Transazione fallita! ' . $e->getMessage());
+            return Redirect::to('customers/create')->withErrors($e->getMessage());
         }
 
-        return redirect('customers/index')->with('status', 'saved');
+        return redirect('customers/index')->with('status', 'Socio aggiunto.');
     }
 
     /**
      * Restituisce la vista per la modifica di un socio
      *
-     * @param $customerId
-     *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param $idCustomer
+     * @return RedirectResponse | View
      */
-    public function edit($customerId)
+    public function edit($idCustomer)
     {
-        $customers = Customers::where('id', '=', $customerId)
+        // Validazione ID Socio
+        $validator = new CustomersDataValidator();
+
+        if (!$validator->checkCustomerID($idCustomer)) {
+            return Redirect::to('customers/index')->withErrors($validator->getReturnMessage());
+        }
+
+        // Ottengo i dati del socio
+        $customers = Customers::where('id', '=', $idCustomer)
             ->get()
             ->first();
 
@@ -100,36 +110,39 @@ class CustomersController extends Controller
     /**
      * Aggiorna un socio
      *
-     * @param Request $request
+     * @param CustomerRequest $request
      * @param $idCustomer
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return RedirectResponse
      */
-    public function update(CustomerRequest $request, $idCustomer)
+    public function update(CustomerRequest $request, $idCustomer): RedirectResponse
     {
         try {
+            // Validazione dei dati
             $validatedData = $request->validated();
+            $dataValidator = new CustomersDataValidator();
+            if (!$dataValidator->checkCustomerID($idCustomer)) {
+                throw new Exception($dataValidator->getReturnMessage());
+            }
 
             DB::beginTransaction();
             $this->saveCustomer($validatedData, $idCustomer);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('customers/create')
-                ->withErrors('[customers.update] Transazione fallita! ' . $e->getMessage());
+            return Redirect::to('customers/create')->withErrors($e->getMessage());
         }
 
-        return redirect('customers/index')->with('status', 'updated');
+        return redirect('customers/index')->with('status', 'Socio aggiornato.');
     }
 
     /**
-     * @param Request $request
+     * Salva i dati del nuovo socio o aggiorna uno corrente
+     *
+     * @param $data
      * @param $idCustomer
-     * @return int
      */
     private function saveCustomer($data, $idCustomer)
     {
-        $customer = null;
-
         if ($idCustomer == 0) {
             $customer = new Customers();
         } else {
@@ -172,41 +185,43 @@ class CustomersController extends Controller
         }
 
         $customer->save();
-
-        return $customer->id;
     }
 
     /**
      * Elimina un socio
      *
-     * @param $customerId
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Throwable
+     * @return false
      */
-    public function destroy($idCustomer)
+    public function destroy(): bool
     {
         // TODO Implementami!
         // Check if there are receipts for the current customer
 
-        return view('customers/list');
+        return false;
     }
-
 
     /**
      * Restituisce la vista contenente ricevute e gruppo familiare di un socio nel corso degli anni.
      *
      * @param $idCustomer
-     *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return RedirectResponse | View
      */
     public function summary($idCustomer)
     {
+        // Validazione ID Socio
+        $validator = new CustomersDataValidator();
+        if (!$validator->checkCustomerID($idCustomer)) {
+            return Redirect::to('customers/index')->withErrors($validator->getReturnMessage());
+        }
+
         $data = [];
+        // Ottego i dati del socio
         $customer = Customers::where('id', '=', $idCustomer)
             ->select(DB::raw('(first_name || \' \' || last_name || \' (\' || alias || \')\') as name'))
             ->get()
             ->first();
 
+        // Ottengo tutte le ricevute del socio
         $receipts = DB::table('customers_receipts')
             ->where('customers_id', '=', $idCustomer)
             ->select(['year', 'number'])
@@ -214,31 +229,28 @@ class CustomersController extends Controller
             ->orderBy('number', 'asc')
             ->get();
 
+        // Per ogni ricevuta, carico i dati del gruppo familiare
         foreach ($receipts as $receipt) {
-            $r = Receipts::where([
+            $currentReceipt = Receipts::where([
                 ['year', '=', $receipt->year],
                 ['number', '=', $receipt->number],
             ])->get();
 
-            $c = DB::select(
+            $currentCustomer = DB::select(
                 "select customers.id, (first_name || ' ' || last_name) as name,
                     alias
                 from customers_receipts
                 join customers on customers_id = customers.id
-                where year = ? and number = ?",
-                [
-                    $receipt->year,
-                    $receipt->number
-                ]
+                where year = {$receipt->year} and number = {$receipt->number}"
             );
 
             $data[] = [
-                'date' => $r[0]->date,
-                'year' => $r[0]->year,
-                'number' => $r[0]->number,
-                'total' => $r[0]->total,
-                'head' => $r[0]->customers_id,
-                'customers' => $c
+                'date' => $currentReceipt[0]->date,
+                'year' => $currentReceipt[0]->year,
+                'number' => $currentReceipt[0]->number,
+                'total' => $currentReceipt[0]->total,
+                'head' => $currentReceipt[0]->customers_id,
+                'customers' => $currentCustomer
             ];
         }
 

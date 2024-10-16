@@ -23,11 +23,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Receipts whereTotal($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Receipts whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Receipts whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property integer $number
  * @property integer $year
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Receipts whereNumber($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Receipts whereYear($value)
+ * @property int $custom_quotas
+ * @property int $payment_type_id
+ * @property int $num_people
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts whereCustomQuotas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts whereNumPeople($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipts wherePaymentTypeId($value)
+ * @mixin \Eloquent
  */
 class Receipts extends Model
 {

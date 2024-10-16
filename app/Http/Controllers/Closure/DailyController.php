@@ -1,41 +1,62 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Closure;
 
 use App\Http\Controllers\Controller;
-use DB;
-use Illuminate\Http\Request;
+use App\Util\DataFetcher;
+use App\Util\DataValidator as Validator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View as View;
 
+/**
+ * Class DailyController
+ *
+ * Questa classe si occupa di restituire viste e dati per la chiusura giornaliera
+ *
+ */
 class DailyController extends Controller
 {
     /**
-     * Resituisce la vista per la selezione dell'anno in cui effettuare le chiusure giornaliere.
-     *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     *  Resituisce la vista iniziale nel quale sono disponibili gli anni in cui è possibile effetturare
+     *  la chiusura
+     * 
+     * @return View
      */
-    public function index()
+    public function index() : View
     {
-        $years = DB::select(
-            'select distinct year
-            from customers_receipts
-            order by year desc;'
-        );
+        // Ottengo gli anni in cui sono state effettuate delle ricevute
+        $years = DataFetcher::getYears();
 
         return view('closure/daily/index', ['years' => $years]);
     }
 
     /**
-     * Restituisce la vista con le chiusure giornaliere.
+     * Ottiene i dati della chiusura in base all'anno e restituisce la vista richiesta
      *
-     * @param Request $request
-     *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param $year
+     * @return JsonResponse
      */
-    public function listData($year)
+    public function listData($year): JsonResponse
     {
+        // FIXME Funzione troppo lunga?
+        $validate = new Validator();
+
+        // Controllo anno
+        if (!$validate->checkYear($year)) {
+            return response()->json(
+                [
+                    "error" => ["message" => $validate->getReturnMessage()]
+                ]
+            );
+        }
+
+        // Per le query, serve avere la data iniziale e quella finale
         $beginDate = $year . '-01-01';
         $endDate = $year . '-12-31';
 
+        // Dati delle chiusure divisi per data
         $data = DB::select(
             'select date,
                    sum(num_people) as num_total,
@@ -44,11 +65,10 @@ class DailyController extends Controller
                    sum(case when payment_type_id = 1 then total else 0 end) as total_cash,
                    sum(case when payment_type_id = 2 then total else 0 end) as total_bank,
                    sum(total) as total
-            from receipts
-            join payment_types on receipts.payment_type_id = payment_types.id
-            where date between ? and ?
-              and receipts.year = ?
-            group by date;',
+                from receipts
+                join payment_types on receipts.payment_type_id = payment_types.id
+                where date between ? and ? and receipts.year = ?
+                group by date;',
             [
                 $beginDate,
                 $endDate,
@@ -56,24 +76,92 @@ class DailyController extends Controller
             ]
         );
 
+        // Somma totale
         $final = DB::select(
-            'select sum(num_people) as people_total, sum(total) as total
-            from receipts
-            where date between ? and ?
-              and year = ?;',
+            "select sum(num_people) as people,
+                    sum(case when payment_type_id = 1 then num_people else 0 end) as people_cash,
+                    sum(case when payment_type_id = 2 then num_people else 0 end) as people_bank,
+                    sum(total) as total,
+                    sum(case when payment_type_id = 1 then total else 0 end) as total_cash,
+                    sum(case when payment_type_id = 2 then total else 0 end) as total_bank
+                from receipts
+                where date between ? and ? and year = ?;",
             [
                 $beginDate,
                 $endDate,
-                $year,
+                $year
             ]
         );
 
-        return view(
+        // Dati parziali delle offerte
+        $offersData = DB::select(
+            'select date, sum(amount) as total
+                from offers
+                where date between ? and ?
+                group by date',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        // Somma finale delle offerte
+        $offersFinal = DB::select(
+            'select sum(amount) as total
+                from offers
+                where date between ? and ?',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        // Dati parziali delle spese
+        $expensesData = DB::select(
+            'select date, sum(amount) as total
+                from expenses
+                where date between ? and ?
+                group by date',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        // Somma finale delle spese
+        $expensesFinal = DB::select(
+            'select sum(amount) as total
+                from expenses
+                where date between ? and ?',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        // Totale finale [ricevute] + [offerte] + [spese]
+        $summary = $final[0]->total + $offersFinal[0]->total - $expensesFinal[0]->total;
+
+        $view = view(
             'closure.daily.list',
             [
                 'years' => $year,
                 'data' => $data,
                 'final' => $final[0],
+                'offersData' => $offersData,
+                'offersFinal' => $offersFinal[0],
+                'expensesData' => $expensesData,
+                'expensesFinal' => $expensesFinal[0],
+                'summary' => $summary
+            ]
+        )->render();
+
+        return response()->json(
+            [
+                'data' => [
+                    'view' => $view,
+                    'year' => $year
+                ]
             ]
         );
     }

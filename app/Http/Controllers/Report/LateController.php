@@ -1,34 +1,48 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
-use DB;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
+use App\Util\DataFetcher;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
+
+/**
+ *
+ */
 class LateController extends Controller
 {
     /**
      * Restituisce la vista per la selezione dell'anno in cui effettuare la ricerca dei soci morosi
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
-        $years = DB::select(
-            "select distinct year
-            from customers_receipts
-            order by year desc;"
-        );
+        $years = DataFetcher::getYears();
 
         return view('report/late/index', ['years' => $years]);
     }
 
     /**
+     * Resituisce la lista dei soci morosi
+     *
      * @param $year
-     * @return array
+     * @return JsonResponse
      */
-    public function listData($year)
+    public function listData($year): JsonResponse
     {
+        $validator = new DataValidator();
+
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
         $endDate = $year . '-12-31';
 
         $late = DB::select(
@@ -75,10 +89,12 @@ class LateController extends Controller
             ]
         )->render();
 
-        return [
-            'year' => $year,
-            'num_late' => count($late),
-            'view' => $view
-        ];
+        return response()->json(
+            ['data' => [
+                'year' => $year,
+                'num_late' => count($late),
+                'view' => $view
+            ]]
+        );
     }
 }

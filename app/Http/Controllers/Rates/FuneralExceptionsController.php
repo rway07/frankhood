@@ -1,18 +1,57 @@
 <?php
 
 namespace App\Http\Controllers\Rates;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use DB;
+use App\Http\Requests\RateExceptionRequest;
+use App\Util\FuneralExceptionsDataValidator;
 use Exception;
-use Redirect;
+use Illuminate\Http\JsonResponse as JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View as View;
 
+/**
+ *
+ */
 class FuneralExceptionsController extends Controller
 {
     /**
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return array
      */
-    public function index()
+    private function getYears(): array
+    {
+        return DB::select(
+            'select distinct strftime(\'%Y\', death_date) as year
+            from customers
+            where year is not null
+            order by year desc'
+        );
+    }
+
+    /**
+     * @param $year
+     * @return array
+     */
+    private function getCustomers($year): array
+    {
+        return DB::select(
+            'select id, first_name, last_name
+            from customers c
+            where death_date between ? and ?;',
+            [
+                $year . '-01-01',
+                $year . '-12-31'
+            ]
+        );
+    }
+
+    /**
+     * Restituisce la vista principale delle eccezioni dei funerali
+     *
+     * @return View
+     */
+    public function index(): View
     {
         $exceptions = DB::select(
             'select f.id, c.first_name, c.last_name, r.year, f.cost
@@ -31,26 +70,16 @@ class FuneralExceptionsController extends Controller
     }
 
     /**
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Restituisce la vista per creare un nuova eccezione per un funerale
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
-        $years = DB::select(
-            'select distinct strftime(\'%Y\', death_date) as year
-            from customers
-            where year is not null
-            order by year desc'
-        );
-
-        $customers = DB::select(
-            'select id, first_name, last_name
-            from customers c
-            where death_date between ? and ?;',
-            [
-                $years[0]->year . '-01-01',
-                $years[0]->year . '-12-31'
-            ]
-        );
+        // Ottengo tutti gli anni dove ci sono stati dei morti
+        $years = $this->getYears();
+        // Carico i soci deceduti solo dell'anno più recente, gli altri verranno caricati dinamicamente
+        $customers = $this->getCustomers($years[0]->year);
 
         return view(
             'rates/funeral/create',
@@ -63,26 +92,18 @@ class FuneralExceptionsController extends Controller
 
     /**
      * @param $idException
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return RedirectResponse | View
      */
     public function edit($idException)
     {
-        $years = DB::select(
-            'select distinct strftime(\'%Y\', death_date) as year
-            from customers
-            where year is not null
-            order by year desc'
-        );
+        $validator = new FuneralExceptionsDataValidator();
 
-        $customers = DB::select(
-            'select id, first_name, last_name
-            from customers c
-            where death_date between ? and ?;',
-            [
-                $years[0]->year . '-01-01',
-                $years[0]->year . '-12-31'
-            ]
-        );
+        if (!$validator->checkExceptionID($idException)) {
+            return Redirect::to('rates/exceptions/index')->withErrors($validator->getReturnMessage());
+        }
+
+        $years = $this->getYears();
+        $customers = $this->getCustomers($years[0]->year);
 
         $exception = DB::select(
             'select f.id, f.customer_id, f.cost, r.year
@@ -115,18 +136,19 @@ class FuneralExceptionsController extends Controller
             from rates
             where year = ?;',
             [
-                $data->year
+                $data['year']
             ]
         );
+        $idRate = $idRate[0]->id;
 
         if ($idException == 0) {
             DB::insert(
                 'insert into funerals_cost_exceptions(rate_id, customer_id, cost)
                 values (?, ?, ?);',
                 [
-                    $idRate[0]->id,
-                    $data->dead_customers,
-                    $data->quota
+                    $idRate,
+                    $data['dead_customers'],
+                    $data['quota']
                 ]
             );
         } else {
@@ -135,9 +157,9 @@ class FuneralExceptionsController extends Controller
                 set rate_id = ?, customer_id = ?, cost = ?
                 where id = ?;',
                 [
-                    $idRate[0]->id,
-                    $data->dead_customers,
-                    $data->quota,
+                    $idRate,
+                    $data['dead_customers'],
+                    $data['quota'],
                     $idException
                 ]
             );
@@ -145,69 +167,55 @@ class FuneralExceptionsController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param RateExceptionRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(RateExceptionRequest $request): RedirectResponse
     {
         try {
-            $this->validate(
-                $request,
-                [
-                    'year' => 'required:date_format:Y',
-                    'quota' => 'required:numeric',
-                    'dead_customers' => 'required:integer'
-                ]
-            );
+            $validatedData = $request->validated();
 
             DB::beginTransaction();
-            $this->storeException(0, $request);
+            $this->storeException(0, $validatedData);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('rates/exceptions/create')
-                ->withErrors('Transazione fallita: ' . $e->getMessage());
+            return Redirect::to('rates/exceptions/create')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('rates/exceptions/index');
+        return Redirect::to('rates/exceptions/index')->with('status', 'Eccezione aggiunta.');
     }
 
     /**
-     * @param Request $request
+     * @param RateExceptionRequest $request
      * @param $idException
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function update(Request $request, $idException)
+    public function update(RateExceptionRequest $request, $idException): RedirectResponse
     {
         try {
-            $this->validate(
-                $request,
-                [
-                    'year' => 'required:date_format:Y',
-                    'quota' => 'required:numeric',
-                    'dead_customers' => 'required:integer'
-                ]
-            );
+            $validatedData = $request->validated();
 
             DB::beginTransaction();
-            $this->storeException($idException, $request);
+            $this->storeException($idException, $validatedData);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('rates/exceptions/create')->withErrors('Transazione fallita');
+            return Redirect::to('rates/exceptions/create')->withErrors($e->getMessage());
         }
 
-        return Redirect::to('rates/exceptions/index');
+        return Redirect::to('rates/exceptions/index')->with('status', 'Eccezione aggiornata.');
     }
 
     /**
      * @param $idException
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy($idException)
+    public function destroy($idException): JsonResponse
     {
         try {
             DB::beginTransaction();
+            // FIXME Does it throw an exception in case of error??
             DB::delete(
                 'delete from funerals_cost_exceptions
                     where id = ?;',
@@ -220,13 +228,12 @@ class FuneralExceptionsController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
-                [
-                    'status' => '500',
-                    'message' => $e->getMessage()
-                ]
+                ['error' => ['message' => $e->getMessage()]]
             );
         }
 
-        return response()->json(['status' => 'OK', 'message' => 'Eccezione eliminata']);
+        return response()->json(
+            ['data' => ['message' => 'Eccezione funerale eliminata.']]
+        );
     }
 }

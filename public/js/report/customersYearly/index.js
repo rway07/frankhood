@@ -1,33 +1,46 @@
-var bookPrintStyle = false;
-var showLate = true;
+/**
+ * @file report/customersYearly/index.js
+ * @author kain - rway07@gmail.com
+ */
 
-$(document).ready(function() {
+const urlConstant = {
+    NORMAL: 0,
+    LATE: 1,
+};
+
+let bookPrintStyle = false;
+let showLate = true;
+
+$(() => {
     loadData();
 
-    $('#years').change(function() {
+    $('#years').on('change', () => {
         loadData();
     });
 
-    $('#version').change(function() {
+    $('#version').on('change', () => {
         loadData();
     });
 
-    $('#style_button').click(function() {
+    $('#style_button').on('click', () => {
         toggleStyle();
     });
 
-    $('#late_button').click(function() {
+    $('#late_button').on('click', () => {
         toggleLate();
     });
 });
 
+/**
+ *
+ */
 function toggleStyle() {
-    if (bookPrintStyle == false) {
+    if (bookPrintStyle === false) {
         bookPrintStyle = true;
         $('#style_text').text('Con margini');
         $('#custom_style').html(
             '<style> @media print { @page :left { margin-left: 0; margin-right: 2cm; } ' +
-            '@page :right { margin-left: 2cm; margin-right: 0; }} </style>'
+                '@page :right { margin-left: 2cm; margin-right: 0; }} </style>',
         );
     } else {
         bookPrintStyle = false;
@@ -36,8 +49,11 @@ function toggleStyle() {
     }
 }
 
+/**
+ *
+ */
 function toggleLate() {
-    if (showLate == false) {
+    if (showLate === false) {
         showLate = true;
         $('#late_text').text('Mostra morosi');
     } else {
@@ -48,40 +64,55 @@ function toggleLate() {
     loadData();
 }
 
+/**
+ *
+ * @returns {boolean}
+ */
 function loadData() {
     showLoading();
-    var year = $('#years').val();
-    var url = '';
+    const year = $('#years').val();
+    let dataUrl = `/report/customers/yearly/${year}/${urlConstant.NORMAL}/extended/list`;
 
-    if (showLate == true) {
-        url = '/report/customers/yearly/' + year + '/' + 1 + '/extended/list';
-    } else {
-        url = '/report/customers/yearly/' + year + '/' + 0 + '/extended/list';
+    if (showLate === true) {
+        dataUrl = `/report/customers/yearly/${year}/${urlConstant.LATE}/extended/list`;
     }
 
-
     $.ajax({
-        url: url,
+        url: dataUrl,
         type: 'get',
-        error: function (data) {
-            console.log('Error:', data);
+        error(response) {
+            showGuruModal(response);
         },
-        success: function (data) {
-            $('#data_container')
-                .html('')
-                .append(data);
+        success(response) {
+            if ('error' in response) {
+                showModal(response.error.message);
+                return false;
+            }
 
-            showLoadComplete();
-        }
+            if ('data' in response) {
+                $('#data_container').html('').append(response.data.view);
+                showLoadComplete();
+
+                return true;
+            }
+
+            return false;
+        },
     });
 }
 
+/**
+ *
+ */
 function showLoading() {
     $('#loading_button').removeClass().addClass('btn btn-danger btn-sm');
     $('#loading_text').text('Caricamento...');
     $('#loading_icon').removeClass().addClass('fa fa-cog fa-spin fa-1x fa-fw');
 }
 
+/**
+ *
+ */
 function showLoadComplete() {
     $('#loading_button').removeClass().addClass('btn btn-success btn-sm');
     $('#loading_text').text('Pronto! CTRL+P per stampare!');

@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<link href="/css/print.css" rel="stylesheet" type="text/css">
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <script src="/js/age/index.js" type="text/javascript"></script>
 <div class="d-print-none card">

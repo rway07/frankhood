@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('content')
 <meta name="csrf_token" content="{{ csrf_token() }}" />
+@include('include.toastr')
+@include('include.datatables')
 <script type="text/javascript" src="/js/offers/list.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <div class="card">
@@ -23,15 +25,17 @@
     </div>
 
     @include('common.errors')
+    @include('common.status')
     <div class="card-body">
         <table class="table table-condensed table-sm" id="offers_table">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
                     <th> Data </th>
                     <th> Descrizione </th>
                     <th> Totale </th>
-                    <th> Modifica </th>
-                    <th> Elimina </th>
+                    <th> </th>
+                    <th> </th>
+                    <th> </th>
                 </tr>
             </thead>
         </table>

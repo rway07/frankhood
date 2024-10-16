@@ -1,25 +1,28 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Report;
 
-use DB;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Util\DataFetcher;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
+use Illuminate\View\View as View;
 
+/**
+ *
+ */
 class CustomersYearlyController extends Controller
 {
     /**
      * Restituisce la vista per selezionare l'anno in cui visualizzare la lista dei soci correnti
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
-        $years = DB::select(
-            "select distinct year
-            from receipts
-            order by year desc;"
-        );
+        $years = DataFetcher::getYears();
 
         return view('report/customersYearly/index', ['years' => $years]);
     }
@@ -30,17 +33,31 @@ class CustomersYearlyController extends Controller
      * La lista originale era ordinata per cognome, e questa fa lo stesso.
      *
      * @param $year
-     * @return \BladeView|false|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     * @param $late
+     * @return JsonResponse
      */
-    public function listDataExtended($year, $late)
+    public function listDataExtended($year, $late): JsonResponse
     {
+        $validator = new DataValidator();
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                ['error' => ['message' => $validator->getReturnMessage()]]
+            );
+        }
+
+        $lateFlag = filter_var($late, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        if (!is_bool($lateFlag)) {
+            return response()->json(
+                ['error' => ['message' => 'Parametro late deve essere boolean.']]
+            );
+        }
+
         $endDate = $year . '-12-31';
         $list = [];
-        $counter = 0;
 
         // Ottengo la lista dei membri
         // Mostro - nascondo i morosi
-        if ($late == true) {
+        if ($late) {
             $data = DB::select(
                 "select distinct customers.id, first_name, last_name, alias, birth_date, death_date, revocation_date,
                     phone, mobile_phone,
@@ -116,6 +133,7 @@ class CustomersYearlyController extends Controller
 
         // for each customer
         foreach ($data as $i => $d) {
+            $group = [];
             // get the last receipt for the current customer
             $receipt = DB::select(
                 "SELECT year, number
@@ -153,10 +171,10 @@ class CustomersYearlyController extends Controller
                     ]
                 );
             }
-            array_push($list, ['main' => $d, 'group' => $group]);
+            $list[] = ['main' => $d, 'group' => $group];
         }
 
-        return view(
+        $view = view(
             'report/customersYearly/list',
             [
                 'years' => $year,
@@ -164,6 +182,10 @@ class CustomersYearlyController extends Controller
                 'counter' => count($data),
                 'extended' => true
             ]
+        )->render();
+
+        return response()->json(
+            ['data' => ['view' => $view]]
         );
     }
 }

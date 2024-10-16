@@ -5,7 +5,7 @@
     <title>{Project Mortanius}</title>
 
     <!-- jQuery 3.5.1 + Validate-->
-    <script src="/js/common/jquery/jquery-3.5.1.min.js"></script>
+    <script src="/js/common/jquery/jquery-3.7.1.min.js"></script>
     <script src="/js/common/jquery/jquery.validate.min.js"></script>
     <script src="/js/common/jquery/additional-methods.min.js"></script>
 
@@ -13,25 +13,15 @@
     <link href="/css/common/bootstrap4/bootstrap.min.css" rel="stylesheet" type="text/css">
     <script src="/js/common/bootstrap4/bootstrap.bundle.min.js"></script>
 
-    <!-- Datatables -->
-    <link href="/css/common/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
-    <script src="/js/common/datatables/jquery.dataTables.js"></script>
-    <script src="/js/common/datatables/dataTables.bootstrap4.min.js"></script>
-
     <!-- Font related -->
     <link href="/css/common/fonts/lato.css" rel="stylesheet" type="text/css">
     <link href="/css/common/fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- Custom -->
     <link href="/css/util.css" rel="stylesheet" type="text/css">
-    <link href="/css/header.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/js/common/util.js" defer></script>
 </head>
 <body>
-<!--
-    <div class="container-fluid hidden-print banner">
-        <h1>Confraternita Madonna della Difesa</h1>
-    </div>
-    -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand mr-4" href="#">Confraternita</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,6 +90,7 @@
                         <a class="dropdown-item" href="/report/customers/revocated/index">Lista Soci Revocati</a>
                         <a class="dropdown-item" href="/report/customers/late/index">Lista Soci Morosi</a>
                         <a class="dropdown-item" href="/report/customers/age/index">Lista Soci per Età</a>
+                        <a class="dropdown-item" href="/report/alternatives/index">Lista Ricevute con Quote Alternative</a>
                         <a class="dropdown-item" href="/report/customers/estimation/index">Preventivo Nuovi Soci</a>
                         <a class="dropdown-item" href="/report/customers/duplicates/index">Ricevute Duplicate</a>
                     </div>
@@ -115,9 +106,12 @@
                 </li>
             </ul>
         </div>
+        <span class="nav-link text-light">Mortanius v2</span>
     </nav>
     <br>
     <div class="container-fluid">
+        @include('common.guru')
+        @include('common.modal')
         @yield('content')
     </div>
 </body>

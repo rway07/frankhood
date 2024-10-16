@@ -3,31 +3,48 @@
 namespace App\Http\Controllers\Rates;
 
 use App\Http\Controllers\Controller;
+use App\Util\DataValidator;
+use Illuminate\Http\JsonResponse as JsonResponse;
+use Illuminate\Support\Facades\DB as DB;
 
+/**
+ *
+ */
 class FuneralExceptionsServicesController extends Controller
 {
     /**
      * @param $year
-     * @return array|null
+     * @return JsonResponse
      */
-    public function deadCustomers($year)
+    public function deadCustomers($year): JsonResponse
     {
-        $data = null;
-        if (is_numeric($year)) {
-            $beginDate = $year . '-01-01';
-            $endDate = $year . '-12-31';
+        $validator = new DataValidator();
 
-            $data = DB::select(
-                'select id, first_name, last_name, death_date
-                from customers
-                where death_date between ? and ?;',
+        if (!$validator->checkYear($year)) {
+            return response()->json(
                 [
-                    $beginDate,
-                    $endDate
+                    'error' => ['message' => $validator->getReturnMessage()]
                 ]
             );
         }
 
-        return $data;
+        $beginDate = $year . '-01-01';
+        $endDate = $year . '-12-31';
+
+        $customers =  DB::select(
+            "select id, first_name, last_name, death_date
+                from customers
+                where death_date between ? and ?;",
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        return response()->json(
+            [
+                'data' => ['customers' => $customers]
+            ]
+        );
     }
 }

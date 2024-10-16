@@ -53,6 +53,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Customers whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Customers whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\confraternita\Customers whereEnrollmentYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Customers newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Customers newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Customers query()
  * @mixin \Eloquent
  */
 class Customers extends Model

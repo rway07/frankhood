@@ -1,17 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Receipts;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ReceiptRequest;
 use App\Models\Customers;
+use App\Models\PaymentTypes;
 use App\Models\Rates;
 use App\Models\Receipts;
-use App\Models\PaymentTypes;
-use App\Http\Controllers\Controller;
+use App\Util\DataFetcher;
+use App\Util\ReceiptDataValidator;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB as DB;
-use Exception;
 use Illuminate\Support\Facades\Log;
-use yajra\Datatables\Datatables;
+use Illuminate\Support\Facades\Redirect as Redirect;
+use Illuminate\View\View as View;
+use Throwable;
 
 /**
  * Class ReceiptsController
@@ -22,26 +31,18 @@ class ReceiptsController extends Controller
     /**
      * Restituisce la vista con la liste delle ricevute
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
-        $years = DB::select(
-            'select distinct year
-            from receipts
-            order by year desc;'
-        );
-
-        $types = DB::select(
-            'select distinct id, description
-            from payment_types;'
-        );
+        $years = DataFetcher::getYears();
+        $paymentTypes = PaymentTypes::all();
 
         return view(
             'receipts/list',
             [
                 'years' => $years,
-                'types' => $types
+                'types' => $paymentTypes
             ]
         );
     }
@@ -49,45 +50,27 @@ class ReceiptsController extends Controller
     /**
      * Redirect alla lista delle ricevute con esito dell'operazione precedente
      *
-     * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @param ReceiptRequest $request
+     * @return RedirectResponse
      */
-    public function done(Request $request)
+    public function done(Request $request): RedirectResponse
     {
         $status = $request->status;
 
-        $years = DB::select(
-            'select distinct year
-            from receipts
-            order by year desc;'
-        );
-
-        $types = DB::select(
-            'select distinct id, description
-            from payment_types;'
-        );
-
-        return view(
-            'receipts/list',
-            [
-                'status' => $status,
-                'years' => $years,
-                'types' => $types
-            ]
-        );
+        return Redirect::to('receipts/index')->with('status', $status);
     }
 
     /**
      * Restituisce la vista per la creazione di una nuova ricevuta
      *
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         $customers = Customers::orderBy('last_name', 'asc')->get();
         $rates = Rates::orderBy('year', 'desc')->get();
-        $date = date('Y-m-d');
         $paymentTypes = PaymentTypes::all();
+        $date = date('Y-m-d');
 
         return view(
             "receipts/create",
@@ -101,221 +84,31 @@ class ReceiptsController extends Controller
     }
 
     /**
-     * Dati per la datatable con la lista delle ricevute
-     *
-     * @param $year
-     * @param $type
-     * @return mixed
-     * @throws Exception
-     */
-    public function data($year, $type)
-    {
-        $receipts = Receipts::join('rates', 'receipts.rates_id', '=', 'rates.id')
-            ->join('customers', 'receipts.customers_id', '=', 'customers.id')
-            ->join('payment_types', 'payment_types.id', '=', 'receipts.payment_type_id')
-            ->select([
-                'receipts.number',
-                DB::raw('(receipts.number || \'/\' || receipts.year) as receipt_number'),
-                'receipts.date',
-                DB::raw('(customers.first_name || \' \' || customers.last_name) as name'),
-                'receipts.customers_id',
-                'rates.year',
-                'payment_types.id',
-                'payment_types.description',
-                'receipts.total'
-            ])
-            ->orderBy('receipts.year', 'desc')
-            ->orderBy('receipts.number', 'desc');
-
-        if ($year != 0) {
-            $receipts = $receipts->where('receipts.year', '=', $year);
-        }
-
-        if ($type != 0) {
-            $receipts = $receipts->where('payment_types.id', '=', $type);
-        }
-
-        return Datatables::of($receipts)
-            ->editColumn('total', '{{$total}}€')
-            ->editColumn('date', '{{ strftime("%d/%m/%Y", strtotime($date)) }}')
-            ->addColumn('Info', function ($val) {
-                return "<button type='button' class='btn btn-primary btn-sm'
-                    onclick='info(". $val->number . ", " . $val->year . ")'>
-                                    <i class='fa fa-btn fa-info'> </i> Info</button>";
-            })
-            ->addColumn('Stampa', function ($val) {
-                return "<button type='button' class='btn btn-warning btn-sm'
-                onclick='print(". $val->number . ", " . $val->year . ")'>
-                <i class='fa fa-btn fa-print'> </i> Stampa</button>";
-            })
-            ->addColumn('Modifica', function ($val) {
-                return "<button type='button' class='btn btn-info btn-sm'
-                    onclick='edit(" . $val->number . ", " . $val->year . ")'>
-                    <i class='fa fa-btn fa-edit'> </i> Modifica</button>";
-            })
-            ->addColumn('Elimina', function ($val) {
-                return "<button id='" . $val->number . "_" . $val->year . "' type='button' class='btn btn-danger btn-sm'
-                onclick='destroy(" . $val->number . ", " . $val->year . ")' csrf_token='"
-                . csrf_token() . "'> <i class='fa fa-btn fa-trash'> </i> Elimina</button>";
-            })
-            ->rawColumns(['Info', 'Stampa', 'Modifica', 'Elimina'])
-            ->make(true);
-    }
-
-    /**
-     * Salva una ricevuta
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|string
-     * @throws Exception
-     */
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-            'issue_date' => 'required|date',
-            'rates' => 'required|integer',
-            'recipient' => 'required|integer',
-            'total' => 'required|integer'
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            // Ottengo anno e quota in base all'ID della tariffa
-            $year = DB::select(
-                "select year, quota
-                    from rates
-                    where id = ?;",
-                [
-                    $request->rates
-                ]
-            );
-
-            // Determino se sono state usate le quote alternative
-            if ($request->quota_type == 0) {
-                $customQuotas = false;
-            } else {
-                $customQuotas = true;
-            }
-
-            // Array con gli ID dei componenti del gruppo familiare
-            $ids = explode(',', $request->people);
-            // Grandezza gruppo familiare
-            $numPeople = count($ids);
-
-            /**
-             * Controllo integritò
-             * Si controlla se il totale della ricevuta che arriva dal frontend corrisponde alla somma
-             * [numero_persone] * [quota] oppure sommatoria [persona] * [quota custom]
-             */
-            $totalCheck = 0;
-            if ($customQuotas == false) {
-                $totalCheck = $numPeople * $year[0]->quota;
-            } else {
-                foreach ($ids as $id) {
-                    $totalCheck += $$request->{"quotas-" . $id};
-                }
-            }
-
-            if ($request->total != $totalCheck) {
-                throw new Exception(
-                    'Errore integrità! Il totale della fattura non corrisponde
-                    con al prodotto [Numero di Persone] * [Quota]'
-                );
-            }
-
-            // Ottengo il primo numero di ricevuta disponibile
-            $number = DB::select(
-                "select max(number) as number
-                    from receipts
-                    where year = ?;",
-                [
-                    $year[0]->year
-                ]
-            );
-
-            if ($number[0]->number != null) {
-                $number[0]->number++;
-            } else {
-                $number[0]->number = 1;
-            }
-
-            // Salvo i dati della ricevuta
-            DB::table('receipts')
-                ->insert(
-                    [
-                        'number' => $number[0]->number,
-                        'year' => $year[0]->year,
-                        'date' => $request->issue_date,
-                        'customers_id' => $request->recipient,
-                        'payment_type_id' => $request->payment_type,
-                        'rates_id' => $request->rates,
-                        'total' => $request->total,
-                        'custom_quotas' => $customQuotas,
-                        'num_people' => $numPeople
-                    ]
-                );
-
-            // Aggiungo le voci dei singoli soci del gruppo nella tabella [customer_receipts]
-            foreach ($ids as $id) {
-                if ($customQuotas == true) {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $id,
-                                'number' => $number[0]->number,
-                                'year' => $year[0]->year,
-                                'quota' => $request->{"quotas-" . $id},
-                            ]
-                        );
-                } else {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $id,
-                                'number' => $number[0]->number,
-                                'year' => $year[0]->year,
-                                'quota' => $year[0]->quota,
-                            ]
-                        );
-                }
-            }
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            return $e->getMessage();
-        }
-
-        return response()->json(
-            [
-                'number' => $number[0]->number,
-                'year' => $year[0]->year
-            ]
-        );
-    }
-
-    /**
      * Apre la vista di modifica di una ricevuta
      *
      * @param $receiptNumber
      * @param $receiptYear
-     * @return \BladeView|bool|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @internal param $receiptId
+     * @return RedirectResponse | View
      */
     public function edit($receiptNumber, $receiptYear)
     {
+        $validator = new ReceiptDataValidator();
+
+        if (!$validator->checkReceiptNumber($receiptYear, $receiptNumber)) {
+            return Redirect::to('receipts/index')->withErrors($validator->getReturnMessage());
+        }
+
         $receipts = Receipts::where(
             [
                 ['receipts.number', '=', $receiptNumber],
                 ['receipts.year', '=', $receiptYear]
             ]
-        )
-        ->join('customers', 'receipts.customers_id', '=', 'customers.id')
-        ->select(['receipts.*', 'customers.first_name', 'customers.last_name'])
-        ->get()
-        ->first();
+        )->join('customers', 'receipts.customers_id', '=', 'customers.id')
+            ->select(['receipts.*', 'customers.first_name', 'customers.last_name'])
+            ->get()
+            ->first();
 
-        $customers = DB::select(
+        /*$customers = DB::select(
             "select customers.*
             from customers
             join customers_receipts on customers_receipts.customers_id = customers.id
@@ -324,14 +117,14 @@ class ReceiptsController extends Controller
                 $receiptNumber,
                 $receiptYear
             ]
-        );
+        );*/
+
         $rates = Rates::orderBy('year', 'desc')->get();
         $paymentTypes = PaymentTypes::all();
 
         return view(
             'receipts/create',
             [
-                'customers' => $customers,
                 'receipts' => $receipts,
                 'rates' => $rates,
                 'types' => $paymentTypes
@@ -340,34 +133,155 @@ class ReceiptsController extends Controller
     }
 
     /**
-     * Aggiorna la ricevuta selezionata
-     *
-     * @param Request $request
-     * @param $receiptNumber
-     * @param $receiptYear
-     * @return \Illuminate\Http\JsonResponse|string
-     * @throws Exception
+     * @param ReceiptRequest $request
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function update(Request $request, $receiptNumber, $receiptYear)
+    public function store(ReceiptRequest $request): JsonResponse
     {
-        $this->validate($request, [
-            'issue_date' => 'required|date',
-            'rates' => 'required|integer',
-            'recipient' => 'required|integer',
-            'total' => 'required|integer'
-        ]);
-
         try {
-            DB::beginTransaction();
-            if ($request->quota_type == 0) {
+            $validatedData = $request->validationData();
+            $guardian = new ReceiptDataValidator();
+
+            // Ottengo anno e quota in base all'ID della tariffa
+            $rateData = DataFetcher::getRateData($validatedData['rates']);
+
+            // Array con gli ID dei componenti del gruppo familiare
+            $ids = explode(',', $validatedData['people']);
+
+            if ($guardian->checkCustomersInExistingReceipt($rateData->year, $ids)) {
+                throw new Exception(
+                    'Uno o più persone del gruppo familire risultano presenti in una ricevuta esistente.
+                    Impossibile continuare.'
+                );
+            }
+
+            // Grandezza gruppo familiare
+            $numPeople = count($ids);
+
+            // Determino se sono state usate le quote alternative
+            if ($validatedData['quota_type'] == 0) {
                 $customQuotas = false;
             } else {
                 $customQuotas = true;
             }
 
-            $ids = explode(',', $request->people);
+            /**
+             * FIXME Move me
+             * Controllo integritò
+             * Si controlla se il totale della ricevuta che arriva dal frontend corrisponde alla somma
+             * [numero_persone] * [quota] oppure sommatoria [persona] * [quota custom]
+             */
+            $totalCheck = 0;
+            if (!$customQuotas) {
+                $totalCheck = $numPeople * $rateData->quota;
+            } else {
+                foreach ($ids as $id) {
+                    $totalCheck += $validatedData['quotas-' . $id];
+                }
+            }
+
+            if ($request['total'] != $totalCheck) {
+                throw new Exception(
+                    'Errore integrità! Il totale della fattura non corrisponde
+                    con al prodotto [Numero di Persone] * [Quota]'
+                );
+            }
+
+            DB::beginTransaction();
+            // Ottengo il primo numero di ricevuta disponibile
+            $receiptNumber = DataFetcher::getAvailableReceiptNumber($rateData->year);
+
+            // Salvo i dati della ricevuta
+            DB::table('receipts')
+                ->insert(
+                    [
+                        'number' => $receiptNumber,
+                        'year' => $rateData->year,
+                        'date' => $validatedData['issue-date'],
+                        'customers_id' => $validatedData['recipient'],
+                        'payment_type_id' => $validatedData['payment_type'],
+                        'rates_id' => $validatedData['rates'],
+                        'total' => $validatedData['total'],
+                        'custom_quotas' => $customQuotas,
+                        'num_people' => $numPeople
+                    ]
+                );
+
+            // Aggiungo le voci dei singoli soci del gruppo nella tabella [customer_receipts]
+            foreach ($ids as $id) {
+                if ($customQuotas) {
+                    DB::table('customers_receipts')
+                        ->insert(
+                            [
+                                'customers_id' => $id,
+                                'number' => $receiptNumber,
+                                'year' => $rateData->year,
+                                'quota' => $validatedData['quotas-' . $id]
+                            ]
+                        );
+                } else {
+                    DB::table('customers_receipts')
+                        ->insert(
+                            [
+                                'customers_id' => $id,
+                                'number' => $receiptNumber,
+                                'year' => $rateData->year,
+                                'quota' => $rateData->quota,
+                            ]
+                        );
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                ['error' => ['message' => $e->getMessage()]]
+            );
+        }
+
+        return response()->json(
+            [
+                'data' => [
+                    'success' => true,
+                    'number' => $receiptNumber,
+                    'year' => $rateData->year,
+                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $rateData->year . ' emessa'
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @param ReceiptRequest $request
+     * @param $receiptNumber
+     * @param $receiptYear
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    public function update(ReceiptRequest $request, $receiptNumber, $receiptYear): JsonResponse
+    {
+        try {
+            $guardian = new ReceiptDataValidator();
+
+            if (!$guardian->checkReceiptNumber($receiptYear, $receiptNumber)) {
+                return response()->json(
+                    ['error' => ['message' => $guardian->getReturnMessage()]]
+                );
+            }
+
+            $validatedData = $request->validationData();
+
+            if ($validatedData['quota_type'] == 0) {
+                $customQuotas = false;
+            } else {
+                $customQuotas = true;
+            }
+
+            $ids = explode(',', $validatedData['people']);
             $numPeople = count($ids);
 
+            DB::beginTransaction();
             DB::table('receipts')
                 ->where(
                     [
@@ -377,11 +291,11 @@ class ReceiptsController extends Controller
                 )
                 ->update(
                     [
-                        'date' => $request->issue_date,
-                        'customers_id' => $request->recipient,
-                        'payment_type_id' => $request->payment_type,
-                        'rates_id' => $request->rates,
-                        'total' => $request->total,
+                        'date' => $validatedData['issue-date'],
+                        'customers_id' => $validatedData['recipient'],
+                        'payment_type_id' => $validatedData['payment_type'],
+                        'rates_id' => $validatedData['rates'],
+                        'total' => $validatedData['total'],
                         'custom_quotas' => $customQuotas,
                         'num_people' => $numPeople
                     ]
@@ -399,53 +313,60 @@ class ReceiptsController extends Controller
 
             // Create the new receipt-customer association
             foreach ($ids as $id) {
-                if ($customQuotas == true) {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $id,
-                                'number' => $receiptNumber,
-                                'year' => $receiptYear,
-                                'quota' => $request->{"quotas-" . $id},
-                            ]
-                        );
-                } else {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $id,
-                                'number' => $receiptNumber,
-                                'year' => $receiptYear,
-                                'quota' => $request->quota,
-                            ]
-                        );
+                $quota = $validatedData['quota'];
+                if ($customQuotas) {
+                    $quota = $validatedData['quotas-' . $id];
                 }
+
+                DB::table('customers_receipts')
+                    ->insert(
+                        [
+                            'customers_id' => $id,
+                            'number' => $receiptNumber,
+                            'year' => $receiptYear,
+                            'quota' => $quota,
+                        ]
+                    );
             }
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return $e->getMessage();
+            return response()->json(
+                ['error' => ['message' => $e->getMessage()]]
+            );
         }
 
         return response()->json(
             [
-                'number' => $receiptNumber,
-                'year' => $receiptYear
+                'data' => [
+                    'success' => true,
+                    'number' => $receiptNumber,
+                    'year' => $receiptYear,
+                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $receiptYear . ' aggiornata'
+                ]
             ]
         );
     }
 
     /**
-     * Elimina la ricevuta selezionata
+     * Elimina una ricevuta
      *
      * @param $receiptNumber
      * @param $receiptYear
-     * @return \Illuminate\Http\JsonResponse
-     * @throws Exception
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function destroy($receiptNumber, $receiptYear)
+    public function destroy($receiptNumber, $receiptYear): JsonResponse
     {
         try {
+            $validator = new ReceiptDataValidator();
+
+            if (!$validator->checkReceiptNumber($receiptYear, $receiptNumber)) {
+                return response()->json(
+                    ['error' => ['message' => $validator->getReturnMessage()]]
+                );
+            }
+
             DB::beginTransaction();
 
             $rows = DB::delete(
@@ -472,16 +393,16 @@ class ReceiptsController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
-                [
-                    'status' => 'error',
-                    'code' => $e->getCode(),
-                    'error_message' => $e->getMessage(),
-                    'line' => $e->getLine(),
-                    'message' => 'Errore nella transazione, impossibile eliminare'
-                ]
+                ['error' => ['message' => $e->getMessage()]]
             );
         }
 
-        return response()->json(['status' => 'OK', 'message' => 'OK']);
+        return response()->json(
+            [
+                'data' => [
+                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $receiptYear . ' eliminata'
+                ]
+            ]
+        );
     }
 }

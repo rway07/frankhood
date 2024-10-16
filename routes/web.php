@@ -35,7 +35,7 @@ Route::group(['middleware' => 'web'], function () {
     // Receipts routes
     Route::get('/receipts/index', 'App\Http\Controllers\Receipts\ReceiptsController@index');
     Route::get('/receipts/create', 'App\Http\Controllers\Receipts\ReceiptsController@create');
-    Route::get('/receipts/{year}/{type}/data', 'App\Http\Controllers\Receipts\ReceiptsController@data');
+    Route::get('/receipts/{year}/{type}/data', 'App\Http\Controllers\Receipts\ReceiptsDataController@data');
     Route::post('/receipts/store', 'App\Http\Controllers\Receipts\ReceiptsController@store');
     Route::get('/receipts/{number}/{year}/edit', 'App\Http\Controllers\Receipts\ReceiptsController@edit');
     Route::delete('/receipts/{receipt_number}/{receipt_year}/delete', 'App\Http\Controllers\Receipts\ReceiptsController@destroy');
@@ -96,6 +96,9 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('/report/customers/estimation/index', 'App\Http\Controllers\Report\EstimationController@index');
     Route::post('/report/customers/estimation/print', 'App\Http\Controllers\Report\EstimationController@printReport');
+
+    Route::get('/report/alternatives/index', 'App\Http\Controllers\Report\AlternativeReceiptsController@index');
+    Route::get('/report/alternatives/{year}/list', 'App\Http\Controllers\Report\AlternativeReceiptsController@listData');
 
     Route::get('/report/customers/duplicates/index', 'App\Http\Controllers\Report\DuplicatesController@index');
 
