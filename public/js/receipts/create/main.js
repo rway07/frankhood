@@ -470,7 +470,7 @@ function loadEditData() {
         return;
     }
 
-    const idRecipient = $('#edit_recipient option:selected').val();
+    const idRecipient = $('#recipient_id').val();
     $.ajax({
         url: `/api/customers/${idRecipient}/recipient`,
         type: 'GET',
@@ -744,7 +744,7 @@ function disableForm(message) {
 
     $('#receipt_button').attr('disabled', 'disabled');
     selector.text(message);
-    selector.addClass('badge-danger');
+    selector.addClass('text-bg--danger');
 }
 
 /**
@@ -838,7 +838,7 @@ function resetUI() {
 function resetWarnings() {
     const selector = $('#alert');
     selector.text('');
-    selector.removeClass('badge-danger');
+    selector.removeClass('text-bg--danger');
 }
 
 /**

@@ -38,6 +38,7 @@ function toggleStyle() {
     if (bookPrintStyle === false) {
         bookPrintStyle = true;
         $('#style_text').text('Con margini');
+        $('#style_button').removeClass('btn-danger').addClass('btn-success');
         $('#custom_style').html(
             '<style> @media print { @page :left { margin-left: 0; margin-right: 2cm; } ' +
                 '@page :right { margin-left: 2cm; margin-right: 0; }} </style>',
@@ -45,6 +46,7 @@ function toggleStyle() {
     } else {
         bookPrintStyle = false;
         $('#style_text').text('Senza margini');
+        $('#style_button').removeClass('btn-success').addClass('btn-danger');
         $('#custom_style').html('');
     }
 }
@@ -56,9 +58,11 @@ function toggleLate() {
     if (showLate === false) {
         showLate = true;
         $('#late_text').text('Mostra morosi');
+        $('#late_button').removeClass('btn-danger').addClass('btn-success');
     } else {
         showLate = false;
         $('#late_text').text('Nascondi morosi');
+        $('#late_button').removeClass('btn-success').addClass('btn-danger');
     }
 
     loadData();
@@ -107,7 +111,7 @@ function loadData() {
 function showLoading() {
     $('#loading_button').removeClass().addClass('btn btn-danger btn-sm');
     $('#loading_text').text('Caricamento...');
-    $('#loading_icon').removeClass().addClass('fa fa-cog fa-spin fa-1x fa-fw');
+    $('#loading_icon').removeClass().addClass('spinner-border spinner-border-sm');
 }
 
 /**
@@ -115,6 +119,6 @@ function showLoading() {
  */
 function showLoadComplete() {
     $('#loading_button').removeClass().addClass('btn btn-success btn-sm');
-    $('#loading_text').text('Pronto! CTRL+P per stampare!');
+    $('#loading_text').text('CTRL+P per stampare ');
     $('#loading_icon').removeClass().addClass('fa fa-check');
 }

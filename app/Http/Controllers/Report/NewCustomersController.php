@@ -27,7 +27,14 @@ class NewCustomersController extends Controller
             order by enrollment_year desc;"
         );
 
-        return view('report/new/index', ['years' => $years]);
+        return view(
+            'report/common',
+            [
+                'title' => 'LISTA NUOVI SOCI PER L\'ANNO',
+                'script_prefix' => 'new',
+                'years' => $years
+            ]
+        );
     }
 
     /**

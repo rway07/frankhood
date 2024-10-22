@@ -1,7 +1,12 @@
-.banner {
-    background-color:#2196F3;
-    color: rgb(255 255 255);
-    height:80px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+    --bs-body-font-family: 'Inter', sans-serif;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emojirif;
 }
 
 .navbar, .dropdown-menu {
@@ -12,10 +17,11 @@
     font-weight: bold;
 }
 
-body {
-    font-family: Verdana, serif;
+.btn-custom-small {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
 }
-
 
 .error {
     color: #f00;

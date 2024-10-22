@@ -1,39 +1,45 @@
 @extends('layouts.app')
 @section('content')
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
-<div class="card">
-    <div class="card-header bg-secondary text-white">
-        LISTA DUPLICATI
-    </div>
-    <div class="card-body">
-        @include('common.errors')
-        @if(count($list) > 0)
-            @foreach($list as $l)
-                <table class="table table-condensed table-sm">
-                    <thead class="thead-dark">
-                        <th>{{ $l['year'] }}</th>
-                        <th></th>
-                        <th></th>
-                    </thead>
-                    <tr class="header">
-                        <td> Numero tessera </td>
-                        <td> Socio </td>
-                        <td> Numero duplicati </td>
-                    </tr>
-                    @foreach($l['dup'] as $dup)
+<main class="container-fluid">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <div class="row pb-3">
+            <h5 class="pb-1 mb-0"> LISTA DUPLICATI </h5>
+        </div>
+        <div class="row pb-3">
+            @include('common.errors')
+            @if(count($list) > 0)
+                @foreach($list as $l)
+                    <table class="table table-hover table-sm">
+                        <thead class="table-dark">
                         <tr>
-                            <td> {{ $dup->customers_id }} </td>
-                            <td> {{ $dup->alias }}</td>
-                            <td> {{ $dup->count }} </td>
+                            <th class="col-md-8">{{ $l['year'] }}</th>
+                            <th class="col-md-2"></th>
+                            <th class="col-md-2"></th>
                         </tr>
-                    @endforeach
-                </table>
-            @endforeach
-        @else
-            <div class="alert alert-success" role="alert">
-                Nessun duplicato trovato.
-            </div>
-        @endif
+                        </thead>
+                        <tbody>
+                        <tr class="header">
+                            <td> Socio </td>
+                            <td> Numero tessera </td>
+                            <td> Numero duplicati </td>
+                        </tr>
+                        @foreach($l['dup'] as $dup)
+                            <tr>
+                                <td> {{ $dup->alias }}</td>
+                                <td> {{ $dup->customers_id }} </td>
+                                <td> {{ $dup->count }} </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            @else
+                <div class="alert alert-success" role="alert">
+                    Nessun duplicato trovato.
+                </div>
+            @endif
+        </div>
     </div>
-</div>
+</main>
 @endsection

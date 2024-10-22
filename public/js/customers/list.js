@@ -43,25 +43,28 @@ $(() => {
                 {
                     targets: 7,
                     data: null,
-                    className: 'fit',
+                    width: '1%',
+                    className: 'dt-nowrap',
                     defaultContent:
-                        "<button type='button' class='btn btn-primary btn-sm'> " +
+                        "<button type='button' class='btn btn-primary btn-sm customer-info'> " +
                         "<i class='fa fa-btn fa-info'></i> Info</button>",
                 },
                 {
                     targets: 8,
                     data: null,
-                    className: 'fit',
+                    width: '1%',
+                    className: 'dt-nowrap',
                     defaultContent:
-                        "<button type='button' class='btn btn-info btn-sm'> " +
+                        "<button type='button' class='btn btn-info btn-sm customer-edit'> " +
                         "<i class='fa fa-btn fa-edit'></i> Modifica</button>",
                 },
                 {
                     targets: 9,
                     data: null,
-                    className: 'fit',
+                    width: '1%',
+                    className: 'dt-nowrap',
                     defaultContent:
-                        "<button type='button' class='btn btn-secondary btn-sm'> " +
+                        "<button type='button' class='btn btn-secondary btn-sm customer-history'> " +
                         "<i class='fa fa-btn fa-users'></i> Storico</button>",
                 },
             ],
@@ -121,7 +124,7 @@ $(() => {
  * @param {Object} table
  */
 function addButtonEventListeners(table) {
-    $('.btn-secondary')
+    $('.customer-history')
         .off('click')
         .on('click', (event) => {
             const data = table.row($(event.currentTarget).parents('tr')).data();
@@ -130,7 +133,7 @@ function addButtonEventListeners(table) {
             }
         });
 
-    $('.btn-info')
+    $('.customer-edit')
         .off('click')
         .on('click', (event) => {
             const data = table.row($(event.currentTarget).parents('tr')).data();
@@ -139,7 +142,7 @@ function addButtonEventListeners(table) {
             }
         });
 
-    $('.btn-primary')
+    $('.customer-info')
         .off('click')
         .on('click', (event) => {
             const data = table.row($(event.currentTarget).parents('tr')).data();

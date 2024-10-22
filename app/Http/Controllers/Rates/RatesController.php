@@ -27,6 +27,7 @@ class RatesController extends Controller
     public function index(): View
     {
         $rates = Rates::select(['id', 'year', 'funeral_cost', 'quota'])
+            ->orderBy('year', 'desc')
             ->get();
 
         return view('rates/index', ['rates' => $rates]);

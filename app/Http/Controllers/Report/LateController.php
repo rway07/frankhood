@@ -24,7 +24,14 @@ class LateController extends Controller
     {
         $years = DataFetcher::getYears();
 
-        return view('report/late/index', ['years' => $years]);
+        return view(
+            'report/common',
+            [
+                'title' => 'LISTA SOCI MOROSI PER L\'ANNO',
+                'script_prefix' => 'late',
+                'years' => $years
+            ]
+        );
     }
 
     /**

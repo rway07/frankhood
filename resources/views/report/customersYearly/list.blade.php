@@ -1,5 +1,5 @@
 <?php $count = 1; ?>
-<table class="table-condensed small_table" id="customers_table">
+<table class="table-hover small_table" id="customers_table">
     <thead>
         <tr>
             <h4> LISTA SOCI PER L'ANNO {{ $years }}</h4>

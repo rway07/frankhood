@@ -3,8 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 id="guru_modal_title" class="modal-title">Please ask for Guru Meditation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
@@ -14,7 +13,7 @@
                 <p id="guru_modal_message_text"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Chiudi</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>
             </div>
         </div>
     </div>

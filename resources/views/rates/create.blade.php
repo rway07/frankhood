@@ -1,76 +1,47 @@
 @extends('layouts.app')
 @section('content')
 <script type="text/javascript" src="/js/rates/create.js"></script>
-<div class="card">
-    <div class="card-header bg-secondary text-white">
-        @if (isset($rate))
-            MODIFICA TARIFFA
-        @else
-            NUOVA TARIFFA
-        @endif
-    </div>
-     <div class="card-body">
-        <!-- Display Validation Errors -->
-        @include('common.errors')
+<main class="container">
+    @include('common.errors')
 
-        @if (isset($rate))
-            <form id="create_rate" action="/rates/{{ $rate->id }}/update" method="POST" class="form-horizontal">
-                {{ method_field('PUT') }}
-        @else
-            <form id="create_rate" action="/rates/store" method="POST" class="form-horizontal">
-        @endif
+    <form id="create_rate" action="{{ isset($rate) ? '/rates/' . $rate->id .'/update' : '/rates/store' }}" method="post">
+       {{ isset($rate) ? method_field('put') : '' }}
+        @csrf
 
-            {{ csrf_field() }}
-
-            <div class="row mb-3">
-                <div class="col-md-2">
-                    @if (isset($rate))
-                        <input type="text" id="year" name="year" class="form-control form-control-sm" placeholder="Anno"
-                               value="{{ $rate->year }}" readonly>
-                    @else
-                        <input type="text" id="year" name="year" class="form-control form-control-sm" placeholder="Anno"
-                               value="{{ old('year') }}">
-                    @endif
+        <div class="d-flex bg-body align-items-center p-3 my-3 rounded shadow-sm">
+            <h6 class="pb-1 mb-0"> {{ isset($rate) ? 'MODIFICA TARIFFA' : 'NUOVA TARIFFA' }} </h6>
+        </div>
+        <div class="my-3 p-3 bg-body shadow-sm rounded">
+            <div class="d-flex text-body-secondary pt-2 row">
+                <div class="col-md-4">
+                    <input type="text" id="year" name="year" class="form-control form-control-sm"
+                           placeholder="Anno" value="{{ isset($rate) ? $rate->year : old('year')}}"
+                           {{ isset($rate) ? 'readonly' : ''}}>
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">&euro;</div>
-                        </div>
-                        @if (isset($rate))
-                            <input type="text" class="form-control form-control-sm" id="quota" name="quota"
-                                   placeholder="Quota" value="{{ $rate->quota }}">
-                        @else
-                            <input type="text" class="form-control form-control-sm" id="quota" name="quota"
-                                   placeholder="Quota" value="{{ old('quota') }}">
-                        @endif
+                        <span class="input-group-text">&euro;</span>
+                        <input type="text" class="form-control form-control-sm" id="quota" name="quota"
+                               placeholder="Quota" value="{{ isset($rate) ? $rate->quota : old('quota') }}">
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">&euro;</div>
-                        </div>
-                        @if (isset($rate))
-                            <input type="text" class="form-control form-control-sm" id="funeral_cost" name="funeral_cost"
-                                   placeholder="Costo funerale" value="{{ $rate->funeral_cost }}">
-                        @else
-                            <input type="text" class="form-control form-control-sm" id="funeral_cost" name="funeral_cost"
-                                   placeholder="Costo funerale" value="{{ old('quota') }}">
-                        @endif
-                    </div>
+                        <span class="input-group-text">&euro;</span>
+                        <input type="text" class="form-control form-control-sm" id="funeral_cost"
+                               name="funeral_cost" placeholder="Costo funerale"
+                               value="{{ isset($rate) ? $rate->funeral_cost : old('funeral_cost')}}">
+                     </div>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        @if (isset($rate))
-                            <i class="fa fa-edit"></i> Modifica Tariffa
-                        @else
-                            <i class="fa fa-plus"></i> Aggiungi Tariffa
-                        @endif
+            </div>
+            <div class="d-flex text-body-secondary pt-3 row">
+                <div class="col-md">
+                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                        <i class="fa fa-edit"></i> {{ isset($rate) ? 'Modifica Tariffa' : 'Aggiungi Tariffa' }}
                     </button>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </form>
+</main>
 @endsection

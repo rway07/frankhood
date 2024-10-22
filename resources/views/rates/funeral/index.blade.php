@@ -1,24 +1,26 @@
 @extends('layouts.app')
 @section('content')
-<meta name='csrf_token' content='{{ csrf_token() }}' />
 @include('include.toastr')
 <link href='/css/tables.css' rel='stylesheet' type='text/css'>
 <script type='text/javascript' src='/js/rates/exceptions/index.js'></script>
-<div class='card'>
-    <div class='card-header bg-secondary text-white'>
-        LISTA ECCEZIONI
+<meta name='csrf_token' content='{{ csrf_token() }}' />
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <h6 class="pb-1 mb-0">LISTA ECCEZIONI</h6>
+        @include('common.errors')
+        @include('common.status')
     </div>
-    @include('common.errors')
-    @include('common.status')
-    <div class='card-body'>
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
         @if (count($exceptions) > 0)
-            <table class='table table-condensed table-sm'>
+            <table class='table table-hover table-sm'>
                 <thead>
+                <tr>
                     <th>Anno</th>
                     <th>Socio</th>
                     <th>Costo Funerale</th>
                     <th></th>
                     <th></th>
+                </tr>
                 </thead>
                 <tbody>
                 @foreach ($exceptions as $e)
@@ -32,14 +34,14 @@
                         <td>
                             {{ $e->cost }} &euro;
                         </td>
-                        <td class='fit'>
-                            <button type='submit' class='btn btn-info btn-sm'
+                        <td class='table-column-fit'>
+                            <button type='submit' class='btn btn-info btn-sm text-nowrap'
                                     onclick='edit("rates/exceptions", {{ $e->id }})'>
                                 <i class='fa fa-btn fa-edit'></i> Modifica
                             </button>
                         </td>
-                        <td class='fit'>
-                            <button type='submit' class='btn btn-danger btn-sm'
+                        <td class='table-column-fit'>
+                            <button type='submit' class='btn btn-danger btn-sm text-nowrap'
                                     onclick='destroy("rates/exceptions", {{ $e->id }})'>
                                 <i class='fa fa-btn fa-trash'></i> Elimina
                             </button>
@@ -54,5 +56,5 @@
             </div>
         @endif
     </div>
-</div>
+</main>
 @endsection

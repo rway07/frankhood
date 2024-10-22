@@ -1,17 +1,17 @@
 <?php
     $count = 1;
 ?>
-<table class="table table-condensed table-sm">
-    <thead class="thead-dark">
-    <tr>
-        <th></th>
-        <th> Nome </th>
-        <th> Data Nascita </th>
-        <th> Data Decesso </th>
-        <th> Numero tessera </th>
-        <th> Anno Iscrizione </th>
-        <th> Costo </th>
-    </tr>
+<table class="table table-sm table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th class="col-md-1"> # </th>
+            <th class="col-md-4"> Nome </th>
+            <th class="col-md-1"> Data Nascita </th>
+            <th class="col-md-1"> Data Decesso </th>
+            <th class="col-md-1"> Numero tessera </th>
+            <th class="col-md-1"> Anno Iscrizione </th>
+            <th class="col-md-1"> Costo </th>
+        </tr>
     </thead>
     <tbody>
     @foreach($deceased as $n)
@@ -32,12 +32,11 @@
         </tr>
         <?php $count++; ?>
     @endforeach
-    <tr>
-        <td colspan="6"></td>
-    </tr>
-    <tr>
-        <td colspan="6"> <b>TOTALE:</b> </td>
-        <td>{{ $total }} &euro; </td>
-    </tr>
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="6"> <b>TOTALE:</b> </td>
+            <td>{{ $total }} &euro; </td>
+        </tr>
+    </tfoot>
 </table>

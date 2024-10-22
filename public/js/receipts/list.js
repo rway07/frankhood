@@ -46,20 +46,32 @@ $(() => {
         ],
         columnDefs: [
             {
+                targets: 3,
+                className: 'dt-body-left dt-head-left',
+            },
+            {
+                targets: 4,
+                className: 'dt-body-left dt-head-left',
+            },
+            {
                 targets: 6,
-                className: 'fit',
+                width: '1%',
+                className: 'dt-nowrap',
             },
             {
                 targets: 7,
-                className: 'fit',
+                width: '1%',
+                className: 'dt-nowrap',
             },
             {
                 targets: 8,
-                className: 'fit',
+                width: '1%',
+                className: 'dt-nowrap',
             },
             {
                 targets: 9,
-                className: 'fit',
+                width: '1%',
+                className: 'dt-nowrap',
             },
         ],
     });

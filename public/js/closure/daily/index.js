@@ -32,10 +32,12 @@ function showExtra() {
 
     if (extraDiv.hasClass('d-print-none')) {
         extraDiv.removeClass('d-print-none');
-        $('#show_extra_text').text('Nascondi sezione extra nella stampa');
+        $('#show_extra').removeClass('btn-danger').addClass('btn-success');
+        $('#show_extra_text').text('Mostra sezione extra nella stampa');
     } else {
         extraDiv.addClass('d-print-none');
-        $('#show_extra_text').text('Mostra sezione extra nella stampa');
+        $('#show_extra').removeClass('btn-success').addClass('btn-danger');
+        $('#show_extra_text').text('Nascondi sezione extra nella stampa');
     }
 }
 
@@ -47,10 +49,12 @@ function showGraph() {
 
     if (div.hasClass('d-print-none')) {
         div.removeClass('d-print-none');
-        $('#show_graph_text').text('Nascondi grafico nella stampa');
+        $('#show_graph').removeClass('btn-danger').addClass('btn-success');
+        $('#show_graph_text').text('Mostra grafico nella stampa');
     } else {
         div.addClass('d-print-none');
-        $('#show_graph_text').text('Mostra grafico nella stampa');
+        $('#show_graph').removeClass('btn-success').addClass('btn-danger');
+        $('#show_graph_text').text('Nascondi grafico nella stampa');
     }
 }
 

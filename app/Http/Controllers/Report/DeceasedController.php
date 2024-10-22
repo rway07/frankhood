@@ -28,7 +28,14 @@ class DeceasedController extends Controller
             order by death_date desc;"
         );
 
-        return view('report/deceased/index', ['years' => $years]);
+        return view(
+            'report/common',
+            [
+                'title' => 'LISTA SOCI DECEDUTI PER L\'ANNO',
+                'script_prefix' => 'deceased',
+                'years' => $years
+            ]
+        );
     }
 
     /**
@@ -110,7 +117,7 @@ class DeceasedController extends Controller
         return response()->json(
             [
                 'data' => [
-                    'years' => $year,
+                    'year' => $year,
                     'num_deceased' => count($deceasedCustomers),
                     'view' => $view
                 ]

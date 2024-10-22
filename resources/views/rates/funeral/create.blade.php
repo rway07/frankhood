@@ -1,31 +1,28 @@
 @extends('layouts.app')
 @section('content')
 <script type="text/javascript" src="/js/rates/exceptions/create.js"></script>
-<div class="card">
-    <div class="card-header bg-secondary text-white">
-        @if (isset($exception))
-            MODIFICA ECCEZIONE
-        @else
-            NUOVA ECCEZIONE
-        @endif
-    </div>
+<main class="container">
+    @include('common.errors')
+    @if (isset($exception))
+        <form id="create_exception" action="/rates/exceptions/{{ $exception->id }}/update" method="POST" class="form-horizontal">
+            {{ method_field('PUT') }}
+    @else
+        <form id="create_exception" action="/rates/exceptions/store" method="POST" class="form-horizontal">
+    @endif
+        {{ csrf_field() }}
 
-    <div class="card-body">
-        <!-- Display Validation Errors -->
-        @include('common.errors')
-        @if (isset($exception))
-            <form id="create_exception" action="/rates/exceptions/{{ $exception->id }}/update" method="POST" class="form-horizontal">
-                {{ method_field('PUT') }}
-        @else
-            <form id="create_exception" action="/rates/exceptions/store" method="POST" class="form-horizontal">
-        @endif
-
-            {{ csrf_field() }}
-
-            <div class="row mb-3">
+        <div class="d-flex bg-body p-3 my-3 rounded shadow-sm">
+            @if (isset($exception))
+                <h6 class="pb-1 mb-0">MODIFICA ECCEZIONE</h6>
+            @else
+                <h6 class="pb-1 mb-0">NUOVA ECCEZIONE</h6>
+            @endif
+        </div>
+        <div class="bg-body p-3 my-3 rounded shadow-sm">
+            <div class="d-flex text-body-secondary pt-3 row">
                 <div class="col-md-4">
                     <label for="year" class="control-label">Anno</label>
-                    <select id="year" name="year" class="form-control custom-select-sm">
+                    <select id="year" name="year" class="form-control form-control-sm form-select form-select form-select-sm">
                         @foreach($years as $y)
                             @if(isset($exception))
                                 @if($exception->year == $y->year)
@@ -45,7 +42,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="dead_customers" class="control-label">Socio deceduto</label>
-                    <select id="dead_customers" name="dead_customers" class="form-control custom-select-sm">
+                    <select id="dead_customers" name="dead_customers" class="form-control form-control-sm form-select form-select form-select-sm">
                         @foreach($customers as $c)
                             @if(isset($exception))
                                 @if($exception->customer_id == $c->id)
@@ -62,9 +59,7 @@
                 <div class="col-md-4">
                     <label for="quota" class="control-label">Costo</label>
                     <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">&euro;</div>
-                        </div>
+                        <span class="input-group-text">&euro;</span>
                         @if (isset($exception))
                             <input type="text" class="form-control form-control-sm" id="quota" name="quota" placeholder="Quota" value="{{ $exception->cost }}">
                         @else
@@ -73,16 +68,18 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-4">
-                <button type="submit" class="btn btn-primary btn-sm float-right">
-                    @if (isset($exception))
-                        <i class="fa fa-edit"></i> Modifica Eccezione
-                    @else
-                        <i class="fa fa-plus"></i> Aggiungi Eccezione
-                    @endif
-                </button>
+            <div class="d-flex text-body-secondary pt-3 row">
+                <div class="col-md">
+                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                        @if (isset($exception))
+                            <i class="fa fa-edit"></i> Modifica Eccezione
+                        @else
+                            <i class="fa fa-plus"></i> Aggiungi Eccezione
+                        @endif
+                    </button>
+                </div>
             </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </form>
+</main>
 @endsection

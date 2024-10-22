@@ -14,7 +14,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Top 5 Soci più anziani</h5>
                         <br>
-                        <table class="table table-condensed table-sm">
+                        <table class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Nome</th>

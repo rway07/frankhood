@@ -163,7 +163,7 @@ function receiptInfo(number, year) {
     const url = `/api/receipts/${number}/${year}/info`;
 
     $.get(url, (response) => {
-        const customQuotas = Boolean(response.data.receipt.custom_quotas);
+        const customQuotas = Boolean(parseInt(response.data.receipt.custom_quotas, 10));
 
         $('#date').text(convertDate(response.data.receipt.date));
         $('#number').text(response.data.receipt.number);
@@ -180,9 +180,9 @@ function receiptInfo(number, year) {
         $('#customers').html('');
         response.data.customers.forEach((element) => {
             $('#customers').append(
-                `<h6>${element.first_name} ${element.last_name}${
+                `<p class="mb-1">${element.first_name} ${element.last_name}${
                     customQuotas === true ? ` (${element.quota} &euro;)` : ''
-                }</h6>`,
+                }</p>`,
             );
         });
 
@@ -219,15 +219,15 @@ function writeCustomerInfo(data) {
     if (data.death_date) {
         $('#special_date_label').text('Data decesso');
         $('#special_date_data').text(convertDate(data.death_date));
-        $('#extra_info').removeClass('invisible', 'badge-warning').addClass('badge-danger').text('DECEDUTO');
+        $('#extra_info').removeClass('invisible text-bg-warning').addClass('text-bg-danger').text('DECEDUTO');
     } else if (data.revocation_date) {
         $('#special_date_label').text('Data revoca');
         $('#special_date_data').text(convertDate(data.revocation_date));
-        $('#extra_info').removeClass('invisible', 'badge-danger').addClass('badge-warning').text('REVOCATO');
+        $('#extra_info').removeClass('invisible text-bg-danger').addClass('text-bg-warning').text('REVOCATO');
     } else {
         $('#special_date_data').text('');
         $('#special_date_label').text('');
-        $('#extra_info').removeClass('badge-danger', 'badge-warning').addClass('invisible').text('');
+        $('#extra_info').removeClass('text-bg-danger text-bg-warning').addClass('invisible').text('');
     }
 
     $('#name').text(`${data.first_name} ${data.last_name}`);
@@ -243,6 +243,12 @@ function writeCustomerInfo(data) {
         $('#email').text(data.email);
     } else {
         $('#email').text('--');
+    }
+
+    const priorato = parseInt(data.priorato, 10);
+    if (!!priorato) {
+        $('#priorato_label').text('Priorato');
+        $('#priotato_text').text('Si');
     }
 
     $('#customer_details_modal').modal('show');

@@ -1,23 +1,20 @@
-<table class="table table-condensed table-sm">
-    <thead class="thead-dark">
+<table class="table table-hover table-sm">
+    <thead class="table-dark">
         <tr>
-            <th></th>
-            <th> Numero </th>
-            <th> Entrate </th>
-            <th> Uscite </th>
+            <th class="w-50"></th>
+            <th class="table-w-ten"> Numero </th>
+            <th class="table-w-twenty"> Entrate </th>
+            <th class="table-w-twenty"> Uscite </th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <tr class="alert-success">
+        <tr class="">
             <td> [A] Numero soci regolari</td>
             <td> {{ $customers->numPeople }} </td>
             <td> {{ $customers->amount }} &euro; </td>
             <td> - </td>
         </tr>
-        <tr class="alert-warning">
+        <tr class="">
             <td> [B] Numero rinnovi </td>
             <td> {{ $customers->numPeople - $newCustomers->numPeople }}</td>
             <td> {{ $customers->amount - $newCustomers->amount }} &euro; </td>
@@ -35,7 +32,7 @@
             <td>{{ $customers->amountAlt - $newCustomers->amountAlt}} &euro; </td>
             <td> - </td>
         </tr>
-        <tr class="alert-warning">
+        <tr class="">
             <td> [C] Numero nuovi soci</td>
             <td> {{ $newCustomers->numPeople }}</td>
             <td> {{ $newCustomers->amount }} &euro; </td>
@@ -53,25 +50,19 @@
             <td> {{ $newCustomers->amountAlt }} &euro; </td>
             <td> - </td>
         </tr>
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <tr class="alert-dark">
+        <tr class="">
             <td>[D1] Numero soci quote regolari (rinnovi e nuovi)</td>
             <td> {{ $customers->numRegular  }}</td>
             <td> {{ $customers->amountRegular }} &euro;</td>
             <td> - </td>
         </tr>
-        <tr class="alert-dark">
+        <tr class="">
             <td>[D2] Numero soci quote alternative (rinnovi e nuovi)</td>
             <td> {{ $customers->numAlt }}</td>
             <td> {{ $customers->amountAlt }} &euro;</td>
             <td> - </td>
         </tr>
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <tr class="alert-success">
+        <tr class="">
             <td> [E] Numero soci morosi</td>
             <td> {{ $lateCustomers->numPeople }}</td>
             <td> - </td>
@@ -83,16 +74,13 @@
             <td> - </td>
             <td> - </td>
         </tr>
-        <tr class="alert-info">
+        <tr class="">
             <td> [G] Numero soci totali (compresi morosi)</td>
             <td> {{ $customers->numPeople + $lateCustomers->numPeople - $postDeceasedNumber }}</td>
             <td> - </td>
             <td> - </td>
         </tr>
-        <tr>
-            <td colspan="3"></td>
-        </tr>
-        <tr class="alert-success">
+        <tr class="">
             <td> [H] Numero soci deceduti</td>
             <td> {{ $deceasedCustomers->total }}</td>
             <td> - </td>
@@ -138,28 +126,19 @@
                 <td> {{ $exceptions->post_cost }} &euro;</td>
             </tr>
         @endif
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <tr class="alert-success">
+        <tr class="">
             <td> [I] Numero soci revocati</td>
             <td> {{ $revocatedCustomers->numPeople }}</td>
             <td> - </td>
             <td> - </td>
         </tr>
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <tr class="alert-success">
+        <tr class="">
             <td> [J] Offerte </td>
             <td> - </td>
             <td> {{ $offers }} &euro;</td>
             <td> - </td>
         </tr>
-        <tr>
-            <td colspan="4"></td>
-        </tr>
-        <!-- <tr class="alert-success">
+        <!-- <tr class="">
             <td> [K] Spese</td>
             <td> - </td>
             <td> - </td>
@@ -168,33 +147,33 @@
         <tr>
             <td colspan="4"></td>
         </tr> -->
-        <tr class="alert-danger">
+        <tr class="">
             <td colspan="2"> <b>TOTALE:</b> </td>
             <td> <b> {{ $customers->amount + $offers }} &euro;</b></td>
             <td> <b> {{ $totalFuneral }} &euro; </b></td>
         </tr>
     </tbody>
 </table>
-<table class="table table-condensed table-sm">
+<table class="table table-hover table-sm">
     <thead>
     <tr>
-        <th>Legenda</th>
-        <th></th>
-        <th></th>
+        <th class="w-50">Legenda</th>
+        <th class="w-25"></th>
+        <th class="w-25"></th>
     </tr>
     </thead>
     <tbody>
-    <tr class="alert-primary">
+    <tr class="">
         <td>Quota anno {{ $year }}</td>
         <td></td>
         <td>{{ $rates->quota }} &euro;</td>
     </tr>
-    <tr class="alert-primary">
+    <tr class="">
         <td>Costo funerale {{ $year }}</td>
         <td></td>
         <td>{{ $rates->funeral_cost }} &euro;</td>
     </tr>
-    <tr class="alert-info">
+    <tr class="">
         <td>[G] = [A] + [E] - [F]</td>
         <td>
             {{ $customers->numPeople + $lateCustomers->numPeople - $postDeceasedNumber }} =
@@ -202,7 +181,7 @@
         </td>
         <td></td>
     </tr>
-    <tr class="alert-success">
+    <tr class="">
         <td>[A] = [B] + [C]</td>
         <td>
             {{ $customers->numPeople }} =
@@ -213,7 +192,7 @@
             + {{ $newCustomers->amount }} &euro;
         </td>
     </tr>
-    <tr class="alert-warning">
+    <tr class="">
         <td>[B] = [B1] + [B2]</td>
         <td>
             {{ $customers->numPeople - $newCustomers->numPeople }} =
@@ -234,7 +213,7 @@
             {{ $customers->numRegular - $newCustomers->numRegular }} * {{ $rates->quota }} &euro;
         </td>
     </tr>
-    <tr class="alert-warning">
+    <tr class="">
         <td>[C] = [C1] + [C2]</td>
         <td>
             {{ $newCustomers->numPeople }} =
@@ -255,7 +234,7 @@
             {{ $newCustomers->numRegular}} * {{ $rates->quota }} &euro;
         </td>
     </tr>
-    <tr class="alert-dark">
+    <tr class="">
         <td>[D1] = [B1] + [C1]</td>
         <td>
             {{ $customers->numRegular }} =
@@ -267,7 +246,7 @@
             + {{ $newCustomers->amountRegular }} &euro;
         </td>
     </tr>
-    <tr class="alert-dark">
+    <tr class="">
         <td>[D2] = [B2] + [C2]</td>
         <td>
             {{ $customers->numAlt }} =
@@ -281,4 +260,3 @@
     </tr>
     </tbody>
 </table>
-

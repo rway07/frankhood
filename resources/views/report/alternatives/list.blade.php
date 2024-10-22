@@ -4,10 +4,10 @@
     $totalPeople = 0;
     $regular = 0;
 ?>
-<table class="table table-condensed table-sm">
-    <thead class="thead-dark">
+<table class="table table-hover table-sm">
+    <thead class="table-dark">
     <tr>
-        <th></th>
+        <th> # </th>
         <th> Nr. Ricevuta</th>
         <th> Nome </th>
         <th> Data</th>
@@ -34,9 +34,8 @@
                 $totalPeople += $d->num_people;
             ?>
         @endforeach
-        <tr>
-            <td colspan="7"></td>
-        </tr>
+    </tbody>
+    <tfoot>
         <tr>
             <td colspan="6"><b>TOTALE REGOLARE:</b></td>
             <td>{{ $regular }} &euro;</td>
@@ -51,5 +50,5 @@
             <td></td>
             <td>{{ $total }} &euro;</td>
         </tr>
-    </tbody>
+    </tfoot>
 </table>

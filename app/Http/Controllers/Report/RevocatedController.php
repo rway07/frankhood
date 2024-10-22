@@ -28,7 +28,14 @@ class RevocatedController extends Controller
             order by revocation_date desc;"
         );
 
-        return view('report/revocated/index', ['years' => $years]);
+        return view(
+            'report/common',
+            [
+                'title' => 'LISTA SOCI REVOCATI PER L\'ANNO',
+                'script_prefix' => 'revocated',
+                'years' => $years
+            ]
+        );
     }
 
     /**

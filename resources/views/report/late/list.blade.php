@@ -1,11 +1,11 @@
 <?php
-$count = 1;
-$i = 0;
+    $count = 1;
+    $i = 0;
 ?>
-<table class="table table-condensed table-sm">
-    <thead class="thead-dark">
+<table class="table table-hover table-sm">
+    <thead class="table-dark">
     <tr>
-        <th></th>
+        <th> # </th>
         <th> Nome </th>
         <th> Data Nascita </th>
         <th> Numero di telefono</th>

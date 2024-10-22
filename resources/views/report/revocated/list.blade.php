@@ -1,11 +1,11 @@
 <?php $count = 1; ?>
-<table class="table table-condensed table-sm">
-    <thead class="thead-dark">
+<table class="table table-hover table-sm">
+    <thead class="table-dark">
     <tr>
-        <th></th>
-        <th> Nome </th>
-        <th> Data Nascita </th>
-        <th> Numero tessera </th>
+        <th class="col-md-1"> # </th>
+        <th class="col-md-7"> Nome </th>
+        <th class="col-md-2"> Data Nascita </th>
+        <th class="col-md-2"> Numero tessera </th>
     </tr>
     </thead>
     <tbody>

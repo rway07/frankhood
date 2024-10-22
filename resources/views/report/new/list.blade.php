@@ -1,16 +1,16 @@
-<?php
+@php
     $count = 1;
     $total = 0;
-?>
-<table class="table table-condensed table-sm" id="customers_table">
-    <thead class="thead-dark">
+@endphp
+<table class="table table-hover table-sm" id="customers_table">
+    <thead class="table-dark">
         <tr>
-            <th></th>
-            <th> Nome </th>
-            <th> Data Nascita </th>
-            <th> Nr. Ricevuta </th>
-            <th> Quota </th>
-            <th> Telefono</th>
+            <th class="col-md-1"> # </th>
+            <th class="col-md-5"> Nome </th>
+            <th class="col-md-1"> Data Nascita </th>
+            <th class="col-md-1"> Nr. Ricevuta </th>
+            <th class="col-md-3"> Telefono </th>
+            <th class="col-md-1"> Quota</th>
         </tr>
     </thead>
     <tbody>
@@ -34,12 +34,11 @@
                 $total += $n->quota;
             ?>
         @endforeach
-        <tr>
-            <td colspan="6"></td>
-        </tr>
+    </tbody>
+    <tfoot>
         <tr>
             <td colspan="5"><b>TOTALE:</b></td>
             <td>{{ $total }} &euro;</td>
         </tr>
-    </tbody>
+    </tfoot>
 </table>
