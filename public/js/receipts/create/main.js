@@ -744,7 +744,7 @@ function disableForm(message) {
 
     $('#receipt_button').attr('disabled', 'disabled');
     selector.text(message);
-    selector.addClass('text-bg--danger');
+    selector.addClass('text-bg-danger');
 }
 
 /**
@@ -800,6 +800,9 @@ function initStatus() {
 
     // Initialize the event handlers for the custom quotas
     initQuotas();
+
+    // Enable the main button
+    $('#receipt_button').removeAttr('disabled');
 }
 
 /**
@@ -838,7 +841,7 @@ function resetUI() {
 function resetWarnings() {
     const selector = $('#alert');
     selector.text('');
-    selector.removeClass('text-bg--danger');
+    selector.removeClass('text-bg-danger');
 }
 
 /**

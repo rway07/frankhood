@@ -119,7 +119,7 @@
                     <h5><span id="alert" class="badge"> </span></h5>
                 </div>
                 <div class="col-md-2">
-                    <button id="receipt_button" type="submit" class="btn btn-primary btn-sm float-end">
+                    <button id="receipt_button" type="submit" class="btn btn-primary btn-sm float-end text-nowrap" disabled>
                         <i id="button_icon" class="fa fa-edit"></i> {{ isset($receipts) ? 'Modifica Ricevuta' : 'Aggiungi Ricevuta' }}
                     </button>
                 </div>

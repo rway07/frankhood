@@ -27,7 +27,14 @@ class AlternativeReceiptsController extends Controller
             order by year desc;"
         );
 
-        return view('report/alternatives/index', ['years' => $years]);
+        return view(
+            'report/common',
+            [
+                'title' => 'LISTA RICEVUTE CON QUOTE ALTERNATIVE PER L\'ANNO',
+                'script_prefix' => 'alternatives',
+                'years' => $years
+            ]
+        );
     }
 
     /**
