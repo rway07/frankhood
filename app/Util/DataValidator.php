@@ -5,7 +5,8 @@ namespace App\Util;
 /**
  *
  */
-class DataValidator {
+class DataValidator
+{
     protected $returnMessage = "";
 
     /**

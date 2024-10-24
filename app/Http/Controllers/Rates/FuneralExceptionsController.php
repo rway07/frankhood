@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Rates;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RateExceptionRequest;
+use App\Util\CustomersDataValidator;
 use App\Util\FuneralExceptionsDataValidator;
 use Exception;
 use Illuminate\Http\JsonResponse as JsonResponse;
@@ -131,6 +133,18 @@ class FuneralExceptionsController extends Controller
      */
     private function storeException($idException, $data)
     {
+        $validator  = new FuneralExceptionsDataValidator();
+        if ($validator->rateYearAvailable($data['year'])) {
+            return Redirect::to('rates/exception/create')
+                ->withErrors('Errore con l\'anno selezionato');
+        }
+
+        $customerValidator = new CustomersDataValidator();
+        if (!$customerValidator->checkCustomerID($data['dead_customers'])) {
+            return Redirect::to('rates/exception/create')
+                ->withErrors($customerValidator->getReturnMessage());
+        }
+        
         $idRate = DB::select(
             'select id
             from rates
@@ -194,6 +208,11 @@ class FuneralExceptionsController extends Controller
     public function update(RateExceptionRequest $request, $idException): RedirectResponse
     {
         try {
+            $validator = new FuneralExceptionsDataValidator();
+            if (!$validator->checkExceptionID($idException)) {
+                return Redirect::to('rates/exception/create')->withErrors($validator->getReturnMessage());
+            }
+
             $validatedData = $request->validated();
 
             DB::beginTransaction();

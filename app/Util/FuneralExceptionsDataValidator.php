@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\DB as DB;
 /**
  *
  */
-class FuneralExceptionsDataValidator {
-    private $returnMessage = '';
-
+class FuneralExceptionsDataValidator extends RatesDataValidator
+{
     /**
      * @param $idException
      * @return bool
@@ -33,13 +32,5 @@ class FuneralExceptionsDataValidator {
         }
 
         return true;
-    }
-
-    /**
-     * @return string
-     */
-    public function getReturnMessage(): string
-    {
-        return $this->returnMessage;
     }
 }

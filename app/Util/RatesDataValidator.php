@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\DB as DB;
 /**
  *
  */
-class RatesDataValidator {
-    private $returnMessage = "";
+class RatesDataValidator
+{
+    protected $returnMessage = "";
 
     /**
      * @param $idRate
@@ -21,7 +22,8 @@ class RatesDataValidator {
             return false;
         }
 
-        $query = DB::select("SELECT *
+        $query = DB::select(
+            "SELECT *
             FROM rates
             WHERE id = '$idRate'"
         );
@@ -46,7 +48,8 @@ class RatesDataValidator {
             return false;
         }
 
-        $query = DB::select("select year
+        $query = DB::select(
+            "select year
             from rates
             where year = {$year}"
         );
