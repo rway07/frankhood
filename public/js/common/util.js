@@ -293,7 +293,7 @@ function showModal(message) {
  */
 function showGuruModal(data) {
     const serverText = `${data.status} - ${data.statusText}`;
-    const message = `${data.responseJSON.error.message}`;
+    const message = `${data.responseJSON.message}`;
     $('#guru_modal_server_error').text(serverText);
     $('#guru_modal_message_text').text(message);
     $('#guru_modal').modal('show');

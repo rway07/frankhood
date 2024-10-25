@@ -27,21 +27,108 @@ const status = new UIStatus();
 $(() => {
     const $recipientSelector = $('#recipient');
     const $receiptFormSelector = $('#create_receipt_form');
-    // Minimum data validation
-    $receiptFormSelector.validate({
-        rules: {
-            'issue-date': { required: true },
-            recipient: { required: true },
-            rates: { required: true },
-            total: { required: true, number: true },
-        },
-        messages: {
-            'issue-date': { required: 'Inserire la data' },
-            recipient: { required: 'Inserire il destinatario' },
-            rates: { required: 'Inserire la quota' },
-            total: { required: 'Inserire il totale' },
-        },
+    const validator = new JustValidate('#create_receipt_form', {
+        errorFieldCssClass: 'error-field',
+        errorLabelCssClass: 'error-label',
+        successFieldCssClass: 'validation-success',
     });
+
+    validator
+        .addField(
+            '#issue-date',
+            [
+                {
+                    plugin: JustValidatePluginDate(() => ({
+                        required: true,
+                        format: 'yyyy-MM-dd',
+                    })),
+                    errorMessage: 'Data nel formato sbagliato',
+                },
+            ],
+            {
+                errorsContainer: '#issue-date-div',
+            },
+        )
+        .addField(
+            '#rates',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: "Inserire l'anno",
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'Anno non valido',
+                },
+            ],
+            {
+                errorsContainer: '#rates-div',
+            },
+        )
+        .addField(
+            '#payment_type',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: 'Inserire il tipo di pagamento',
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'Tipo di pagamennto non valido',
+                },
+            ],
+            {
+                errorsContainer: '#payment-type-div',
+            },
+        )
+        .addField(
+            '#quota_type',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: 'Inserire il tipo di pagamento',
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'Tipo di pagamennto non valido',
+                },
+            ],
+            {
+                errorsContainer: '#quota-type-div',
+            },
+        )
+        .addField(
+            '#quota',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: 'Inserire la quota',
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'Quota non valida',
+                },
+            ],
+            {
+                errorsContainer: '#quota-div',
+            },
+        )
+        .addField(
+            '#total',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: 'Inserire il totale',
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'Totale non valido',
+                },
+            ],
+            {
+                errorsContainer: '#total-div',
+            },
+        );
 
     // Events handlers
     // Load a new rate on year change

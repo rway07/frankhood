@@ -1,4 +1,4 @@
-<div id="guru_modal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1">
+<div id="guru_modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

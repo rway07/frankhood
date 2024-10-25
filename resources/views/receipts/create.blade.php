@@ -13,21 +13,21 @@
         <form id="create_receipt_form"
               action="{{ isset($receipts) ? '/receipts/' . $receipts->number . '/' . $receipts->year . '/update' : '/receipts/store' }}"
               method="POST" target="_blank">
+            @csrf
             {{ isset($receipts) ? method_field('put') : '' }}
             <input id="receipt_number" name="receipt_number" type="hidden" value="{{ isset($receipts) ? $receipts->number : '0' }}">
             <input id="recipient_id" name="recipient_id" type="hidden" value="{{ isset($receipts) ? $receipts->customers_id : '0' }}"
-            @csrf
             <!-- new section -->
             <div class="row mb-3">
-                <div class="col-md-2">
+                <div id="issue-date-div" class="col-md-2">
                     <label class="col-form-label-sm">Data Emissione</label>
                     <input type="date" name="issue-date" id="issue-date" class="form-control form-control-sm"
                            value="{{ isset($receipts) ? $receipts->date : $date }}">
                 </div>
-                <div class="col-md-2" id="rates_div">
+                <div id="rates-div" class="col-md-2" id="rates_div">
                     <label class="col-form-label-sm"> Anno </label>
                     @if (count($rates) > 0)
-                        <select id="rates" name="rates" class="form-control form-control-sm">
+                        <select id="rates" name="rates" class="form-select form-select-sm custom-select">
                             @if (isset($receipts))
                                 @foreach($rates as $rate)
                                     @if ($receipts->rates_id == $rate->id)
@@ -50,9 +50,9 @@
                         <div class="alert alert-danger" role="alert"> Nessun Anno trovato! </div>
                     @endif
                 </div>
-                <div class="col-md-2">
+                <div id="payment-type-div" class="col-md-2">
                     <label for="payment_type" class="col-form-label-sm"> Tipo di Pagamento </label>
-                    <select id="payment_type" name="payment_type" class="form-control form-control-sm">
+                    <select id="payment_type" name="payment_type" class="form-select form-select-sm custom-select">
                         @foreach($types as $t)
                             @if(isset($receipts))
                                 @if($receipts->payment_type_id == $t->id)
@@ -66,7 +66,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div id="quota-type-div" class="col-md-2">
                     <label class="col-form-label-sm"> Tipo Quota </label>
                     <select id="quota_type" name="quota_type" class="custom-select form-select form-select-sm">
                         @if(isset($receipts))
@@ -83,14 +83,14 @@
                         @endif
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div id="quota-div "class="col-md-2">
                     <label class="col-form-label-sm"> Quota </label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>
                         <input type="text" id="quota" name="quota" class="form-control form-control-sm" value="" readonly>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div id="total-div" class="col-md-2">
                     <label class="col-form-label-sm">Totale</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>

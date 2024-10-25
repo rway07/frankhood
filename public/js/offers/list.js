@@ -56,9 +56,9 @@ $(() => {
 
     $('#years').on('change', () => {
         const year = $('#years').val();
-        const url = `/expenses/${year}/data`;
+        const url = `/offers/${year}/data`;
 
-        $('#expenses_table').DataTable().ajax.url(url).load();
+        $('#offers_table').DataTable().ajax.url(url).load();
     });
 
     checkPageStatus();

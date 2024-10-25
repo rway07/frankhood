@@ -6,11 +6,11 @@
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <div class="row pb-3 border-bottom">
-            <div class="col-md-6">
+        <div class="row pb-3 border-bottom align-items-center">
+            <div class="col-md-8">
                 <h5 class="pb-1 mb-0"> CHIUSURE GIORNALIERE PER L'ANNO <span id="title_year"></span></h5>
             </div>
-            <div class="col-md-6 d-flex justify-content-end d-print-none gap-1">
+            <div class="col-md-4 d-flex flex-lg-row flex-column justify-content-end d-print-none gap-1">
                 <button id="show_graph" class="btn btn-danger btn-sm text-nowrap">
                     <span id="show_graph_text">Nascondi grafico nella stampa</span>
                 </button>
