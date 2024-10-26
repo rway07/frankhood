@@ -2,13 +2,6 @@
  * @file rates/create.js
  * @author kain rway07@gmail.com
  */
-const MIN_YEAR_LEN = 4;
-const MAX_YEAR_LEN = 4;
-const MIN_YEAR = 1900;
-const MAX_YEAR = 2100;
-const MIN_QUOTA = 10;
-const MIN_FUNERAL_COST = 1000;
-
 $(() => {
     const selector = document.querySelector('#rates-button');
     const validator = new JustValidate('#create_rate', {
@@ -41,13 +34,13 @@ $(() => {
                 },
                 {
                     rule: 'minNumber',
-                    value: MIN_YEAR,
-                    errorMessage: `L'anno deve partire almeno dal ${MIN_YEAR}`,
+                    value: YEAR_START,
+                    errorMessage: `L'anno deve partire almeno dal ${YEAR_START}`,
                 },
                 {
                     rule: 'maxNumber',
-                    value: MAX_YEAR,
-                    errorMessage: `L'anno non deve superare il ${MAX_YEAR}`,
+                    value: YEAR_END,
+                    errorMessage: `L'anno non deve superare il ${YEAR_END}`,
                 },
             ],
             {

@@ -16,6 +16,10 @@ $(() => {
  * @param {number} year
  */
 function loadData(year) {
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
+        return;
+    }
+
     $.ajax({
         url: `/report/customers/new/${year}/list`,
         type: 'get',

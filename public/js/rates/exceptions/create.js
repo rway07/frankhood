@@ -2,9 +2,6 @@
  * @file rates/exceptions/create.js
  * @author kain rway07@gmail.com
  */
-const MIN_YEAR_LEN = 4;
-const MAX_YEAR_LEN = 4;
-
 $(() => {
     const selector = document.querySelector('#exception-button');
     const validator = new JustValidate('#create_exception', {
@@ -18,22 +15,13 @@ $(() => {
             '#year',
             [
                 {
-                    rule: 'required',
-                    errorMessage: "Inserire l'anno",
-                },
-                {
-                    rule: 'number',
-                    errorMessage: "L'anno deve essere un numero",
-                },
-                {
-                    rule: 'minLength',
-                    value: MIN_YEAR_LEN,
-                    errorMessage: `L'anno deve esssere di ${MIN_YEAR_LEN} cifre`,
-                },
-                {
-                    rule: 'maxLength',
-                    value: MAX_YEAR_LEN,
-                    errorMessage: `L'anno deve esssere di ${MAX_YEAR_LEN} cifre`,
+                    plugin: JustValidatePluginDate(() => ({
+                        required: true,
+                        format: 'yyyy',
+                        isAfter: YEAR_START.toString(),
+                        isBefore: YEAR_END.toString(),
+                    })),
+                    errorMessage: 'Data nel formato sbagliato',
                 },
             ],
             {
@@ -86,10 +74,7 @@ $(() => {
 function getCustomers() {
     const year = $('#year').val();
 
-    // FIXME Check year
-    if (!isNaN(year)) {
-        loadCustomers(year);
-    }
+    loadCustomers(year);
 }
 
 /**
@@ -98,6 +83,10 @@ function getCustomers() {
  * @param year
  */
 function loadCustomers(year) {
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
+        return;
+    }
+
     $.ajax({
         url: `/api/rates/exceptions/${year}/customers`,
         type: 'get',

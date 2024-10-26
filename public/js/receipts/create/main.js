@@ -223,6 +223,26 @@ $(() => {
 });
 
 /**
+ *
+ * @param target
+ * @returns {boolean}
+ */
+function validateQuota(target) {
+    const idQuota = target.id;
+
+    if (!v8n().numeric().test(target.value)) {
+        disableForm('Quota alternativa non valida');
+        document.getElementById(idQuota).classList.add('error-field');
+
+        return false;
+    }
+
+    document.getElementById(idQuota).classList.remove('error-field');
+
+    return true;
+}
+
+/**
  * Validate the user input before form submit
  *
  * @returns {boolean}
@@ -257,14 +277,13 @@ function validateInput() {
     let isQuotaValid = true;
     if (status.isQuotaAlternate()) {
         $('.quotas').each((index, element) => {
-            const quotaValue = element.value;
-            if (quotaValue === '' || isNaN(quotaValue)) {
+            if (!validateQuota(element)) {
                 isQuotaValid = false;
-                // FIXME check
-                // disableForm(`Quota alternativa n. ${index} non valida`);
 
                 return false;
             }
+
+            return true;
         });
     }
 
@@ -352,11 +371,11 @@ function updateGroupTotal() {
     total = ZERO;
     if (status.isQuotaAlternate()) {
         $('.quotas').each((index, element) => {
-            const quota = parseFloat(element.value);
-            if (isNaN(quota)) {
-                disableForm('Input non valido');
+            if (!validateQuota(element)) {
                 return;
             }
+
+            const quota = parseFloat(element.value);
 
             total += quota;
         });
@@ -378,7 +397,7 @@ function updateGroupTotal() {
  */
 function recipientChange(value) {
     // If the user remove the recipient, reset the UI
-    if (value === '') {
+    if (v8n().empty().test(value)) {
         resetUI();
 
         return;
@@ -478,7 +497,7 @@ function loadGroup() {
     const peopleControl = $people[0].selectize;
 
     // If the recipient is somehow not set, exit
-    if (idRecipient === '') {
+    if (v8n().empty().test(idRecipient)) {
         return false;
     }
 
@@ -973,12 +992,9 @@ function addEventListener() {
                 return;
             }
 
-            const currentValue = event.currentTarget.value;
-            if (isNaN(currentValue) || currentValue === '') {
-                disableForm('Input non valido');
-                return;
+            if (validateQuota(event.currentTarget)) {
+                updateGroupTotal();
             }
-            updateGroupTotal();
         });
     });
 }

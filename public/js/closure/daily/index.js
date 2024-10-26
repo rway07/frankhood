@@ -9,8 +9,6 @@ let totals = [];
 $(() => {
     const years = $('#years');
 
-    loadData(years.val());
-
     years.on('change', (event) => {
         loadData(event.currentTarget.value);
     });
@@ -22,6 +20,8 @@ $(() => {
     $('#show_extra').on('click', () => {
         showExtra();
     });
+
+    loadData(years.val());
 });
 
 /**
@@ -144,6 +144,10 @@ function loadChart() {
  * @param year
  */
 function loadData(year) {
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
+        return;
+    }
+
     $.ajax({
         url: `/closure/daily/${year}/list`,
         type: 'get',

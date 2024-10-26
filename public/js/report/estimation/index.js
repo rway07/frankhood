@@ -43,6 +43,7 @@ $(() => {
                     plugin: JustValidatePluginDate(() => ({
                         required: true,
                         format: 'yyyy-MM-dd',
+                        isAfter: '1800-01-01',
                     })),
                     errorMessage: 'Data nel formato sbagliato',
                 },

@@ -3,15 +3,10 @@
  * @author kain
  */
 
-const MIN_AGE = 12;
-const MAX_AGE = 120;
-
 $(() => {
     $('#age').on('input', (event) => {
         const age = event.currentTarget.value;
-        if (checkAge(age)) {
-            loadData(age);
-        }
+        loadData(age);
     });
 });
 
@@ -46,15 +41,12 @@ function checkAge(age) {
 /**
  *
  * @param age
- * @returns {boolean}
  */
 function loadData(age) {
     const container = document.getElementById('container');
 
-    if (isNaN(age)) {
-        container.innerHTML = '';
-
-        return false;
+    if (!checkAge(age)) {
+        return;
     }
 
     $.ajax({
@@ -70,6 +62,4 @@ function loadData(age) {
             }
         },
     });
-
-    return true;
 }

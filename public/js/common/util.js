@@ -3,6 +3,15 @@
  * @author kain - rway07@gmail.com
  */
 
+const YEAR_START = 1800;
+const YEAR_END = 2100;
+const MIN_YEAR_LEN = 4;
+const MAX_YEAR_LEN = 4;
+const MIN_QUOTA = 10;
+const MIN_FUNERAL_COST = 1000;
+const MIN_AGE = 12;
+const MAX_AGE = 120;
+
 /**
  * Converte una data dal formato yyyy-mm-dd
  * nel formato dd-mm-yyyy

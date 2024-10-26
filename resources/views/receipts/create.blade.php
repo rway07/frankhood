@@ -24,7 +24,7 @@
                     <input type="date" name="issue-date" id="issue-date" class="form-control form-control-sm"
                            value="{{ isset($receipts) ? $receipts->date : $date }}">
                 </div>
-                <div id="rates-div" class="col-md-2" id="rates_div">
+                <div class="col-md-2" id="rates_div">
                     <label class="col-form-label-sm"> Anno </label>
                     @if (count($rates) > 0)
                         <select id="rates" name="rates" class="form-select form-select-sm custom-select">

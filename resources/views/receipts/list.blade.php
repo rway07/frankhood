@@ -4,7 +4,6 @@
 @include('include.datatables')
 @include('receipts.util.info')
 <meta name="csrf_token" content="{{ csrf_token() }}" />
-<script src="/js/common/util.js" type="text/javascript"></script>
 <script type="text/javascript" src="/js/receipts/list.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
