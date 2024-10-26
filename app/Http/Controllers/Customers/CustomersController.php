@@ -159,7 +159,7 @@ class CustomersController extends Controller
         $customer->gender = $data['gender'];
         $customer->municipality = $data['municipality'];
         $customer->address = $data['address'];
-        $customer->CAP = $data['CAP'];
+        $customer->CAP = $data['cap'];
         $customer->province = $data['province'];
         $customer->phone = $data['phone'];
         $customer->mobile_phone = $data['mobile_phone'];

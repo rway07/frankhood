@@ -16,8 +16,8 @@ $(() => {
  * @param {number} year
  */
 function loadData(year) {
-    if (isNaN(year)) {
-        return false;
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
+        return;
     }
 
     $.ajax({
@@ -43,6 +43,4 @@ function loadData(year) {
             return false;
         },
     });
-
-    return true;
 }

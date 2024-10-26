@@ -12,8 +12,6 @@ let bookPrintStyle = false;
 let showLate = true;
 
 $(() => {
-    loadData();
-
     $('#years').on('change', () => {
         loadData();
     });
@@ -29,6 +27,8 @@ $(() => {
     $('#late_button').on('click', () => {
         toggleLate();
     });
+
+    loadData();
 });
 
 /**

@@ -3,6 +3,15 @@
  * @author kain - rway07@gmail.com
  */
 
+const YEAR_START = 1800;
+const YEAR_END = 2100;
+const MIN_YEAR_LEN = 4;
+const MAX_YEAR_LEN = 4;
+const MIN_QUOTA = 10;
+const MIN_FUNERAL_COST = 1000;
+const MIN_AGE = 12;
+const MAX_AGE = 120;
+
 /**
  * Converte una data dal formato yyyy-mm-dd
  * nel formato dd-mm-yyyy
@@ -293,7 +302,7 @@ function showModal(message) {
  */
 function showGuruModal(data) {
     const serverText = `${data.status} - ${data.statusText}`;
-    const message = `${data.responseJSON.error.message}`;
+    const message = `${data.responseJSON.message}`;
     $('#guru_modal_server_error').text(serverText);
     $('#guru_modal_message_text').text(message);
     $('#guru_modal').modal('show');

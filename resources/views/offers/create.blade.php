@@ -12,12 +12,12 @@
         </div>
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <div class="d-flex text-body-secondary pt-2 row">
-                <div class="col-md-2">
+                <div id="#date-div" class="col-md-3">
                     <label for="date" class="col-form-label-sm">Data</label>
                     <input type="date" name="date" id="date" class="form-control form-control-sm"
                            value="{{ isset($offer) ? $offer->date : old('date')}}">
                 </div>
-                <div class="col-md-2">
+                <div id="amount-div" class="col-md-3">
                     <label for="amount" class="col-form-label-sm">Totale</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>
@@ -25,7 +25,7 @@
                                placeholder="Totale" value="{{ isset($offer) ? $offer->amount : old('amount')}}">
                     </div>
                 </div>
-                <div class="col-md-8">
+                <div id="description-div" class="col-md-6">
                     <label for="description" class="col-form-label-sm">Descrizione</label>
                     <input type="text" name="description" id="description" class="form-control form-control-sm"
                            value="{{ isset($offer) ? $offer->description : old('description') }}">
@@ -33,7 +33,8 @@
             </div>
             <div class="d-flex text-body-secondary pt-3 row">
                 <div class="col-md">
-                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                    <button id="offer-button" type="submit"
+                            class="btn btn-primary btn-sm float-end text-nowrap" disabled>
                         <i class="fa fa-edit"></i> {{ isset($offer) ? 'Modifica Offerta' : 'Aggiungi Offerta' }}
                     </button>
                 </div>

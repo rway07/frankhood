@@ -20,7 +20,7 @@
         </div>
         <div class="bg-body p-3 my-3 rounded shadow-sm">
             <div class="d-flex text-body-secondary pt-3 row">
-                <div class="col-md-4">
+                <div id="year-div" class="col-md-4">
                     <label for="year" class="control-label">Anno</label>
                     <select id="year" name="year" class="form-control form-control-sm form-select form-select form-select-sm">
                         @foreach($years as $y)
@@ -40,7 +40,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div id="dead-customers-div" class="col-md-4">
                     <label for="dead_customers" class="control-label">Socio deceduto</label>
                     <select id="dead_customers" name="dead_customers" class="form-control form-control-sm form-select form-select form-select-sm">
                         @foreach($customers as $c)
@@ -56,7 +56,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div id="quota-div" class="col-md-4">
                     <label for="quota" class="control-label">Costo</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>
@@ -70,7 +70,8 @@
             </div>
             <div class="d-flex text-body-secondary pt-3 row">
                 <div class="col-md">
-                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                    <button id="exception-button" type="submit"
+                            class="btn btn-primary btn-sm float-end text-nowrap" disabled>
                         @if (isset($exception))
                             <i class="fa fa-edit"></i> Modifica Eccezione
                         @else

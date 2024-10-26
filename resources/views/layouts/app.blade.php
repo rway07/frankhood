@@ -4,17 +4,20 @@
 <head>
     <title>{Project Mortanius}</title>
 
-    <!-- jQuery 3.7.1 + Validate-->
+    <!-- jQuery 3.7.1 -->
     <script src="/js/common/jquery/jquery-3.7.1.min.js"></script>
-    <script src="/js/common/jquery/jquery.validate.min.js"></script>
-    <script src="/js/common/jquery/additional-methods.min.js"></script>
+
+    <!-- Validation -->
+    <script src="/js/common/validation/just-validate.production.min.js"></script>
+    <script src="/js/common/validation/just-validate-plugin-date.production.min.js"></script>
+    <script src="/js/common/validation/v8n.min.js"></script>
 
     <!-- Bootstrap 5.3 -->
     <link href="/css/common/bootstrap5/bootstrap.min.css" rel="stylesheet" type="text/css">
     <script src="/js/common/bootstrap5/bootstrap.bundle.min.js"></script>
 
     <!-- Font related -->
-    <link href="/css/common/fonts/lato.css" rel="stylesheet" type="text/css">
+    <!--<link href="/css/common/fonts/lato.css" rel="stylesheet" type="text/css">-->
     <link href="/css/common/fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- Custom -->

@@ -18,7 +18,7 @@ $(() => {
  * @returns {boolean}
  */
 function loadData(year) {
-    if (isNaN(year)) {
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
         return false;
     }
 

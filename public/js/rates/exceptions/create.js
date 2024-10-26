@@ -3,22 +3,69 @@
  * @author kain rway07@gmail.com
  */
 $(() => {
-    $('#create_exception').validate({
-        rules: {
-            dead_customers: { required: true },
-            quota: { required: true, number: true },
-            year: { required: true, digits: true },
-        },
-        messages: {
-            year: { required: "Inserire l'anno" },
-            quota: { required: 'Inserire il costo del funerale' },
-            dead_customers: 'Inserire il socio deceduto',
-        },
+    const selector = document.querySelector('#exception-button');
+    const validator = new JustValidate('#create_exception', {
+        errorFieldCssClass: 'error-field',
+        errorLabelCssClass: 'error-label',
+        submitFormAutomatically: true,
     });
+
+    validator
+        .addField(
+            '#year',
+            [
+                {
+                    plugin: JustValidatePluginDate(() => ({
+                        required: true,
+                        format: 'yyyy',
+                        isAfter: YEAR_START.toString(),
+                        isBefore: YEAR_END.toString(),
+                    })),
+                    errorMessage: 'Data nel formato sbagliato',
+                },
+            ],
+            {
+                errorsContainer: '#year-div',
+            },
+        )
+        .addField(
+            '#dead_customers',
+            [
+                {
+                    rule: 'required',
+                },
+            ],
+            {
+                errorsContainer: '#dead-customers-div',
+            },
+        )
+        .addField(
+            '#quota',
+            [
+                {
+                    rule: 'required',
+                    errorMessage: 'Inserire la quota',
+                },
+                {
+                    rule: 'number',
+                    errorMessage: 'La quota deve essere un numero',
+                },
+                {
+                    rule: 'minNumber',
+                    value: 1000,
+                    errorMessage: `La quota deve essere maggiore di 1000`,
+                },
+            ],
+            {
+                errorsContainer: '#quota-div',
+            },
+        );
 
     $('#year').on('change', (event) => {
         loadCustomers(event.currentTarget.value);
     });
+
+    selector.removeAttribute('disabled');
 });
 
 /**
@@ -27,10 +74,7 @@ $(() => {
 function getCustomers() {
     const year = $('#year').val();
 
-    // FIXME Check year
-    if (!isNaN(year)) {
-        loadCustomers(year);
-    }
+    loadCustomers(year);
 }
 
 /**
@@ -39,6 +83,10 @@ function getCustomers() {
  * @param year
  */
 function loadCustomers(year) {
+    if (!v8n().numeric().between(YEAR_START, YEAR_END).test(year)) {
+        return;
+    }
+
     $.ajax({
         url: `/api/rates/exceptions/${year}/customers`,
         type: 'get',

@@ -13,19 +13,19 @@
         </div>
         <div class="my-3 p-3 bg-body shadow-sm rounded">
             <div class="d-flex text-body-secondary pt-2 row">
-                <div class="col-md-4">
+                <div id="year-div" class="col-md-4">
                     <input type="text" id="year" name="year" class="form-control form-control-sm"
                            placeholder="Anno" value="{{ isset($rate) ? $rate->year : old('year')}}"
                            {{ isset($rate) ? 'readonly' : ''}}>
                 </div>
-                <div class="col-md-4">
+                <div id="quota-div" class="col-md-4">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>
                         <input type="text" class="form-control form-control-sm" id="quota" name="quota"
                                placeholder="Quota" value="{{ isset($rate) ? $rate->quota : old('quota') }}">
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div id="funeral-cost-div" class="col-md-4">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">&euro;</span>
                         <input type="text" class="form-control form-control-sm" id="funeral_cost"
@@ -36,7 +36,7 @@
             </div>
             <div class="d-flex text-body-secondary pt-3 row">
                 <div class="col-md">
-                    <button type="submit" class="btn btn-primary btn-sm float-end">
+                    <button id="rates-button" type="submit" class="btn btn-primary btn-sm float-end" disabled>
                         <i class="fa fa-edit"></i> {{ isset($rate) ? 'Modifica Tariffa' : 'Aggiungi Tariffa' }}
                     </button>
                 </div>

@@ -4,16 +4,15 @@
 @include('include.datatables')
 @include('receipts.util.info')
 <meta name="csrf_token" content="{{ csrf_token() }}" />
-<script src="/js/common/util.js" type="text/javascript"></script>
 <script type="text/javascript" src="/js/receipts/list.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row align-items-center">
+            <div class="col-md-8">
                 <h5 class="pb-1 mb-0"> LISTA RICEVUTE </h5>
             </div>
-            <div class="col-md-6 d-flex justify-content-end gap-1">
+            <div class="col-md-4 d-flex flex-lg-row flex-column justify-content-end gap-1">
                 <button type='button' class='btn btn-warning btn-sm text-nowrap' onclick='window.open("/receipts/create", "_self");'>
                     <i class='fa fa-btn fa-plus'></i> Nuova Ricevuta
                 </button>
