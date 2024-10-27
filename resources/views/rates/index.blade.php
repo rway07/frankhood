@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-@include('include.toastr')
 <link href='/css/tables.css' rel='stylesheet' type='text/css'>
 <script type='text/javascript' src='/js/rates/index.js'></script>
 <main class="container">

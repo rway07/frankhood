@@ -17,8 +17,11 @@
     <script src="/js/common/bootstrap5/bootstrap.bundle.min.js"></script>
 
     <!-- Font related -->
-    <!--<link href="/css/common/fonts/lato.css" rel="stylesheet" type="text/css">-->
     <link href="/css/common/fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Notyf -->
+    <link href="/css/common/notification/notyf.min.css" rel="stylesheet" type="text/css">
+    <script src="/js/common/notification/notyf.min.js" defer></script>
 
     <!-- Custom -->
     <link href="/css/util.css" rel="stylesheet" type="text/css">

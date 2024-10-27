@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-@include('include.toastr')
 @include('include.datatables')
 <script type="text/javascript" src="/js/expenses/list.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">

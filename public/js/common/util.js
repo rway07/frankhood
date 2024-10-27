@@ -30,20 +30,16 @@ function convertDate(date) {
  * @param {String} msg
  */
 function showToastSuccess(msg) {
-    toastr.options = {
-        closeButton: true,
-        newestOnTop: true,
-        positionClass: 'toast-top-right',
-        showDuration: '300',
-        hideDuration: '1000',
-        timeOut: '5000',
-        extendedTimeOut: '1000',
-        showEasing: 'swing',
-        hideEasing: 'linear',
-        showMethod: 'fadeIn',
-        hideMethod: 'fadeOut',
-    };
-    toastr.success(msg);
+    const notyf = new Notyf({
+        duration: 3000,
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        dismissible: true,
+    });
+
+    notyf.success(msg);
 }
 
 /**
@@ -52,20 +48,16 @@ function showToastSuccess(msg) {
  * @param {String} msg
  */
 function showToastError(msg) {
-    toastr.options = {
-        closeButton: true,
-        newestOnTop: true,
-        positionClass: 'toast-top-right',
-        showDuration: '300',
-        hideDuration: '1000',
-        timeOut: '5000',
-        extendedTimeOut: '2000',
-        showEasing: 'swing',
-        hideEasing: 'linear',
-        showMethod: 'fadeIn',
-        hideMethod: 'fadeOut',
-    };
-    toastr.error(msg, 'Foolishness Dante');
+    const notyf = new Notyf({
+        duration: 3000,
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        dismissible: true,
+    });
+
+    notyf.warning(msg);
 }
 
 /**

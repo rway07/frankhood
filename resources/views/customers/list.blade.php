@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-@include('include.toastr')
 @include('include.datatables')
 @include('customers.util.info')
 <script type="text/javascript" src="/js/customers/list.js"></script>
