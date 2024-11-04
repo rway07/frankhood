@@ -1,6 +1,10 @@
+@section('custom_assets')
+     @include('include/validate')
+    <script type="text/javascript" src="{{ mix('/js/app/customers/create.js') }}"></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script type="text/javascript" src="/js/customers/create.js"></script>
 <main class="container">
     @include('common.errors')
     <div class="d-flex bg-body align-items-center my-3 p-3 rounded shadow-sm">

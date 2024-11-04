@@ -1,7 +1,10 @@
+@section('custom_assets')
+    <script src="/js/app/report/customersYearly/index.js"></script>
+    <link rel="stylesheet" href="/css/yearly.css">
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script src="/js/report/customersYearly/index.js"></script>
-<link rel="stylesheet" href="/css/yearly/list.css">
 <div id="custom_style">
 
 </div>

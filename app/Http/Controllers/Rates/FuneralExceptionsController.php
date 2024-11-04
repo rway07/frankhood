@@ -64,7 +64,7 @@ class FuneralExceptionsController extends Controller
         );
 
         return view(
-            'rates/funeral/index',
+            'rates/exceptions/index',
             [
                 'exceptions' => $exceptions
             ]
@@ -84,7 +84,7 @@ class FuneralExceptionsController extends Controller
         $customers = $this->getCustomers($years[0]->year);
 
         return view(
-            'rates/funeral/create',
+            'rates/exceptions/create',
             [
                 'years' => $years,
                 'customers' => $customers
@@ -118,7 +118,7 @@ class FuneralExceptionsController extends Controller
         );
 
         return view(
-            'rates/funeral/create',
+            'rates/exceptions/create',
             [
                 'years' => $years,
                 'customers' => $customers,
@@ -144,7 +144,7 @@ class FuneralExceptionsController extends Controller
             return Redirect::to('rates/exception/create')
                 ->withErrors($customerValidator->getReturnMessage());
         }
-        
+
         $idRate = DB::select(
             'select id
             from rates

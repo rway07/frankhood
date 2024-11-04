@@ -1,7 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<script src="/js/common/util.js" type="text/javascript"></script>
-<link href="/css/util.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row">
@@ -49,11 +47,11 @@
                         <div class="col-md-2">
                                 <button type="button" class="btn btn-sm btn-warning"
                                         onclick="edit('receipts', '{{ $item['number'] }}/{{ $item['year'] }}')">
-                                    <i class="fa fa-btn fa-edit"></i> Modifica
+                                    <i class="fa  fa-edit"></i> Modifica
                                 </button>
                                 <button type='button' class='btn btn-sm btn-danger'
                                         onclick="receiptInfo({{ $item['number'] }}, {{ $item['year'] }})">
-                                    <i class='fa fa-btn fa-info'></i> Info
+                                    <i class='fa  fa-info'></i> Info
                                 </button>
 
                         </div>
@@ -71,11 +69,11 @@
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-sm btn-info"
                                         onclick="edit('customers', {{ $i->id }})">
-                                    <i class="fa fa-btn fa-edit"></i> Modifica
+                                    <i class="fa  fa-edit"></i> Modifica
                                 </button>
                                 <button type='button' class='btn btn-primary btn-sm'
                                         onclick="customerInfo({{ $i->id }})">
-                                    <i class='fa fa-btn fa-info'></i> Info
+                                    <i class='fa  fa-info'></i> Info
                                 </button>
                             </div>
                         </div>

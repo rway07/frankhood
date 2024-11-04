@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<script src="/js/common/util.js"></script>
+<script src="/js/util.js"></script>
 <script src="/js/report/statistics/index.js"></script>
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <div class="d-print-none">

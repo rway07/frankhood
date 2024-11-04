@@ -1,9 +1,11 @@
+@section('custom_assets')
+    @include('include/validate')
+    @include('include.selectize')
+    <script type="module" src="{{ mix('/js/app/receipts/create.js') }}" defer></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<!-- Selectize.js -->
-@include('include.selectize')
-<!-- Custom -->
-<script type="module" src="/js/receipts/create/main.js" defer></script>
 <main class="container-fluid">
     <div class="d-flex bg-body align-items-center p-3 my-3 rounded shadow-sm">
         <h6 class="pb-1 mb-0"> {{ isset($receipts) ? 'MODIFICA RICEVUTA' : 'NUOVA RICEVUTA' }}</h6>

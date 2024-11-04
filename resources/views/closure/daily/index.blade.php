@@ -1,9 +1,11 @@
+@section('custom_assets')
+    <script src="{{ mix('/js/vendor/chart.js') }}"></script>
+    <script src="{{ mix('/js/app/closure/daily/index.js') }}"></script>
+    <link href="{{ mix('/css/tables.css') }}" rel="stylesheet" type="text/css">
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script src="/js/closure/daily/index.js"></script>
-<script src="/js/common/chartjs/Chart.min.js"></script>
-<link href="/css/common/chartjs/Chart.min.css" rel="stylesheet" type="text/css">
-<link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row pb-3 border-bottom align-items-center">

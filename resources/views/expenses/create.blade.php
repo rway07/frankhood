@@ -1,9 +1,12 @@
+@section('custom_assets')
+    @include('include.validate')
+    <script src="{{ mix('/js/app/expenses/create.js') }}"></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script type="text/javascript" src="/js/expenses/create.js"></script>
 <main class="container">
     @include('common.errors')
-
     <form id="create_expense_form"
           action="{{ isset($expense) ? '/expenses/' . $expense->id . '/update' : '/expenses/store' }}" method="POST">
         {{ isset($expense) ? method_field('put') : '' }}

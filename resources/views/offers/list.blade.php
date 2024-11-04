@@ -1,8 +1,11 @@
+@section('custom_assets')
+    @include('include.datatables')
+    <script type="text/javascript" src="{{ mix('/js/app/offers/list.js') }}"></script>
+    <link href="{{ mix('/css/tables.css') }}" rel="stylesheet" type="text/css">
+@endsection
+
 @extends('layouts.app')
 @section('content')
-@include('include.datatables')
-<script type="text/javascript" src="/js/offers/list.js"></script>
-<link href="/css/tables.css" rel="stylesheet" type="text/css">
 <meta name="csrf_token" content="{{ csrf_token() }}" />
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -12,7 +15,7 @@
             </div>
             <div class="col-md-4 d-flex flex-lg-row flex-column justify-content-end gap-1">
                 <button type='button' class='btn btn-warning btn-sm text-nowrap' onclick='window.open("/offers/create", "_self");'>
-                    <i class='fa fa-btn fa-plus'></i> Nuova Offerta
+                    <i class='fa  fa-plus'></i> Nuova Offerta
                 </button>
                 <select id="years" name="years" class="form-control form-control-sm form-select form-select-sm w-auto">
                     <option value="0" selected>Tutti gli anni</option>

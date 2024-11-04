@@ -12,7 +12,8 @@ use Yajra\DataTables\DataTables;
 /**
  *
  */
-class ReceiptsDataController  extends Controller {
+class ReceiptsDataController extends Controller
+{
     /**
      * Dati per la datatable con la lista delle ricevute
      *
@@ -83,10 +84,10 @@ class ReceiptsDataController  extends Controller {
         return DataTables::of($receipts)
             ->editColumn('total', '{{$total}}€')
             ->editColumn('date', '{{ strftime("%d/%m/%Y", strtotime($date)) }}')
-            ->filterColumn('receipt_number', function($query, $keyword) {
+            ->filterColumn('receipt_number', function ($query, $keyword) {
                 $query->whereRaw('(receipts.number || \'/\' || receipts.year) like ?', ["%{$keyword}%"]);
             })
-            ->filterColumn('name', function($query, $keyword) {
+            ->filterColumn('name', function ($query, $keyword) {
                 $query->whereRaw('(customers.first_name || \' \' || customers.last_name) like ?', ["%{$keyword}%"]);
             })
             ->addColumn('Info', function ($entry) {

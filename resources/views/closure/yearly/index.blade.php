@@ -1,7 +1,10 @@
+@section('custom_assets')
+    <script src="{{ mix('/js/app/closure/yearly/index.js') }}"></script>
+    <link href="{{ mix('/css/tables.css') }}" rel="stylesheet" type="text/css">
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script src="/js/closure/yearly/index.js"></script>
-<link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row pb-3 border-bottom">

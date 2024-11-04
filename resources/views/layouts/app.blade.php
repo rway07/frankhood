@@ -4,28 +4,11 @@
 <head>
     <title>{Project Mortanius}</title>
 
-    <!-- jQuery 3.7.1 -->
-    <script src="/js/common/jquery/jquery-3.7.1.min.js"></script>
+    <!-- App base import -->
+    <script src="{{ mix('/js/vendor/base.js') }}"></script>
+    <link href="{{ mix('/css/base.css') }}" rel="stylesheet" type="text/css">
 
-    <!-- Validation -->
-    <script src="/js/common/validation/just-validate.production.min.js"></script>
-    <script src="/js/common/validation/just-validate-plugin-date.production.min.js"></script>
-    <script src="/js/common/validation/v8n.min.js"></script>
-
-    <!-- Bootstrap 5.3 -->
-    <link href="/css/common/bootstrap5/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <script src="/js/common/bootstrap5/bootstrap.bundle.min.js"></script>
-
-    <!-- Font related -->
-    <link href="/css/common/fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- Notyf -->
-    <link href="/css/common/notification/notyf.min.css" rel="stylesheet" type="text/css">
-    <script src="/js/common/notification/notyf.min.js" defer></script>
-
-    <!-- Custom -->
-    <link href="/css/util.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="/js/common/util.js" defer></script>
+    @yield('custom_assets')
 </head>
 <body class="bg-body-tertiary">
     <div class="d-print-none">
@@ -114,7 +97,7 @@
                         </li>
                     </ul>
                 </div>
-                <span class="nav-link text-light">Mortanius v2.1</span>
+                <span class="nav-link text-light">Mortanius v{{ env('APP_VERSION') }}</span>
             </div>
         </nav>
     </div>

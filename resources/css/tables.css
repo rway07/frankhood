@@ -1,0 +1,102 @@
+@media print {
+    @page {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        border: none;
+    }
+
+    .shadow-sm {
+        box-shadow: none !important;
+    }
+
+    .table-hover:hover {
+        --bs-table-hover-bg: transparent; /* light gray */
+
+    }
+
+    .table-dark {
+        --bs-table-color: black !important;
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-warning {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-danger {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-success {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-primary {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-secondary {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    .table-info {
+        --bs-table-bg: transparent !important;
+        --bs-table-border-color: #dee2e6 !important;
+    }
+
+    table, th, tr, td {
+        font-size: 0.75rem;
+        background-color: transparent !important;
+    }
+
+    thead, tfoot {
+        display: table-row-group;
+    }
+
+    .panel {
+        border: 0;
+    }
+
+    .card-header {
+        color: black !important;
+        font-size: xx-large;
+    }
+
+    h5 {
+        font-size: large;
+    }
+
+    h6 {
+        font-size: medium;
+    }
+}
+
+table {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    font-size: small;
+}
+
+.table-column-fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+.table-w-forty {
+    width: 40%;
+}
+
+.table-w-twenty {
+    width: 20%;
+}
+
+.table-w-ten {
+    width: 10%;
+}

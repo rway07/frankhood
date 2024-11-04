@@ -1,6 +1,10 @@
+@section('custom_assets')
+    @include('include.validate')
+    <script type="text/javascript" src="{{ mix('/js/app/offers/create.js') }}"></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script type="text/javascript" src="/js/offers/create.js"></script>
 <main class="container">
     @include('common.errors')
     <form id="create_offer_form" action="{{ isset($offer) ? '/offers/' . $offer->id . '/update' : '/offers/store' }}" method="post">

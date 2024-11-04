@@ -1,11 +1,11 @@
 @extends('layouts.print')
 @section('content')
-    <style type="text/css" media="print">
-        @page {
-            size: auto;   /* auto is the initial value */
-        }
-    </style>
-<div id="container" class="panel">
+<style media="print">
+    @page {
+        size: auto;   /* auto is the initial value */
+    }
+</style>
+<div>
     <div id="title">
         <h2>CONFRATERNITA MADONNA DELLA DIFESA ONLUS</h2>
         <h5>Via Sassari 121 - 07040 Stintino - Codice Fiscale: 92106010900</h5>
@@ -13,26 +13,26 @@
     </div>
     <div id="body">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-md-12">
                 <h4>ATTESTAZIONE DI VERSAMENTO CONTRIBUTIVO</h4>
             </div>
         </div>
         <br>
         <div class="row">
-            <div class="col-sm-5">
-                Numero: <b>{{ $receipts->number . '/' . $receipts->year }}</b>
+            <div class="col-md-5">
+                Numero: <strong>{{ $receipts->number . '/' . $receipts->year }}</strong>
             </div>
-            <div class="col-sm-5">
+            <div class="col-md-5">
                 Data: <b>{{ strftime("%d/%m/%Y", strtotime($receipts->date)) }}</b>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-6">
                 Rilasciato a: <b>{{ $receipts->first_name . ' ' . $receipts->last_name }}</b>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-6">
                 Pagato con: <b>{{ $receipts->description }}</b>
             </div>
         </div>

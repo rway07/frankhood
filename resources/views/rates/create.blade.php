@@ -1,9 +1,12 @@
+@section('custom_assets')
+    @include('include/validate')
+    <script type="text/javascript" src="{{ mix('/js/app/rates/create.js') }}"></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script type="text/javascript" src="/js/rates/create.js"></script>
 <main class="container">
     @include('common.errors')
-
     <form id="create_rate" action="{{ isset($rate) ? '/rates/' . $rate->id .'/update' : '/rates/store' }}" method="post">
        {{ isset($rate) ? method_field('put') : '' }}
         @csrf

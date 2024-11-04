@@ -1,7 +1,10 @@
+@section('custom_assets')
+    <script type='text/javascript' src='{{ mix('/js/app/rates/index.js') }}'></script>
+    <link href='{{ mix('/css/tables.css') }}' rel='stylesheet' type='text/css'>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<link href='/css/tables.css' rel='stylesheet' type='text/css'>
-<script type='text/javascript' src='/js/rates/index.js'></script>
 <main class="container">
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h6 class="pb-1 mb-0"> TARIFFE CORRENTI</h6>
@@ -34,7 +37,7 @@
                         <td class='table-column-fit'>
                             <button type='submit' class='btn btn-info btn-sm'
                                     onclick='edit("rates", {{ $rate->id }})'>
-                                <i class='fa fa-btn fa-edit'></i> Modifica
+                                <i class='fa  fa-edit'></i> Modifica
                             </button>
                         </td>
                     </tr>

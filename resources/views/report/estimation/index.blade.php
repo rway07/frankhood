@@ -1,9 +1,12 @@
+@section('custom_assets')
+    <script src="{{ mix('/js/vendor/validate.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('/js/app/report/estimation/index.js') }}"></script>
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<script type="text/javascript" src="/js/report/estimation/index.js"></script>
 <main class="container">
     @include('common.errors')
-
     <form id="estimation_form" action="/report/customers/estimation/print" method="POST"
           class="form-horizontal" target="_blank">
         @csrf

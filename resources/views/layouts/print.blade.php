@@ -1,9 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>{Project Mortanius}</title>
-
     <style>
         /*!
              * Bootstrap v3.3.6 (http://getbootstrap.com)
@@ -14,15 +12,8 @@
     </style>
 </head>
 <body>
-<!--
-<div class="container-fluid" style="background-color:#2196F3;color:#fff;height:100px;">
-    <h2>CONFRATERNITA MADONNA DELLA DIFESA ONLUS</h2>
-    <h5>Via Sassari 121 - 07040 Stintino - Codice Fiscale: 92106010900</h5>
-</div>
--->
-<div class="container">
-    @yield('content')
-</div>
-
+    <div class="container">
+        @yield('content')
+    </div>
 </body>
 </html>

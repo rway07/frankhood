@@ -1,3 +1,3 @@
-<link href="/css/common/selectize/selectize.bootstrap3.css" rel="stylesheet" />
-<link href="/css/common/selectize/selectize.css" rel="stylesheet" />
-<script src="/js/common/selectize/selectize.js"></script>
+<link href="{{ mix('/css/vendor/selectize.css') }}" rel="stylesheet" />
+<link href="{{ mix('/css/vendor/selectize.bootstrap5.css') }}" rel="stylesheet" />
+<script src="{{ mix('/js/vendor/selectize.js') }}"></script>
