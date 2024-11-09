@@ -21,40 +21,55 @@ Route::group(['middleware' => 'web'], function () {
     Route::any('/customers/data', 'App\Http\Controllers\Customers\CustomersController@data');
     Route::get('/customers/create', 'App\Http\Controllers\Customers\CustomersController@create');
     Route::post('/customers/store', 'App\Http\Controllers\Customers\CustomersController@store');
-    Route::delete('/customers/{customer}/delete', 'App\Http\Controllers\Customers\CustomersController@destroy');
-    Route::get('/customers/{customer}/edit', 'App\Http\Controllers\Customers\CustomersController@edit');
+    Route::delete('/customers/{id}/delete', 'App\Http\Controllers\Customers\CustomersController@destroy');
+    Route::get('/customers/{id}/edit', 'App\Http\Controllers\Customers\CustomersController@edit');
     Route::match(
         [
             'put',
             'patch'
         ],
-        '/customers/{customer}/update',
+        '/customers/{id}/update',
         'App\Http\Controllers\Customers\CustomersController@update'
     );
-    Route::get('/customers/{customer}/summary', 'App\Http\Controllers\Customers\CustomersController@summary');
+    Route::get('/customers/{id}/summary', 'App\Http\Controllers\Customers\CustomersController@summary');
+
     // Receipts routes
     Route::get('/receipts/index', 'App\Http\Controllers\Receipts\ReceiptsController@index');
     Route::get('/receipts/create', 'App\Http\Controllers\Receipts\ReceiptsController@create');
-    Route::get('/receipts/{year}/{type}/data', 'App\Http\Controllers\Receipts\ReceiptsDataController@data');
+    Route::get('/receipts/{year}/{id}/data', 'App\Http\Controllers\Receipts\ReceiptsDataController@data');
     Route::post('/receipts/store', 'App\Http\Controllers\Receipts\ReceiptsController@store');
-    Route::get('/receipts/{number}/{year}/edit', 'App\Http\Controllers\Receipts\ReceiptsController@edit');
-    Route::delete('/receipts/{receipt_number}/{receipt_year}/delete', 'App\Http\Controllers\Receipts\ReceiptsController@destroy');
-    Route::match(['put', 'patch'], '/receipts/{number}/{year}/update', 'App\Http\Controllers\Receipts\ReceiptsController@update');
+    Route::get('/receipts/{receipt_number}/{year}/edit', 'App\Http\Controllers\Receipts\ReceiptsController@edit');
+    Route::delete(
+        '/receipts/{receipt_number}/{year}/delete',
+        'App\Http\Controllers\Receipts\ReceiptsController@destroy'
+    );
+    Route::match(
+        ['put', 'patch'],
+        '/receipts/{receipt_number}/{year}/update',
+        'App\Http\Controllers\Receipts\ReceiptsController@update'
+    );
     Route::post('/receipts/done', 'App\Http\Controllers\Receipts\ReceiptsController@done');
+
     // Rates routes
     Route::get('/rates/index', 'App\Http\Controllers\Rates\RatesController@index');
     Route::get('/rates/create', 'App\Http\Controllers\Rates\RatesController@create');
     Route::get('/rates/{id}/edit', 'App\Http\Controllers\Rates\RatesController@edit');
     Route::match(['put', 'patch'], '/rates/{id}/update', 'App\Http\Controllers\Rates\RatesController@update');
     Route::post('/rates/store', 'App\Http\Controllers\Rates\RatesController@store');
-    Route::delete('/rates/{rate}/delete', 'App\Http\Controllers\Rates\RatesController@destroy');
+    Route::delete('/rates/{id}/delete', 'App\Http\Controllers\Rates\RatesController@destroy');
+
     // Funeral exception routes
     Route::get('/rates/exceptions/index', 'App\Http\Controllers\Rates\FuneralExceptionsController@index');
     Route::get('/rates/exceptions/create', 'App\Http\Controllers\Rates\FuneralExceptionsController@create');
     Route::get('/rates/exceptions/{id}/edit', 'App\Http\Controllers\Rates\FuneralExceptionsController@edit');
-    Route::match(['put', 'patch'], '/rates/exceptions/{id}/update', 'App\Http\Controllers\Rates\FuneralExceptionsController@update');
+    Route::match(
+        ['put', 'patch'],
+        '/rates/exceptions/{id}/update',
+        'App\Http\Controllers\Rates\FuneralExceptionsController@update'
+    );
     Route::post('/rates/exceptions/store', 'App\Http\Controllers\Rates\FuneralExceptionsController@store');
     Route::delete('/rates/exceptions/{id}/delete', 'App\Http\Controllers\Rates\FuneralExceptionsController@destroy');
+
     // Expenses routes
     Route::get('/expenses/index', 'App\Http\Controllers\ExpensesController@index');
     Route::get('/expenses/{year}/data', 'App\Http\Controllers\ExpensesController@data');
@@ -63,6 +78,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('/expenses/store', 'App\Http\Controllers\ExpensesController@store');
     Route::match(['put', 'patch'], '/expenses/{id}/update', 'App\Http\Controllers\ExpensesController@update');
     Route::delete('/expenses/{id}/delete', 'App\Http\Controllers\ExpensesController@destroy');
+
     // Offers routes
     Route::get('/offers/index', 'App\Http\Controllers\OffersController@index');
     Route::get('/offers/{year}/data', 'App\Http\Controllers\OffersController@data');
@@ -98,7 +114,10 @@ Route::group(['middleware' => 'web'], function () {
     Route::post('/report/customers/estimation/print', 'App\Http\Controllers\Report\EstimationController@printReport');
 
     Route::get('/report/alternatives/index', 'App\Http\Controllers\Report\AlternativeReceiptsController@index');
-    Route::get('/report/alternatives/{year}/list', 'App\Http\Controllers\Report\AlternativeReceiptsController@listData');
+    Route::get(
+        '/report/alternatives/{year}/list',
+        'App\Http\Controllers\Report\AlternativeReceiptsController@listData'
+    );
 
     Route::get('/report/customers/duplicates/index', 'App\Http\Controllers\Report\DuplicatesController@index');
 

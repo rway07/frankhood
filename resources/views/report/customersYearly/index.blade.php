@@ -8,8 +8,8 @@
 <div id="custom_style">
 
 </div>
-@include('common.errors')
 <main class="container-fluid">
+    @include('common.errors')
     <div class="my-3 p-3 bg-body rounded shadow-sm d-print-none">
         <div class="row pb-1">
             <div class="col-md-6 align-items-center">

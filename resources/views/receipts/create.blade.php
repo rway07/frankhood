@@ -7,11 +7,11 @@
 @extends('layouts.app')
 @section('content')
 <main class="container-fluid">
+    @include('common.errors')
     <div class="d-flex bg-body align-items-center p-3 my-3 rounded shadow-sm">
         <h6 class="pb-1 mb-0"> {{ isset($receipts) ? 'MODIFICA RICEVUTA' : 'NUOVA RICEVUTA' }}</h6>
     </div>
     <div class="my-3 p-3 bg-body shadow-sm rounded">
-        @include('common.errors')
         <form id="create_receipt_form"
               action="{{ isset($receipts) ? '/receipts/' . $receipts->number . '/' . $receipts->year . '/update' : '/receipts/store' }}"
               method="POST" target="_blank">

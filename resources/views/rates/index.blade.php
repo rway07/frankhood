@@ -6,10 +6,10 @@
 @extends('layouts.app')
 @section('content')
 <main class="container">
+    @include('common.errors')
+    @include('common.status')
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h6 class="pb-1 mb-0"> TARIFFE CORRENTI</h6>
-        @include('common.errors')
-        @include('common.status')
     </div>
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <table class='table table-hover table-sm'>

@@ -35,6 +35,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Route::pattern('id', '[0-9]+');
+        Route::pattern('receipt_number', '[0-9]+');
+        Route::pattern('year', '[0-9]+');
+        Route::pattern('late', '\b[01]\b');
+        Route::pattern('age', '[0-9]+');
+
         $this->configureRateLimiting();
 
         $this->routes(function () {

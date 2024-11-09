@@ -9,6 +9,8 @@
 @include('receipts.util.info')
 <meta name="csrf_token" content="{{ csrf_token() }}" />
 <main class="container-fluid">
+    @include('common.errors')
+    @include('common.status')
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row mb-2 align-items-center">
             <div class="col-md-6">
@@ -33,8 +35,7 @@
             </div>
         </div>
         <div class="row mb-2">
-            @include('common.errors')
-            @include('common.status')
+
         </div>
     </div>
     <div class="my-3 p-3 bg-body rounded shadow-sm">

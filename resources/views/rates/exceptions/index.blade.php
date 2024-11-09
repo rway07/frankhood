@@ -7,10 +7,10 @@
 @section('content')
 <meta name='csrf_token' content='{{ csrf_token() }}' />
 <main class="container">
+    @include('common.errors')
+    @include('common.status')
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h6 class="pb-1 mb-0">LISTA ECCEZIONI</h6>
-        @include('common.errors')
-        @include('common.status')
     </div>
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         @if (count($exceptions) > 0)

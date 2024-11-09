@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('api')->group(function () {
     // Customers API routes
     Route::get(
-        '/customers/{year}/{exclude}/names',
+        '/customers/{year}/{id}/names',
         'App\Http\Controllers\Customers\CustomersServicesController@customersNamesPerYear'
     );
     Route::get('/customers/{id}/recipient', 'App\Http\Controllers\Customers\CustomersServicesController@recipient');
@@ -24,15 +24,15 @@ Route::middleware('api')->group(function () {
         '/customers/{customer}/{year}/{edit}/group',
         'App\Http\Controllers\Customers\CustomersServicesController@getGroup'
     );
-    Route::get('/customers/{customer}/info', 'App\Http\Controllers\Customers\CustomersServicesController@customerInfo');
+    Route::get('/customers/{id}/info', 'App\Http\Controllers\Customers\CustomersServicesController@customerInfo');
 
     // Receipts API routes
     Route::get(
-        '/receipts/{number}/{year}/info',
+        '/receipts/{receipt_number}/{year}/info',
         'App\Http\Controllers\Receipts\ReceiptsServicesController@info'
     );
     Route::get(
-        '/receipts/{id}/{number}/{year}/quota',
+        '/receipts/{id}/{receipt_number}/{year}/quota',
         'App\Http\Controllers\Receipts\ReceiptsServicesController@customerQuota'
     );
     Route::get(
@@ -40,7 +40,7 @@ Route::middleware('api')->group(function () {
         'App\Http\Controllers\Receipts\ReceiptsServicesController@years'
     );
     Route::get(
-        '/receipts/{number}/{year}/print',
+        '/receipts/{receipt_number}/{year}/print',
         'App\Http\Controllers\Receipts\ReceiptsServicesController@printReceipt'
     );
 

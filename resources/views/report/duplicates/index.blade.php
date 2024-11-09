@@ -2,12 +2,12 @@
 @section('content')
 <link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
+    @include('common.errors')
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row pb-3">
             <h5 class="pb-1 mb-0"> LISTA DUPLICATI </h5>
         </div>
         <div class="row pb-3">
-            @include('common.errors')
             @if(count($list) > 0)
                 @foreach($list as $l)
                     <table class="table table-hover table-sm">

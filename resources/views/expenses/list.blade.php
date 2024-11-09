@@ -8,6 +8,8 @@
 @section('content')
 <meta name="csrf_token" content="{{ csrf_token() }}" />
 <main class="container-fluid">
+    @include('common.errors')
+    @include('common.status')
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <div class="row align-items-center">
             <div class="col-md-8">
@@ -24,10 +26,6 @@
                     @endforeach
                 </select>
             </div>
-        </div>
-        <div class="row">
-            @include('common.errors')
-            @include('common.status')
         </div>
     </div>
     <div class="my-3 p-3 bg-body rounded shadow-sm">
