@@ -133,6 +133,69 @@ class ReceiptsController extends Controller
     }
 
     /**
+     * @param $request
+     * @return array
+     * @throws Exception
+     */
+    private function validateStore($request): array
+    {
+        $validatedData = $request->validationData();
+        $guardian = new ReceiptDataValidator();
+
+        // Ottengo anno e quota in base all'ID della tariffa
+        $rateData = DataFetcher::getRateData($validatedData['rates']);
+
+        // Array con gli ID dei componenti del gruppo familiare
+        $groupIds = explode(',', $validatedData['people']);
+
+        if ($guardian->checkCustomersInExistingReceipt($rateData->year, $groupIds)) {
+            throw new Exception(
+                'Uno o più persone del gruppo familire risultano presenti in una ricevuta esistente.
+                    Impossibile continuare.'
+            );
+        }
+
+        // Grandezza gruppo familiare
+        $numPeople = count($groupIds);
+
+        // Determino se sono state usate le quote alternative
+        if ($validatedData['quota_type'] == 0) {
+            $customQuotaEnabled = false;
+        } else {
+            $customQuotaEnabled = true;
+        }
+
+        /**
+         * Controllo integrità
+         * Si controlla se il totale della ricevuta che arriva dal frontend corrisponde alla somma
+         * [numero_persone] * [quota] oppure sommatoria [persona] * [quota custom]
+         */
+        $expectedTotal = 0;
+        if (!$customQuotaEnabled) {
+            $expectedTotal = $numPeople * $rateData->quota;
+        } else {
+            foreach ($groupIds as $id) {
+                $expectedTotal += $validatedData['quotas-' . $id];
+            }
+        }
+
+        if ($validatedData['total'] != $expectedTotal) {
+            throw new Exception(
+                'Errore integrità! Il totale della fattura non corrisponde
+                    con al prodotto [Numero di Persone] * [Quota]'
+            );
+        }
+
+        $validatedData['year'] = $rateData->year;
+        $validatedData['quota'] = $rateData->quota;
+        $validatedData['custom_quotas'] = $customQuotaEnabled;
+        $validatedData['num_people'] = $numPeople;
+        $validatedData['group_ids'] = $groupIds;
+
+        return $validatedData;
+    }
+
+    /**
      * @param ReceiptRequest $request
      * @return JsonResponse
      * @throws Throwable
@@ -140,94 +203,48 @@ class ReceiptsController extends Controller
     public function store(ReceiptRequest $request): JsonResponse
     {
         try {
-            $validatedData = $request->validationData();
-            $guardian = new ReceiptDataValidator();
-
-            // Ottengo anno e quota in base all'ID della tariffa
-            $rateData = DataFetcher::getRateData($validatedData['rates']);
-
-            // Array con gli ID dei componenti del gruppo familiare
-            $ids = explode(',', $validatedData['people']);
-
-            if ($guardian->checkCustomersInExistingReceipt($rateData->year, $ids)) {
-                throw new Exception(
-                    'Uno o più persone del gruppo familire risultano presenti in una ricevuta esistente.
-                    Impossibile continuare.'
-                );
-            }
-
-            // Grandezza gruppo familiare
-            $numPeople = count($ids);
-
-            // Determino se sono state usate le quote alternative
-            if ($validatedData['quota_type'] == 0) {
-                $customQuotas = false;
-            } else {
-                $customQuotas = true;
-            }
-
-            /**
-             * FIXME Move me
-             * Controllo integritò
-             * Si controlla se il totale della ricevuta che arriva dal frontend corrisponde alla somma
-             * [numero_persone] * [quota] oppure sommatoria [persona] * [quota custom]
-             */
-            $totalCheck = 0;
-            if (!$customQuotas) {
-                $totalCheck = $numPeople * $rateData->quota;
-            } else {
-                foreach ($ids as $id) {
-                    $totalCheck += $validatedData['quotas-' . $id];
-                }
-            }
-
-            if ($request['total'] != $totalCheck) {
-                throw new Exception(
-                    'Errore integrità! Il totale della fattura non corrisponde
-                    con al prodotto [Numero di Persone] * [Quota]'
-                );
-            }
+            $validatedData = $this->validateStore($request);
 
             DB::beginTransaction();
             // Ottengo il primo numero di ricevuta disponibile
-            $receiptNumber = DataFetcher::getAvailableReceiptNumber($rateData->year);
+            $receiptNumber = DataFetcher::getAvailableReceiptNumber($validatedData['year']);
 
             // Salvo i dati della ricevuta
             DB::table('receipts')
                 ->insert(
                     [
                         'number' => $receiptNumber,
-                        'year' => $rateData->year,
+                        'year' => $validatedData['year'],
                         'date' => $validatedData['issue-date'],
                         'customers_id' => $validatedData['recipient'],
                         'payment_type_id' => $validatedData['payment_type'],
                         'rates_id' => $validatedData['rates'],
                         'total' => $validatedData['total'],
-                        'custom_quotas' => $customQuotas,
-                        'num_people' => $numPeople
+                        'custom_quotas' => $validatedData['custom_quotas'],
+                        'num_people' => $validatedData['num_people']
                     ]
                 );
 
             // Aggiungo le voci dei singoli soci del gruppo nella tabella [customer_receipts]
-            foreach ($ids as $id) {
-                if ($customQuotas) {
+            foreach ($validatedData['group_ids'] as $customerId) {
+                if ($validatedData['custom_quotas']) {
                     DB::table('customers_receipts')
                         ->insert(
                             [
-                                'customers_id' => $id,
+                                'customers_id' => $customerId,
                                 'number' => $receiptNumber,
-                                'year' => $rateData->year,
-                                'quota' => $validatedData['quotas-' . $id]
+                                'year' => $validatedData['year'],
+                                'quota' => $validatedData['quotas-' . $customerId]
                             ]
                         );
                 } else {
                     DB::table('customers_receipts')
                         ->insert(
                             [
-                                'customers_id' => $id,
+                                'customers_id' => $customerId,
                                 'number' => $receiptNumber,
-                                'year' => $rateData->year,
-                                'quota' => $rateData->quota,
+                                'year' => $validatedData['year'],
+                                'quota' => $validatedData['quota']
                             ]
                         );
                 }
@@ -245,8 +262,8 @@ class ReceiptsController extends Controller
                 'data' => [
                     'success' => true,
                     'number' => $receiptNumber,
-                    'year' => $rateData->year,
-                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $rateData->year . ' emessa'
+                    'year' => $validatedData['year'],
+                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $validatedData['year'] . ' emessa'
                 ]
             ]
         );
@@ -278,8 +295,8 @@ class ReceiptsController extends Controller
                 $customQuotas = true;
             }
 
-            $ids = explode(',', $validatedData['people']);
-            $numPeople = count($ids);
+            $groupIds = explode(',', $validatedData['people']);
+            $numPeople = count($groupIds);
 
             DB::beginTransaction();
             DB::table('receipts')
@@ -312,7 +329,7 @@ class ReceiptsController extends Controller
                 ->delete();
 
             // Create the new receipt-customer association
-            foreach ($ids as $id) {
+            foreach ($groupIds as $id) {
                 $quota = $validatedData['quota'];
                 if ($customQuotas) {
                     $quota = $validatedData['quotas-' . $id];

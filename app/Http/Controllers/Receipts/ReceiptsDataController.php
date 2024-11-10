@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Receipts;
 
@@ -15,41 +16,13 @@ use Yajra\DataTables\DataTables;
 class ReceiptsDataController extends Controller
 {
     /**
-     * Dati per la datatable con la lista delle ricevute
-     *
      * @param $year
      * @param $type
      * @return mixed
      * @throws Exception
      */
-    public function data($year, $type)
+    private function getData($year, $type)
     {
-        $validator = new ReceiptDataValidator();
-
-        if (!$validator->checkYear($year)) {
-            return response()->json(
-                [
-                    'draw' => 0,
-                    'recordsTotal' => 0,
-                    'recordsFiltered' => 0,
-                    'data' => [],
-                    'error' => $validator->getReturnMessage()
-                ]
-            );
-        }
-
-        if (!$validator->checkPaymentMethod($type)) {
-            return response()->json(
-                [
-                    'draw' => 0,
-                    'recordsTotal' => 0,
-                    'recordsFiltered' => 0,
-                    'data' => [],
-                    'error' => $validator->getReturnMessage()
-                ]
-            );
-        }
-
         $receipts = Receipts::join('rates', 'receipts.rates_id', '=', 'rates.id')
             ->join('customers', 'receipts.customers_id', '=', 'customers.id')
             ->join('payment_types', 'payment_types.id', '=', 'receipts.payment_type_id')
@@ -127,5 +100,44 @@ class ReceiptsDataController extends Controller
             })
             ->rawColumns(['Info', 'Stampa', 'Modifica', 'Elimina'])
             ->make(true);
+    }
+
+    /**
+     * Dati per la datatable con la lista delle ricevute
+     *
+     * @param $year
+     * @param $type
+     * @return mixed
+     * @throws Exception
+     */
+    public function data($year, $type)
+    {
+        $validator = new ReceiptDataValidator();
+
+        if (!$validator->checkYear($year)) {
+            return response()->json(
+                [
+                    'draw' => 0,
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => $validator->getReturnMessage()
+                ]
+            );
+        }
+
+        if (!$validator->checkPaymentMethod($type)) {
+            return response()->json(
+                [
+                    'draw' => 0,
+                    'recordsTotal' => 0,
+                    'recordsFiltered' => 0,
+                    'data' => [],
+                    'error' => $validator->getReturnMessage()
+                ]
+            );
+        }
+
+        return $this->getData($year, $type);
     }
 }
