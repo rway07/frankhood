@@ -319,7 +319,7 @@ function saveReceipt(event) {
         dataType: 'json',
         data: receiptsData,
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {
@@ -434,8 +434,8 @@ function loadPerson(query, callback) {
         data: {
             name: query,
         },
-        error(error) {
-            showGuruModal(error);
+        error(response) {
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
             callback();
         },
         success(response) {
@@ -462,7 +462,7 @@ function loadRate() {
         async: false,
         dataType: 'json',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {
@@ -512,8 +512,8 @@ function loadGroup() {
         url: `/api/customers/${idRecipient}/${year}/${status.isEditModeActive()}/group`,
         type: 'GET',
         dataType: 'json',
-        error(error) {
-            showGuruModal(error);
+        error(response) {
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(result) {
             if ('error' in result) {
@@ -583,8 +583,8 @@ function loadEditData() {
         url: `/api/customers/${idRecipient}/recipient`,
         type: 'GET',
         dataType: 'json',
-        error(result) {
-            showGuruModal(result);
+        error(response) {
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(result) {
             if ('error' in result) {
@@ -618,7 +618,7 @@ function getCustomerAlternateQuota(idCustomer, number, year) {
         async: true,
         dataType: 'json',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {
@@ -667,8 +667,8 @@ function checkReceiptForCurrentYear() {
         url: `/api/receipts/years/${idRecipient}/${year}`,
         type: 'GET',
         dataType: 'json',
-        error(error) {
-            showGuruModal(error);
+        error(response) {
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {

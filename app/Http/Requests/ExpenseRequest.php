@@ -41,9 +41,12 @@ class ExpenseRequest extends FormRequest
     public function messages()
     {
         return [
-            'date.required' => 'Inserire la data!',
+            'date.required' => 'Inserire la data',
+            'date.date' => 'Data in formato non valido',
             'description.required' => 'Inserire la descrizione!',
-            'amount.required' => 'Inserire l\'importo!'
+            'description.string' => 'La descrizione deve essere testo',
+            'amount.required' => 'Inserire l\'importo.',
+            'amount.numeric' => 'L\'importo deve essere numerico'
         ];
     }
 }

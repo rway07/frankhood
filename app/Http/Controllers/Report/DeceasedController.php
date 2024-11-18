@@ -50,7 +50,7 @@ class DeceasedController extends Controller
 
         if (!$validator->checkYear($year)) {
             return response()->json(
-                ['erroro' => ['message' => $validator->getReturnMessage()]]
+                ['error' => ['message' => $validator->getReturnMessage()]]
             );
         }
 

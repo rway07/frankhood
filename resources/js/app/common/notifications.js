@@ -98,12 +98,13 @@ export function showModal(message) {
 
 /**
  *
- * @param data
+ * @param statusCode
+ * @param statusText
+ * @param message
  */
-export function showGuruModal(data) {
-    const serverText = `${data.status} - ${data.statusText}`;
-    const message = `${data.responseJSON.message}`;
-    $('#guru_modal_server_error').text(serverText);
-    $('#guru_modal_message_text').text(message);
+export function showGuruModal(statusCode, statusText, message) {
+    $('#guru_status_code').text(statusCode);
+    $('#guru_status_text').text(statusText)
+    $('#guru_message').text(message);
     $('#guru_modal').modal('show');
 }

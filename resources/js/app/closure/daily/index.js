@@ -156,7 +156,7 @@ function loadData(year) {
         url: `/closure/daily/${year}/list`,
         type: 'get',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             // Controllo se la risposta contiene errori

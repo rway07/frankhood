@@ -30,7 +30,7 @@ function loadData(year) {
         url: `/closure/yearly/${year}/list`,
         type: 'get',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {

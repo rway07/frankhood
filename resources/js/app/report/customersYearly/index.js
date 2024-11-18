@@ -87,7 +87,7 @@ function loadData() {
         url: dataUrl,
         type: 'get',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {

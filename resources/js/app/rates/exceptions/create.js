@@ -86,7 +86,7 @@ function loadCustomers(year) {
         url: `/api/rates/exceptions/${year}/customers`,
         type: 'get',
         error(response) {
-            showGuruModal(response);
+            showGuruModal(response.status, response.statusText, response.responseJSON.message);
         },
         success(response) {
             if ('error' in response) {

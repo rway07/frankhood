@@ -16,7 +16,7 @@
         </div>
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <div class="d-flex text-body-secondary pt-2 row">
-                <div id="#date-div" class="col-md-3">
+                <div id="date-div" class="col-md-3">
                     <label for="date" class="col-form-label-sm">Data</label>
                     <input type="date" name="date" id="date" class="form-control form-control-sm"
                            value="{{ isset($offer) ? $offer->date : old('date')}}">
