@@ -8,7 +8,7 @@
  *
  * @param {String} msg
  */
-function showToastSuccess(msg) {
+export function showToastSuccess(msg) {
     const notyf = new Notyf({
         duration: 3000,
         position: {
@@ -26,9 +26,9 @@ function showToastSuccess(msg) {
  *
  * @param {String} msg
  */
-function showToastError(msg) {
+export function showToastError(msg) {
     const notyf = new Notyf({
-        duration: 3000,
+        duration: 6000,
         position: {
             x: 'right',
             y: 'top',
@@ -36,7 +36,7 @@ function showToastError(msg) {
         dismissible: true,
     });
 
-    notyf.warning(msg);
+    notyf.error(msg);
 }
 
 /**

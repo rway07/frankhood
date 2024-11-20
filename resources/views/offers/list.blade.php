@@ -1,3 +1,7 @@
+@section('meta')
+    <meta name="csrf_token" content="{{ csrf_token() }}" />
+@endsection
+
 @section('custom_assets')
     @include('include.datatables')
     <script type="text/javascript" src="{{ mix('/js/app/offers/list.js') }}"></script>
@@ -6,7 +10,6 @@
 
 @extends('layouts.app')
 @section('content')
-<meta name="csrf_token" content="{{ csrf_token() }}" />
 <main class="container-fluid">
     @include('common.errors')
     @include('common.status')

@@ -9,6 +9,7 @@
     <link href="{{ mix('/css/base.css') }}" rel="stylesheet" type="text/css">
 
     @yield('custom_assets')
+    @yield('meta')
 </head>
 <body class="bg-body-tertiary">
     <div class="d-print-none">
@@ -84,6 +85,16 @@
                                 <a class="dropdown-item" href="/report/alternatives/index">Lista Ricevute con Quote Alternative</a>
                                 <a class="dropdown-item" href="/report/customers/estimation/index">Preventivo Nuovi Soci</a>
                                 <a class="dropdown-item" href="/report/customers/duplicates/index">Ricevute Duplicate</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Consegne
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="/deliveries/create">Nuova Consegna</a>
+                                <a class="dropdown-item" href="/deliveries/index">Lista Consegne</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">

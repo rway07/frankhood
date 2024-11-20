@@ -1,3 +1,7 @@
+@section('meta')
+    <meta name="csrf_token" content="{{ csrf_token() }}" />
+@endsection
+
 @section('custom_assets')
     @include('include.datatables')
     <script src="{{ mix('/js/app/receipts/list.js') }}"></script>
@@ -7,7 +11,6 @@
 @extends('layouts.app')
 @section('content')
 @include('receipts.util.info')
-<meta name="csrf_token" content="{{ csrf_token() }}" />
 <main class="container-fluid">
     @include('common.errors')
     @include('common.status')

@@ -1,3 +1,7 @@
+@section('meta')
+    <meta name="csrf_token" content="{{ csrf_token() }}" />
+@endsection
+
 @section('custom_assets')
     <script type='text/javascript' src='{{ mix('/js/app/rates/exceptions/index.js') }}'></script>
     <link href='{{ mix('/css/tables.css') }}' rel='stylesheet' type='text/css'>
@@ -5,7 +9,6 @@
 
 @extends('layouts.app')
 @section('content')
-<meta name='csrf_token' content='{{ csrf_token() }}' />
 <main class="container">
     @include('common.errors')
     @include('common.status')
