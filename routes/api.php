@@ -56,4 +56,7 @@ Route::middleware('api')->group(function () {
 
     // Expenses API routes
     Route::get('/expenses/{id}/print', 'App\Http\Controllers\ExpensesController@printReceipt');
+
+    // Deliveries API routes
+    Route::get('/deliveries/{date}/total', 'App\Http\Controllers\Deliveries\DeliveriesDataController@getTotal');
 });

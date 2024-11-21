@@ -2,6 +2,8 @@
 
 namespace App\Util;
 
+use DateTime;
+
 /**
  *
  */
@@ -25,6 +27,20 @@ class DataValidator
         // La Confraternita esisterà ancora nel 2100??????
         if (($year < 0) || ($year > 2100)) {
             $this->returnMessage =  "Anno nel range sbagliato.";
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $date
+     * @return bool
+     */
+    public function checkDate($date): bool
+    {
+        if (!DateTime::createFromFormat('Y-m-d', $date)) {
+            $this->returnMessage = "Data non valida";
             return false;
         }
 

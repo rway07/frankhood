@@ -88,6 +88,14 @@ Route::group(['middleware' => 'web'], function () {
     Route::match(['put', 'patch'], '/offers/{id}/update', 'App\Http\Controllers\OffersController@update');
     Route::delete('/offers/{id}/delete', 'App\Http\Controllers\OffersController@destroy');
 
+    // Deliveries routes
+    Route::get('/deliveries/index', 'App\Http\Controllers\Deliveries\DeliveriesController@index');
+    Route::get('/deliveries/{year}/data', 'App\Http\Controllers\Deliveries\DeliveriesController@deliveriesList');
+    Route::get('/deliveries/create', 'App\Http\Controllers\Deliveries\DeliveriesController@create');
+    Route::post('/deliveries/store', 'App\Http\Controllers\Deliveries\DeliveriesController@store');
+    Route::delete('/deliveries/delete/{year}/last', 'App\Http\Controllers\Deliveries\DeliveriesController@deleteLast');
+    Route::delete('/deliveries/delete/{year}/all', 'App\Http\Controllers\Deliveries\DeliveriesController@deleteAll');
+
     // Report routes
     Route::get('/report/customers/yearly/index', 'App\Http\Controllers\Report\CustomersYearlyController@index');
     Route::get(

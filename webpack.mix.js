@@ -55,7 +55,9 @@ mix.js('resources/js/app/receipts/create/main.js', 'public/js/app/receipts/creat
     .js('resources/js/app/report/estimation/index.js', 'public/js/app/report/estimation/index.js')
     .js('resources/js/app/report/late/index.js', 'public/js/app/report/late/index.js')
     .js('resources/js/app/report/new/index.js', 'public/js/app/report/new/index.js')
-    .js('resources/js/app/report/revocated/index.js', 'public/js/app/report/revocated/index.js');
+    .js('resources/js/app/report/revocated/index.js', 'public/js/app/report/revocated/index.js')
+    .js('resources/js/app/deliveries/index.js', 'public/js/app/deliveries/index.js')
+    .js('resources/js/app/deliveries/save.js', 'public/js/app/deliveries/save.js');
 
 mix.sass('resources/sass/app.scss', 'public/css/base.css')
     .sass('resources/sass/datatables.scss', 'public/css/vendor/datatables.css')

@@ -108,7 +108,7 @@
                         </li>
                     </ul>
                 </div>
-                <span class="nav-link text-light">Mortanius v{{ env('APP_VERSION') }}</span>
+                <span class="nav-link text-light">{{ env('APP_NAME') }} v{{ env('APP_VERSION') }}</span>
             </div>
         </nav>
     </div>

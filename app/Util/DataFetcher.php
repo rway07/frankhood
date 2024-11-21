@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB as DB;
 /**
  *
  */
-class DataFetcher {
+class DataFetcher
+{
     /**
      * @return array
      */
@@ -49,7 +50,8 @@ class DataFetcher {
      * @return mixed
      * @throws Exception
      */
-    public static function getRateData($idRate) {
+    public static function getRateData($idRate)
+    {
         $rateData = DB::select(
             "select year, quota
                     from rates
@@ -61,5 +63,54 @@ class DataFetcher {
         }
 
         return $rateData[0];
+    }
+
+    /**
+     * @param $date
+     * @return float
+     */
+    public static function getDeliveryCashTotal($date): float
+    {
+        $beginDate = date('Y', strtotime($date)) . '-01-01';
+        $receiptsTotal = DB::select(
+            'select sum(total) as total
+            from receipts
+            where receipts.payment_type_id = 1
+                and date between ? and ?;',
+            [
+                $beginDate,
+                $date
+            ]
+        );
+
+        $deliveriesTotal = DB::select(
+            'select sum(amount) as total
+            from deliveries
+            where date between ? and ?;',
+            [
+                $beginDate,
+                $date
+            ]
+        );
+
+        $receiptsTotal = (count($receiptsTotal) > 0) ? $receiptsTotal[0]->total : 0;
+        $deliveriesTotal = (count($deliveriesTotal) > 0) ? $deliveriesTotal[0]->total : 0;
+
+        return ($receiptsTotal - $deliveriesTotal);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastDeliveryDate(): string
+    {
+        $lastDate = DB::select(
+            'select date
+            from deliveries
+            order by date desc
+            limit 1'
+        );
+
+        return (count($lastDate) > 0) ? $lastDate[0]->date : '';
     }
 }
