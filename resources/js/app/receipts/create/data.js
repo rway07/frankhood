@@ -1,6 +1,6 @@
 /**
  * @file receipts/create/data.js
- * @author kain - rway07@gmail.com
+ * @author kain - rway07 at gmail.com
  */
 
 export const Action = {
@@ -19,63 +19,69 @@ export const QuotaTypes = {
 };
 
 export class UIStatus {
+    #edit;
+    #groupLoading;
+    #quotaTypeChanged;
+    #quotaType;
+    #direction;
+
     constructor() {
-        this.edit = false;
-        this.groupLoading = false;
-        this.quotaTypeChanged = false;
-        this.quotaType = QuotaTypes.Normal;
-        this.direction = QuotaChangeDirection.NormalToAlternative;
+        this.#edit = false;
+        this.#groupLoading = false;
+        this.#quotaTypeChanged = false;
+        this.#quotaType = QuotaTypes.Normal;
+        this.#direction = QuotaChangeDirection.NormalToAlternative;
     }
 
     enableEditMode() {
-        this.edit = true;
+        this.#edit = true;
     }
 
     disableEditMode() {
-        this.edit = false;
+        this.#edit = false;
     }
 
     isEditModeActive() {
-        return this.edit;
+        return this.#edit;
     }
 
     setGroupLoading(groupLoading) {
-        this.groupLoading = groupLoading;
+        this.#groupLoading = groupLoading;
     }
 
     isGroupLoading() {
-        return this.groupLoading;
+        return this.#groupLoading;
     }
 
     setQuotaType(quotaType) {
-        this.quotaType = parseInt(quotaType, 10);
+        this.#quotaType = parseInt(quotaType, 10);
     }
 
     getQuotaType() {
-        return this.quotaType;
+        return this.#quotaType;
     }
 
     isQuotaAlternate() {
-        return this.quotaType === QuotaTypes.Alternative;
+        return this.#quotaType === QuotaTypes.Alternative;
     }
 
     setQuotaTypeChanged(mode) {
-        this.quotaTypeChanged = mode;
+        this.#quotaTypeChanged = mode;
     }
 
     isQuotaTypeChanged() {
-        return this.quotaTypeChanged;
+        return this.#quotaTypeChanged;
     }
 
     setDirectionAlternateToNormal() {
-        this.direction = 1;
+        this.#direction = 1;
     }
 
     setDirectionNormalToAlternate() {
-        this.direction = 0;
+        this.#direction = 0;
     }
 
     getDirection() {
-        return this.direction;
+        return this.#direction;
     }
 }
