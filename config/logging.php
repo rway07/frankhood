@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'single'),
+    'default' => env('LOG_CHANNEL', 'stack'),
 
     /*
     |--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'app'],
             'ignore_exceptions' => false,
         ],
 
@@ -45,6 +45,15 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/debug.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'app' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/app.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'formatter_with' => [
+                'includeStacktraces' => false,
+            ],
         ],
 
         'daily' => [

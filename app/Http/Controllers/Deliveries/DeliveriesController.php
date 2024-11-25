@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DeliveryRequest;
 use App\Util\DataFetcher;
 use App\Util\DataValidator;
+use App\Util\DeliveriesIntegrityUtil;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -111,46 +112,6 @@ class DeliveriesController extends Controller
     }
 
     /**
-     * @param $data
-     * @return void
-     * @throws Exception
-     */
-    private function integrityCheck($data)
-    {
-        // TODO rework exceptions
-        if ($data['amount'] == 0) {
-            throw new Exception('La cifra della consegna non può essere zero.');
-        }
-
-        $lastDate = DataFetcher::getLastDeliveryDate();
-
-        if (strtotime($lastDate) > strtotime($data['date'])) {
-            throw new Exception(
-                'La data della consegna inserita non può essere precedente a l\'ultima salvata '
-            );
-        }
-
-        $total = DataFetcher::getDeliveryCashTotal($data['date']);
-
-        if ($total != $data['total']) {
-            throw new Exception(
-                'Il totale reale non corrisponde con quello ricevuto.'
-            );
-        }
-
-        if ($data['amount'] > $total) {
-            throw new Exception(
-                'La cifra della consegna non può essere maggiore del totale in cassa'
-            );
-        }
-
-        $remaining = $total - $data['amount'];
-        if ($remaining != $data['remaining']) {
-            throw new Exception();
-        }
-    }
-
-    /**
      * @param DeliveryRequest $request
      * @return RedirectResponse
      * @throws Throwable
@@ -160,7 +121,7 @@ class DeliveriesController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $this->integrityCheck($validatedData);
+            DeliveriesIntegrityUtil::integrityCheck($validatedData);
 
             DB::beginTransaction();
             DB::table('deliveries')
@@ -185,11 +146,11 @@ class DeliveriesController extends Controller
 
     /**
      * @param $year
-     * @param $all
+     * @param $eraseAll
      * @return JsonResponse
      * @throws Throwable
      */
-    private function deleteDelivery($year, $all): JsonResponse
+    private function deleteDelivery($year, $eraseAll): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -197,7 +158,7 @@ class DeliveriesController extends Controller
             $beginDate = $year . '-01-01';
             $endDate = $year . '-12-31';
 
-            if ($all) {
+            if ($eraseAll) {
                 $rows = DB::delete(
                     'delete from deliveries
                 where date between ? and ?;',
@@ -231,7 +192,7 @@ class DeliveriesController extends Controller
             );
         }
 
-        if ($all) {
+        if ($eraseAll) {
             $message = 'Eliminate tutte le consegne per l\'anno ' . $year;
         } else {
             $message = 'Eliminata ultima consegna per l\'anno ' . $year;

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Receipts;
 
+use App\Events\ReceiptDeleted;
+use App\Events\ReceiptSaved;
+use App\Events\ReceiptUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ReceiptRequest;
 use App\Models\Customers;
@@ -107,17 +110,6 @@ class ReceiptsController extends Controller
             ->select(['receipts.*', 'customers.first_name', 'customers.last_name'])
             ->get()
             ->first();
-
-        /*$customers = DB::select(
-            "select customers.*
-            from customers
-            join customers_receipts on customers_receipts.customers_id = customers.id
-            where customers_receipts.number = ? and customers_receipts.year = ?;",
-            [
-                $receiptNumber,
-                $receiptYear
-            ]
-        );*/
 
         $rates = Rates::orderBy('year', 'desc')->get();
         $paymentTypes = PaymentTypes::all();
@@ -250,6 +242,8 @@ class ReceiptsController extends Controller
                 }
             }
             DB::commit();
+
+            event(new ReceiptSaved($validatedData['year'], $receiptNumber, $validatedData['issue-date']));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -346,6 +340,8 @@ class ReceiptsController extends Controller
                     );
             }
             DB::commit();
+
+            event(new ReceiptUpdated($receiptYear, $receiptNumber, $validatedData['issue-date']));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -384,6 +380,16 @@ class ReceiptsController extends Controller
                 );
             }
 
+            $receiptData = DB::select(
+                'select date
+                from receipts
+                where year = ? and number = ?;',
+                [
+                    $receiptYear,
+                    $receiptNumber
+                ]
+            );
+
             DB::beginTransaction();
 
             $rows = DB::delete(
@@ -405,8 +411,9 @@ class ReceiptsController extends Controller
                 ]
             );
             Log::debug('Deleting customes_receipts data. Rows affected: ' . $rows);
-
             DB::commit();
+
+            event(new ReceiptDeleted($receiptYear, $receiptNumber, $receiptData[0]->date));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
