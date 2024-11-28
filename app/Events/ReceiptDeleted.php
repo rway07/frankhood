@@ -15,13 +15,21 @@ class ReceiptDeleted extends ReceiptEvent
     use InteractsWithSockets;
     use SerializesModels;
 
+    public bool $invalidate;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($year, $number, $date)
+    public function __construct($receiptData)
     {
-        parent::__construct($year, $number, $date);
+        parent::__construct($receiptData);
+
+        if ($receiptData['paymentType'] == config('custom.cash')) {
+            $this->invalidate = true;
+        } else {
+            $this->invalidate = false;
+        }
     }
 }

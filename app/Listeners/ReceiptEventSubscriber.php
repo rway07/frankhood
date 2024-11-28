@@ -20,7 +20,9 @@ class ReceiptEventSubscriber
     public function handleNewReceipt($event)
     {
         Log::info('Ricevuta ' . $event->number . '/' . $event->year . ' salvata');
-        DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        if ($event->invalidate) {
+            DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        }
     }
 
     /**
@@ -30,7 +32,9 @@ class ReceiptEventSubscriber
     public function handleUpdatedReceipt($event)
     {
         Log::info('Ricevuta ' . $event->number . '/' . $event->year . ' aggiornata');
-        DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        if ($event->invalidate) {
+            DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        }
     }
 
     /**
@@ -40,7 +44,9 @@ class ReceiptEventSubscriber
     public function handleDeletedReceipt($event)
     {
         Log::info('Ricevuta ' . $event->number . '/' . $event->year . ' eliminata');
-        DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        if ($event->invalidate) {
+            DeliveriesIntegrityUtil::invalidateDelivery($event->date);
+        }
     }
 
     /**

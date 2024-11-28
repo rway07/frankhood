@@ -25,10 +25,10 @@ class ReceiptEvent
      *
      * @return void
      */
-    public function __construct($year, $number, $date)
+    public function __construct($receiptData)
     {
-        $this->year = $year;
-        $this->number = $number;
-        $this->date = $date;
+        $this->year = $receiptData['year'];
+        $this->number = $receiptData['number'];
+        $this->date = $receiptData['date'];
     }
 }

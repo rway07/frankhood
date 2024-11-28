@@ -188,6 +188,199 @@ class ReceiptsController extends Controller
     }
 
     /**
+     * @param $validatedData
+     * @return array
+     */
+    private function saveReceipt($validatedData): array
+    {
+        // Ottengo il primo numero di ricevuta disponibile
+        $receiptNumber = DataFetcher::getAvailableReceiptNumber($validatedData['year']);
+
+        DB::table('receipts')
+            ->insert(
+                [
+                    'number' => $receiptNumber,
+                    'year' => $validatedData['year'],
+                    'date' => $validatedData['issue-date'],
+                    'customers_id' => $validatedData['recipient'],
+                    'payment_type_id' => $validatedData['payment_type'],
+                    'rates_id' => $validatedData['rates'],
+                    'total' => $validatedData['total'],
+                    'custom_quotas' => $validatedData['custom_quotas'],
+                    'num_people' => $validatedData['num_people']
+                ]
+            );
+
+        // Aggiungo le voci dei singoli soci del gruppo nella tabella [customer_receipts]
+        foreach ($validatedData['group_ids'] as $customerId) {
+            if ($validatedData['custom_quotas']) {
+                DB::table('customers_receipts')
+                    ->insert(
+                        [
+                            'customers_id' => $customerId,
+                            'number' => $receiptNumber,
+                            'year' => $validatedData['year'],
+                            'quota' => $validatedData['quotas-' . $customerId]
+                        ]
+                    );
+            } else {
+                DB::table('customers_receipts')
+                    ->insert(
+                        [
+                            'customers_id' => $customerId,
+                            'number' => $receiptNumber,
+                            'year' => $validatedData['year'],
+                            'quota' => $validatedData['quota']
+                        ]
+                    );
+            }
+        }
+
+        return [
+            'year' => $validatedData['year'],
+            'number' => $receiptNumber,
+            'date' => $validatedData['issue-date'],
+            'paymentType' => $validatedData['payment_type'],
+            'paymentTypeChanged' => false
+        ];
+    }
+
+    /**
+     * @param $receiptNumber
+     * @param $receiptYear
+     * @param $validatedData
+     * @return array
+     */
+    private function updateReceipt($receiptNumber, $receiptYear, $validatedData): array
+    {
+        $currentPaymentData = DB::select(
+            'select payment_type_id
+            from receipts
+            where year = ? and number = ?;',
+            [
+                $receiptYear,
+                $receiptNumber
+            ]
+        );
+
+        if ($currentPaymentData[0]->payment_type_id != $validatedData['payment_type']) {
+            $paymentTypeChanged = true;
+        } else {
+            $paymentTypeChanged = false;
+        }
+
+        if ($validatedData['quota_type'] == config('custom.normalQuota')) {
+            $customQuotas = false;
+        } else {
+            $customQuotas = true;
+        }
+
+        $groupIds = explode(',', $validatedData['people']);
+        $numPeople = count($groupIds);
+
+        DB::table('receipts')
+            ->where(
+                [
+                    ['number', '=' ,$receiptNumber],
+                    ['year', '=', $receiptYear]
+                ]
+            )
+            ->update(
+                [
+                    'date' => $validatedData['issue-date'],
+                    'customers_id' => $validatedData['recipient'],
+                    'payment_type_id' => $validatedData['payment_type'],
+                    'rates_id' => $validatedData['rates'],
+                    'total' => $validatedData['total'],
+                    'custom_quotas' => $customQuotas,
+                    'num_people' => $numPeople
+                ]
+            );
+
+        // Remove the previous receipts-customers association
+        DB::table('customers_receipts')
+            ->where(
+                [
+                    ['number', '=' ,$receiptNumber],
+                    ['year', '=', $receiptYear]
+                ]
+            )
+            ->delete();
+
+        // Create the new receipt-customer association
+        foreach ($groupIds as $id) {
+            $quota = $validatedData['quota'];
+            if ($customQuotas) {
+                $quota = $validatedData['quotas-' . $id];
+            }
+
+            DB::table('customers_receipts')
+                ->insert(
+                    [
+                        'customers_id' => $id,
+                        'number' => $receiptNumber,
+                        'year' => $receiptYear,
+                        'quota' => $quota,
+                    ]
+                );
+        }
+
+        return [
+            'year' => $receiptYear,
+            'number' => $receiptNumber,
+            'date' => $validatedData['issue-date'],
+            'paymentType' => $validatedData['payment_type'],
+            'paymentTypeChanged' => $paymentTypeChanged
+        ];
+    }
+
+    /**
+     * @param $receiptNumber
+     * @param $receiptYear
+     * @return array
+     */
+    private function deleteReceipt($receiptNumber, $receiptYear): array
+    {
+        $receiptData = DB::select(
+            'select year, number, date, payment_type_id
+                from receipts
+                where year = ? and number = ?;',
+            [
+                $receiptYear,
+                $receiptNumber
+            ]
+        );
+
+        $rows = DB::delete(
+            "delete from receipts
+                    where number = ? and year = ?;",
+            [
+                $receiptNumber,
+                $receiptYear
+            ]
+        );
+        Log::debug('Deleting receipts data. Rows affected: ' . $rows);
+
+        $rows = DB::delete(
+            "delete from customers_receipts
+                    where number = ? and year = ?;",
+            [
+                $receiptNumber,
+                $receiptYear
+            ]
+        );
+        Log::debug('Deleting customes_receipts data. Rows affected: ' . $rows);
+
+        return [
+            'year' => $receiptYear,
+            'number' => $receiptNumber,
+            'date' => $receiptData[0]->date,
+            'paymentType' => $receiptData[0]->payment_type_id,
+            'paymentTypeChanged' => false
+        ];
+    }
+
+    /**
      * @param ReceiptRequest $request
      * @return JsonResponse
      * @throws Throwable
@@ -198,52 +391,10 @@ class ReceiptsController extends Controller
             $validatedData = $this->validateStore($request);
 
             DB::beginTransaction();
-            // Ottengo il primo numero di ricevuta disponibile
-            $receiptNumber = DataFetcher::getAvailableReceiptNumber($validatedData['year']);
-
-            // Salvo i dati della ricevuta
-            DB::table('receipts')
-                ->insert(
-                    [
-                        'number' => $receiptNumber,
-                        'year' => $validatedData['year'],
-                        'date' => $validatedData['issue-date'],
-                        'customers_id' => $validatedData['recipient'],
-                        'payment_type_id' => $validatedData['payment_type'],
-                        'rates_id' => $validatedData['rates'],
-                        'total' => $validatedData['total'],
-                        'custom_quotas' => $validatedData['custom_quotas'],
-                        'num_people' => $validatedData['num_people']
-                    ]
-                );
-
-            // Aggiungo le voci dei singoli soci del gruppo nella tabella [customer_receipts]
-            foreach ($validatedData['group_ids'] as $customerId) {
-                if ($validatedData['custom_quotas']) {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $customerId,
-                                'number' => $receiptNumber,
-                                'year' => $validatedData['year'],
-                                'quota' => $validatedData['quotas-' . $customerId]
-                            ]
-                        );
-                } else {
-                    DB::table('customers_receipts')
-                        ->insert(
-                            [
-                                'customers_id' => $customerId,
-                                'number' => $receiptNumber,
-                                'year' => $validatedData['year'],
-                                'quota' => $validatedData['quota']
-                            ]
-                        );
-                }
-            }
+            $newReceipt = $this->saveReceipt($validatedData);
             DB::commit();
 
-            event(new ReceiptSaved($validatedData['year'], $receiptNumber, $validatedData['issue-date']));
+            event(new ReceiptSaved($newReceipt));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -255,9 +406,9 @@ class ReceiptsController extends Controller
             [
                 'data' => [
                     'success' => true,
-                    'number' => $receiptNumber,
-                    'year' => $validatedData['year'],
-                    'message' => 'Ricevuta ' . $receiptNumber . '/' . $validatedData['year'] . ' emessa'
+                    'number' => $newReceipt['number'],
+                    'year' => $newReceipt['year'],
+                    'message' => 'Ricevuta ' . $newReceipt['number'] . '/' . $newReceipt['year'] . ' emessa'
                 ]
             ]
         );
@@ -283,65 +434,11 @@ class ReceiptsController extends Controller
 
             $validatedData = $request->validationData();
 
-            if ($validatedData['quota_type'] == 0) {
-                $customQuotas = false;
-            } else {
-                $customQuotas = true;
-            }
-
-            $groupIds = explode(',', $validatedData['people']);
-            $numPeople = count($groupIds);
-
             DB::beginTransaction();
-            DB::table('receipts')
-                ->where(
-                    [
-                        ['number', '=' ,$receiptNumber],
-                        ['year', '=', $receiptYear]
-                    ]
-                )
-                ->update(
-                    [
-                        'date' => $validatedData['issue-date'],
-                        'customers_id' => $validatedData['recipient'],
-                        'payment_type_id' => $validatedData['payment_type'],
-                        'rates_id' => $validatedData['rates'],
-                        'total' => $validatedData['total'],
-                        'custom_quotas' => $customQuotas,
-                        'num_people' => $numPeople
-                    ]
-                );
-
-            // Remove the previous receipts-customers association
-            DB::table('customers_receipts')
-                ->where(
-                    [
-                        ['number', '=' ,$receiptNumber],
-                        ['year', '=', $receiptYear]
-                    ]
-                )
-                ->delete();
-
-            // Create the new receipt-customer association
-            foreach ($groupIds as $id) {
-                $quota = $validatedData['quota'];
-                if ($customQuotas) {
-                    $quota = $validatedData['quotas-' . $id];
-                }
-
-                DB::table('customers_receipts')
-                    ->insert(
-                        [
-                            'customers_id' => $id,
-                            'number' => $receiptNumber,
-                            'year' => $receiptYear,
-                            'quota' => $quota,
-                        ]
-                    );
-            }
+            $updatedReceipt = $this->updateReceipt($receiptNumber, $receiptYear, $validatedData);
             DB::commit();
 
-            event(new ReceiptUpdated($receiptYear, $receiptNumber, $validatedData['issue-date']));
+            event(new ReceiptUpdated($updatedReceipt));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(
@@ -380,40 +477,11 @@ class ReceiptsController extends Controller
                 );
             }
 
-            $receiptData = DB::select(
-                'select date
-                from receipts
-                where year = ? and number = ?;',
-                [
-                    $receiptYear,
-                    $receiptNumber
-                ]
-            );
-
             DB::beginTransaction();
-
-            $rows = DB::delete(
-                "delete from receipts
-                    where number = ? and year = ?;",
-                [
-                    $receiptNumber,
-                    $receiptYear
-                ]
-            );
-            Log::debug('Deleting receipts data. Rows affected: ' . $rows);
-
-            $rows = DB::delete(
-                "delete from customers_receipts
-                    where number = ? and year = ?;",
-                [
-                    $receiptNumber,
-                    $receiptYear
-                ]
-            );
-            Log::debug('Deleting customes_receipts data. Rows affected: ' . $rows);
+            $deletedReceipt = $this->deleteReceipt($receiptNumber, $receiptYear);
             DB::commit();
 
-            event(new ReceiptDeleted($receiptYear, $receiptNumber, $receiptData[0]->date));
+            event(new ReceiptDeleted($deletedReceipt));
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(

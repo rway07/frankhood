@@ -17,7 +17,7 @@ class DeliveriesIntegrityUtil
      * @return void
      * @throws Exception
      */
-    public static function integrityCheck($deliveryData)
+    public static function integrityCheck($deliveryData): void
     {
         // TODO rework exceptions
         if ($deliveryData['amount'] == 0) {
@@ -53,12 +53,10 @@ class DeliveriesIntegrityUtil
     }
 
     /**
-     * @param $receiptYear
-     * @param $receiptNumber
      * @param $receiptDate
      * @return void
      */
-    public static function invalidateDelivery($receiptDate)
+    public static function invalidateDelivery($receiptDate): void
     {
         $lastDeliveryData = DB::select(
             'select date
