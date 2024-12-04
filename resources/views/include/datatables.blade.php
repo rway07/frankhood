@@ -1,2 +1,1 @@
-<link href="{{ mix('/css/vendor/datatables.css') }}" rel="stylesheet" type="text/css">
-<script src="{{ mix('/js/vendor/datatables.js') }}"></script>
+@vite(['resources/js/datatables.js', 'resources/sass/datatables.scss'])

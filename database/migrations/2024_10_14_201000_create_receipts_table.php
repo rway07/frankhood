@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('receipts')) return;
+        
         Schema::create('receipts', function (Blueprint $table) {
             $table->integer('number')->default(1);
             $table->integer('year')->default(1);

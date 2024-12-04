@@ -138,15 +138,12 @@
             <td> {{ $offers }} &euro;</td>
             <td> - </td>
         </tr>
-        <!-- <tr class="">
+        <tr class="">
             <td> [K] Spese</td>
             <td> - </td>
             <td> - </td>
             <td> {{ $expenses}} &euro; </td>
         </tr>
-        <tr>
-            <td colspan="4"></td>
-        </tr> -->
         <tr class="">
             <td colspan="2"> <b>TOTALE:</b> </td>
             <td> <b> {{ $customers->amount + $offers }} &euro;</b></td>

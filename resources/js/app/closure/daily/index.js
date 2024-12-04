@@ -3,8 +3,8 @@
  * @author kain rway07@gmail.com
  */
 
-import { YEAR_START, YEAR_END } from '../../common/util';
-import { showModal, showGuruModal } from '../../common/notifications';
+import { YEAR_START, YEAR_END } from '../../common/util.js';
+import { showModal, showGuruModal } from '../../common/notifications.js';
 
 let dates = [];
 let numPeople = [];

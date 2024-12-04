@@ -1,6 +1,6 @@
 @section('custom_assets')
     @include('include.validate')
-    <script type="text/javascript" src="{{ mix('/js/app/deliveries/save.js') }}"></script>
+    @vite(['resources/js/app/deliveries/save.js'])
 @endsection
 
 @extends('layouts.app')

@@ -10,7 +10,7 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-
+/*
 mix.options({
     terser: {
         extractComments: false,
@@ -70,3 +70,4 @@ mix.sass('resources/sass/app.scss', 'public/css/base.css')
 if (mix.inProduction()) {
     mix.version();
 }
+*/

@@ -3,7 +3,7 @@
  * @author kain rway07@gmail.com
  */
 
-import { DeliveryController } from './delivery';
+import { DeliveryController } from './delivery.js';
 
 let controller = null;
 

@@ -2,8 +2,8 @@
  * @file deliveries/delivery.js
  * @author kain rway07@gmail.com
  */
-import { showGuruModal, showModal } from '../common/notifications';
-import { FormManager } from './form';
+import { showGuruModal, showModal } from '../common/notifications.js';
+import { FormManager } from './form.js';
 
 export class DeliveryController {
     #date;

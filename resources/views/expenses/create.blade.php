@@ -1,6 +1,6 @@
 @section('custom_assets')
     @include('include.validate')
-    <script src="{{ mix('/js/app/expenses/create.js') }}"></script>
+    @vite(['resources/js/app/expenses/create.js'])
 @endsection
 
 @extends('layouts.app')

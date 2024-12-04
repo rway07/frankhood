@@ -3,8 +3,8 @@
  * @author kain
  */
 
-import {YEAR_START, YEAR_END} from '../common/util';
-import { checkPageStatus, showGuruModal, showModal, showToastError, showToastSuccess } from '../common/notifications';
+import {YEAR_START, YEAR_END} from '../common/util.js';
+import { checkPageStatus, showGuruModal, showModal, showToastError, showToastSuccess } from '../common/notifications.js';
 
 function enableButtons() {
     document.getElementById('delete-last').removeAttribute('disabled');
@@ -24,21 +24,37 @@ function loadDeliveries(year) {
     const url = `/deliveries/${year}/data`;
 
     fetch(url)
-        .then(response => response.json(),
-            (error) => {
-                console.log(error)
-                return error;
+        .then((response) => {
+            if (!response.ok) {
+                return Promise.reject(response);
+            }
+
+            return response.json();
         })
         .then(response => {
-           document.getElementById('title_year').innerText = year;
-           document.getElementById('totalAmount').innerText = response.totalAmount;
-           document.getElementById('data_container').innerHTML = response.view;
+            if ('error' in response) {
+                showModal(response.error.message);
+                return;
+            }
 
-           if (response.rows === 0) {
-               disableButtons();
-           } else {
-               enableButtons();
-           }
+            if ('data' in response) {
+                document.getElementById('title_year').innerText = year;
+                document.getElementById('totalAmount').innerText = response.data.totalAmount;
+                document.getElementById('data_container').innerHTML = response.data.view;
+
+                if (response.data.rows === 0) {
+                    disableButtons();
+                } else {
+                    enableButtons();
+                }
+            }
+        })
+        .catch(error => {
+            if (error instanceof Response) {
+                error.json().then(data => {
+                    showGuruModal(error.status, error.statusText, data.error.message)
+                });
+            }
         });
 }
 

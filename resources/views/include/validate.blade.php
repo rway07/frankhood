@@ -1,1 +1,1 @@
-<script src="{{ mix('/js/vendor/validate.js') }}"></script>
+@vite(['resources/js/validate.js'])

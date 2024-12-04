@@ -3,7 +3,7 @@
  * @author kain - rway07@gmail.com
  */
 
-import { convertDate } from './util';
+import { convertDate } from './util.js';
 
 /**
  *
@@ -37,7 +37,8 @@ export function receiptInfo (number, year) {
             );
         });
 
-        $('#receipt_details_modal').modal('show');
+        const receiptDetailsModal = new Modal(document.getElementById('receipt_details_modal'));
+        receiptDetailsModal.show();
     });
 }
 
@@ -102,7 +103,8 @@ function writeCustomerInfo(data) {
         $('#priotato_text').text('Si');
     }
 
-    $('#customer_details_modal').modal('show');
+    const customerDetailsModal = new Modal(document.getElementById('customer_details_modal'));
+    customerDetailsModal.show();
 }
 
 /**

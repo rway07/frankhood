@@ -3,10 +3,10 @@
  * @author kain - rway07@gmail.com
  */
 
-import { checkPageStatus } from '../common/notifications';
-import { convertDate} from '../common/util';
-import { customerInfo} from '../common/info';
-import { edit } from '../common/common';
+import { checkPageStatus } from '../common/notifications.js';
+import { convertDate} from '../common/util.js';
+import { customerInfo} from '../common/info.js';
+import { edit } from '../common/common.js';
 
 $(() => {
     /**
@@ -153,7 +153,10 @@ function addButtonEventListeners(table) {
         .on('click', (event) => {
             const data = table.row($(event.currentTarget).parents('tr')).data();
             if (data !== null) {
-                $(event.currentTarget).parents('tr').popover('hide');
+                const pop = Popover.getInstance(event.currentTarget.closest('tr'));
+                if (pop !== null) {
+                    pop.hide();
+                }
                 customerInfo(data.id);
             }
         });
@@ -170,39 +173,49 @@ function addMouseEventListeners(table) {
     const deceasedRowsSelector = $('#customers_table > tbody > tr.table-danger');
 
     // MouseOver per i soci revocati
-    revocatedRowsSelector.on('mouseover', (event) => {
+    revocatedRowsSelector
+        .off('mouseover')
+        .on('mouseover', (event) => {
         const data = table.row(event.currentTarget).data();
         if (data !== null) {
-            $(event.currentTarget).popover({
+            const pop = new Popover(event.currentTarget, {
                 title: 'Data Revoca',
                 content: convertDate(data.revocation_date),
                 placement: 'top',
             });
-            $(event.currentTarget).popover('show');
+            pop.show();
         }
     });
 
     // MouseOut per i soci revocati
-    revocatedRowsSelector.on('mouseout', (event) => {
-        $(event.currentTarget).popover('hide');
+    revocatedRowsSelector
+        .off('mouseout')
+        .on('mouseout', (event) => {
+        const pop = Popover.getInstance(event.currentTarget);
+        pop.hide();
     });
 
     // MouseOver per i soci deceduti
-    deceasedRowsSelector.on('mouseover', (event) => {
+    deceasedRowsSelector
+        .off('mouseover')
+        .on('mouseover', (event) => {
         const data = table.row(event.currentTarget).data();
         if (data !== null) {
-            $(event.currentTarget).popover({
+            const pop = new Popover(event.currentTarget, {
                 title: 'Data Decesso',
                 content: convertDate(data.death_date),
                 placement: 'top',
             });
-            $(event.currentTarget).popover('show');
+            pop.show();
         }
     });
 
     // MouseOut per i soci deceduti
-    deceasedRowsSelector.on('mouseout', (event) => {
-        $(event.currentTarget).popover('hide');
+    deceasedRowsSelector
+        .off('mouseout')
+        .on('mouseout', (event) => {
+        const pop = Popover.getInstance(event.currentTarget);
+        pop.hide();
     });
 }
 

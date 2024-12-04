@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('funerals_cost_exceptions')) return;
+
         Schema::create('funerals_cost_exceptions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('rate_id');

@@ -3,9 +3,9 @@
  * @author kain - rway07@gmail.com
  */
 
-import { showModal, showGuruModal } from '../../common/notifications';
+import { showModal, showGuruModal } from '../../common/notifications.js';
 
-import { Action, QuotaChangeDirection, QuotaTypes, UIStatus } from './data';
+import { Action, QuotaChangeDirection, QuotaTypes, UIStatus } from './data.js';
 import {
     drawAlternativeQuoteContainer,
     drawAlternativeQuoteCustomer,
@@ -13,7 +13,7 @@ import {
     drawPersonOption,
     drawRecipientItem,
     drawSingleAlternateQuota,
-} from './draw';
+} from './draw.js';
 
 const ZERO = 0;
 const ONE = 1;

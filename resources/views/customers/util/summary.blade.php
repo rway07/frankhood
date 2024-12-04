@@ -1,3 +1,8 @@
+@section('custom_assets')
+    @vite(['resources/js/app/customers/summary.js'])
+@endsection
+
+
 @extends('layouts.app')
 @section('content')
 <main class="container-fluid">

@@ -1,6 +1,5 @@
 @section('custom_assets')
-    <script src="{{ mix('/js/app/report/' . $script_prefix . '/index.js') }}"></script>
-    <link href="{{ mix('/css/tables.css') }}" rel="stylesheet" type="text/css">
+    @vite(['resources/js/app/report/' . $script_prefix . '/index.js', 'resources/css/tables.css'])
 @endsection
 
 @extends('layouts.app')

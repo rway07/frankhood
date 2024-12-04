@@ -5,8 +5,7 @@
     <title>{Project Mortanius}</title>
 
     <!-- App base import -->
-    <script src="{{ mix('/js/vendor/base.js') }}"></script>
-    <link href="{{ mix('/css/base.css') }}" rel="stylesheet" type="text/css">
+    @vite(['resources/js/app.js', 'resources/sass/app.scss'])
 
     @yield('custom_assets')
     @yield('meta')
@@ -25,13 +24,13 @@
                             <a class="nav-link active" href="#">Home </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Soci
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="/customers/create">Nuovo Socio</a>
-                                <a class="dropdown-item" href="/customers/index">Lista Soci</a>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="/customers/create">Nuovo Socio</a></li>
+                                <li><a class="dropdown-item" href="/customers/index">Lista Soci</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

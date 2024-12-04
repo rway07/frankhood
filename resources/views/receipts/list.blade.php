@@ -4,8 +4,7 @@
 
 @section('custom_assets')
     @include('include.datatables')
-    <script src="{{ mix('/js/app/receipts/list.js') }}"></script>
-    <link href="{{ mix('/css/tables.css') }}" rel="stylesheet" type="text/css">
+    @vite(['resources/js/app/receipts/list.js', 'resources/css/tables.css'])
 @endsection
 
 @extends('layouts.app')

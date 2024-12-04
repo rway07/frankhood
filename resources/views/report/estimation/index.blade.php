@@ -1,6 +1,5 @@
 @section('custom_assets')
-    <script src="{{ mix('/js/vendor/validate.js') }}"></script>
-    <script type="text/javascript" src="{{ mix('/js/app/report/estimation/index.js') }}"></script>
+    @vite(['resources/js/validate.js', 'resources/js/app/report/estimation/index.js'])
 @endsection
 
 @extends('layouts.app')

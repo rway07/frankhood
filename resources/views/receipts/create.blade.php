@@ -1,7 +1,7 @@
 @section('custom_assets')
     @include('include/validate')
     @include('include.selectize')
-    <script type="module" src="{{ mix('/js/app/receipts/create.js') }}" defer></script>
+    @vite(['resources/js/app/receipts/create/main.js'])
 @endsection
 
 @extends('layouts.app')

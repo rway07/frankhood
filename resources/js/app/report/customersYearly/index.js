@@ -3,7 +3,7 @@
  * @author kain - rway07@gmail.com
  */
 
-import { showModal, showGuruModal } from '../../common/notifications';
+import { showModal, showGuruModal } from '../../common/notifications.js';
 
 const urlConstant = {
     NORMAL: 0,

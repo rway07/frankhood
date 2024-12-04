@@ -2,8 +2,8 @@
  *  @file offers/list.js
  *  @author kain rway07@gmail.com
  */
-import { destroy, edit, print} from '../common/common';
-import { checkPageStatus } from '../common/notifications';
+import { destroy, edit, print} from '../common/common.js';
+import { checkPageStatus } from '../common/notifications.js';
 
 window.destroy = destroy;
 window.edit = edit;

@@ -3,9 +3,9 @@
  * @author kain rway07@gmail.com
  */
 
-import { ajaxDeleteError, ajaxDeleteSuccess, checkPageStatus } from '../common/notifications';
-import { edit } from '../common/common';
-import { receiptInfo } from '../common/info'
+import { ajaxDeleteError, ajaxDeleteSuccess, checkPageStatus } from '../common/notifications.js';
+import { edit } from '../common/common.js';
+import { receiptInfo } from '../common/info.js'
 
 const ID_YEAR_START = 0;
 const ID_YEAR_END = 4;

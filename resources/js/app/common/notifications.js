@@ -92,8 +92,10 @@ export function ajaxDeleteSuccess(response, idRow) {
  * @param message
  */
 export function showModal(message) {
+    const modal = new Modal(document.getElementById('message_modal'));
+
     $('#message_modal_text').text(message);
-    $('#message_modal').modal('show');
+    modal.show();
 }
 
 /**
@@ -103,8 +105,10 @@ export function showModal(message) {
  * @param message
  */
 export function showGuruModal(statusCode, statusText, message) {
+    const guruModal = new Modal(document.getElementById('guru_modal'));
+
     $('#guru_status_code').text(statusCode);
     $('#guru_status_text').text(statusText)
     $('#guru_message').text(message);
-    $('#guru_modal').modal('show');
+    guruModal.show();
 }

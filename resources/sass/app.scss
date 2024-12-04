@@ -4,9 +4,9 @@
 // Notyf
 @use 'notyf/notyf.min';
 
-// Font Awesome
-@use '@fortawesome/fontawesome-free/scss/fontawesome';
-@use '@fortawesome/fontawesome-free/scss/solid';
-
 // Custom
 @use '../css/app.css';
+
+// Font Awesome
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';

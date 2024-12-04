@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('payment_types')) return;
+
         Schema::create('payment_types', function (Blueprint $table) {
             $table->increments('id');
             $table->string('description');

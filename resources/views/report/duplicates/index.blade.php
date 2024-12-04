@@ -1,6 +1,9 @@
+@section('custom_assets')
+    @vite(['resources/css/tables.css'])
+@endsection
+
 @extends('layouts.app')
 @section('content')
-<link href="/css/tables.css" rel="stylesheet" type="text/css">
 <main class="container-fluid">
     @include('common.errors')
     <div class="my-3 p-3 bg-body rounded shadow-sm">

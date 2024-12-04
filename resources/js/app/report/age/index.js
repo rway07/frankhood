@@ -3,7 +3,7 @@
  * @author kain
  */
 
-import { MIN_AGE, MAX_AGE } from '../../common/util';
+import { MIN_AGE, MAX_AGE } from '../../common/util.js';
 
 $(() => {
     $('#age').on('input', (event) => {

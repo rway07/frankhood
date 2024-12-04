@@ -13,6 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('rates')) return;
+
         Schema::create('rates', function (Blueprint $table) {
             $table->increments('id');
             $table->string('year');

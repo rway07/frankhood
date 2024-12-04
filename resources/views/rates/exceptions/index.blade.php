@@ -3,8 +3,7 @@
 @endsection
 
 @section('custom_assets')
-    <script type='text/javascript' src='{{ mix('/js/app/rates/exceptions/index.js') }}'></script>
-    <link href='{{ mix('/css/tables.css') }}' rel='stylesheet' type='text/css'>
+    @vite(['resources/js/app/rates/exceptions/index.js', 'resources/css/tables.css'])
 @endsection
 
 @extends('layouts.app')

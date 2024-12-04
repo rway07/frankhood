@@ -3,7 +3,7 @@
  * @author kain rway07@gmail.com
  */
 
-import { MIN_YEAR_LEN, MAX_YEAR_LEN, YEAR_START, YEAR_END, MIN_QUOTA, MIN_FUNERAL_COST } from '../common/util';
+import { MIN_YEAR_LEN, MAX_YEAR_LEN, YEAR_START, YEAR_END, MIN_QUOTA, MIN_FUNERAL_COST } from '../common/util.js';
 
 $(() => {
     const selector = document.querySelector('#rates-button');
