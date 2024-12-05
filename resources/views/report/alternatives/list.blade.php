@@ -22,7 +22,7 @@
                 <td>{{ $count }}</td>
                 <td>{{ $d->number }}</td>
                 <td>{{ $d->first_name . ' ' . $d->last_name }}</td>
-                <td>{{ strftime("%d/%m/%Y", strtotime($d->date)) }}</td>
+                <td>{{ date("d/m/Y", strtotime($d->date)) }}</td>
                 <td>{{ $d->num_people }}</td>
                 <td>{{ $d->total - $d->quota }} &euro; </td>
                 <td>{{ $d->total }} &euro; </td>

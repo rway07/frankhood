@@ -23,7 +23,7 @@
                 Numero: <b>{{ $expense->id }}</b>
             </div>
             <div class="col-sm-5">
-                Data: <b>{{ strftime("%d/%m/%Y", strtotime($expense->date)) }}</b>
+                Data: <b>{{ date("d/m/Y", strtotime($expense->date)) }}</b>
             </div>
         </div>
         <br>

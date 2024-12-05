@@ -23,7 +23,7 @@
                 Numero: <b>{{ $offer->id }}</b>
             </div>
             <div class="col-sm-5">
-                Data: <b>{{ strftime("%d/%m/%Y", strtotime($offer->date)) }}</b>
+                Data: <b>{{ date("d/m/Y", strtotime($offer->date)) }}</b>
             </div>
         </div>
         <br>

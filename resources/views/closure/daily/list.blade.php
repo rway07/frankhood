@@ -12,7 +12,7 @@
         <tbody>
         @foreach($data as $d)
             <tr>
-                <td class="date table-w-forty">{{ strftime("%d/%m/%Y", strtotime($d->date))  }}</td>
+                <td class="date table-w-forty">{{ date("d/m/Y", strtotime($d->date))  }}</td>
                 <td class="table-w-twenty text-end"></td>
                 <td class="num_total table-w-twenty text-end">{{ $d->num_total }}</td>
                 <td class="total table-w-twenty text-end">{{ $d->total }} &euro;</td>
@@ -70,7 +70,7 @@
                     <tbody>
                     @foreach($offersData as $d)
                         <tr>
-                            <td colspan="3">{{ strftime("%d/%m/%Y", strtotime($d->date)) }}</td>
+                            <td colspan="3">{{ date("d/m/Y", strtotime($d->date)) }}</td>
                             <td class="table-w-twenty text-end"> {{ $d->total }} &euro;</td>
                         </tr>
                     @endforeach
@@ -103,7 +103,7 @@
                     <tbody>
                     @foreach($expensesData as $d)
                         <tr>
-                            <td colspan="3">{{ strftime("%d/%m/%Y", strtotime($d->date)) }}</td>
+                            <td colspan="3">{{ date("d/m/Y", strtotime($d->date)) }}</td>
                             <td class="table-w-twenty text-end"> {{ $d->total }} &euro;</td>
                         </tr>
                     @endforeach

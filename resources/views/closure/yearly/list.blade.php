@@ -147,7 +147,7 @@
         <tr class="">
             <td colspan="2"> <b>TOTALE:</b> </td>
             <td> <b> {{ $customers->amount + $offers }} &euro;</b></td>
-            <td> <b> {{ $totalFuneral }} &euro; </b></td>
+            <td> <b> {{ $totalFuneral + $expenses }} &euro; </b></td>
         </tr>
     </tbody>
 </table>

@@ -44,7 +44,7 @@
                             <h6>{{ $item['number'] }}</h6>
                         </div>
                         <div class="col-md-2">
-                            <h6>{{ strftime("%d/%m/%Y", strtotime($item['date'])) }}</h6>
+                            <h6>{{ date("d/m/Y", strtotime($item['date'])) }}</h6>
                         </div>
                         <div class="col-md-2">
                             <h6>{{ $item['total'] }} &euro;</h6>

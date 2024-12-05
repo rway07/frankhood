@@ -16,7 +16,7 @@
             </div>
             @if($lastDate != '')
                 <div class="row pb-1">
-                    <h6> Data ultima consegna: {{ strftime("%d/%m/%Y", strtotime($lastDate)) }}</h6>
+                    <h6> Data ultima consegna: {{ date("d/m/Y", strtotime($lastDate)) }}</h6>
                 </div>
             @endif
         </div>

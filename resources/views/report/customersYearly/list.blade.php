@@ -39,7 +39,7 @@
                 {{ $n['main']->alias }}
             </td>
             <td class="upper_element">
-                {{ strftime("%d/%m/%Y", strtotime($n['main']->birth_date)) }}
+                {{ date("d/m/Y", strtotime($n['main']->birth_date)) }}
             </td>
             <td class="upper_element space">
             </td>
@@ -76,7 +76,7 @@
                                         ({{ $g->alias }})
                                     </td>
                                     <td>
-                                        {{ strftime("%d/%m/%Y", strtotime($g->birth_date)) }}
+                                        {{ date("d/m/Y", strtotime($g->birth_date)) }}
                                     </td>
                                 </tr>
                             @else
@@ -89,7 +89,7 @@
                                         ({{ $g->alias }})
                                     </td>
                                     <td>
-                                        {{ strftime("%d/%m/%Y", strtotime($g->birth_date)) }}
+                                        {{ date("d/m/Y", strtotime($g->birth_date)) }}
                                     </td>
                                 </tr>
                             @endif

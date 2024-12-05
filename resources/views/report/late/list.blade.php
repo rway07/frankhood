@@ -18,7 +18,7 @@
         <tr>
             <td>{{ $count }}</td>
             <td>{{ $n->last_name . ' ' . $n->first_name . ' (' . $n->alias . ')' }}</td>
-            <td>{{ strftime("%d/%m/%Y", strtotime($n->birth_date)) }}</td>
+            <td>{{ date("d/m/Y", strtotime($n->birth_date)) }}</td>
             <td>
                 @if($n->phone != "")
                     {{$n->phone}} -

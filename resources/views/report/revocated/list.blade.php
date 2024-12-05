@@ -13,7 +13,7 @@
         <tr>
             <td>{{ $count }}</td>
             <td>{{ $n->first_name . ' ' . $n->last_name }}</td>
-            <td>{{ strftime("%d/%m/%Y", strtotime($n->birth_date)) }}</td>
+            <td>{{ date("d/m/Y", strtotime($n->birth_date)) }}</td>
             <td>{{ $n->id }}</td>
         </tr>
         <?php $count++; ?>

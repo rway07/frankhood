@@ -56,7 +56,7 @@ class ReceiptsDataController extends Controller
          */
         return DataTables::of($receipts)
             ->editColumn('total', '{{$total}}€')
-            ->editColumn('date', '{{ strftime("%d/%m/%Y", strtotime($date)) }}')
+            ->editColumn('date', '{{ date("d/m/Y", strtotime($date)) }}')
             ->filterColumn('receipt_number', function ($query, $keyword) {
                 $query->whereRaw('(receipts.number || \'/\' || receipts.year) like ?', ["%{$keyword}%"]);
             })

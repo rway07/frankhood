@@ -23,7 +23,7 @@
                 Numero: <strong>{{ $receipts->number . '/' . $receipts->year }}</strong>
             </div>
             <div class="col-md-5">
-                Data: <b>{{ strftime("%d/%m/%Y", strtotime($receipts->date)) }}</b>
+                Data: <b>{{ date("d/m/Y", strtotime($receipts->date)) }}</b>
             </div>
         </div>
         <div class="row">
@@ -47,7 +47,7 @@
                 @foreach($data as $d)
                     <tr>
                         <td> {{ $d->first_name . ' '. $d->last_name }}</td>
-                        <td> {{ strftime("%d/%m/%Y", strtotime($d->birth_date)) }} </td>
+                        <td> {{ date("d/m/Y", strtotime($d->birth_date)) }} </td>
                         <td> {{ number_format($d->quota, 2, ',', '') }} &#128;</td>
                     </tr>
                 @endforeach

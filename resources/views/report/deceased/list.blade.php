@@ -18,8 +18,8 @@
         <tr>
             <td>{{ $count }}</td>
             <td>{{ $n->first_name . ' ' . $n->last_name }}</td>
-            <td>{{ strftime("%d/%m/%Y", strtotime($n->birth_date)) }}</td>
-            <td>{{ strftime("%d/%m/%Y", strtotime($n->death_date))}}</td>
+            <td>{{ date("d/m/Y", strtotime($n->birth_date)) }}</td>
+            <td>{{ date("d/m/Y", strtotime($n->death_date))}}</td>
             <td>{{ $n->id }}</td>
             <td>{{ $n->enrollment_year }}</td>
             <td>

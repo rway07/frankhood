@@ -76,7 +76,7 @@ class OffersController extends Controller
         }
 
         return DataTables::of($offers)
-            ->editColumn('date', '{{ strftime(\'%d/%m/%Y\', strtotime($date)) }}')
+            ->editColumn('date', '{{ date(\'d/m/Y\', strtotime($date)) }}')
             ->editColumn('amount', '{{ $amount }} €')
             ->addColumn('Stampa', function ($entry) {
                 return view('common.print', ['subject' => 'offers', 'idSubject' => $entry->id]);

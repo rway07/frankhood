@@ -11,7 +11,7 @@
         <tbody>
             @foreach($deliveries as $delivery)
                 <tr>
-                    <td>{{ strftime("%d/%m/%Y", strtotime($delivery->date)) }}</td>
+                    <td>{{ date("d/m/Y", strtotime($delivery->date)) }}</td>
                     <td>&euro; {{ $delivery->amount }}</td>
                     <td>&euro; {{ $delivery->total }}</td>
                     <td>&euro; {{ $delivery->remaining }}</td>

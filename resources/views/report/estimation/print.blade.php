@@ -39,7 +39,7 @@
             <tbody>
                 <tr>
                     <td> {{ $name }}</td>
-                    <td> {{ strftime("%d/%m/%Y", strtotime($birth_date)) }} </td>
+                    <td> {{ date("d/m/Y", strtotime($birth_date)) }} </td>
                     <td> {{ number_format($total, 2, ',', '') }} &#128;</td>
                 </tr>
             </tbody>
