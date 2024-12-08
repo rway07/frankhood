@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="">
 <head>
-    <title>{Project Mortanius}</title>
+    <title>{Project Frankhood}</title>
 
     <!-- App base import -->
     @vite(['resources/js/app.js', 'resources/sass/app.scss'])
