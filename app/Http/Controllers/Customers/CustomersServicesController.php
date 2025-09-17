@@ -296,23 +296,19 @@ class CustomersServicesController extends Controller
                     // Aggiungo il socio senza ricevuta per l'anno corrente
                     $previousYear = $year - 1;
                     // La condizione è che il socio abbia una ricevuta per l'anno precedente o prima ancora
-                    if ($data[0]->year > $previousYear) {
-                        return response()->json(
-                            ['error' => ['message' => 'Il socio ha una ricevuta per l\'anno successivo']]
-                        );
-                    }
+                    if ($data[0]->year <= $previousYear) {
+                        $final[] = [
+                            'id' => $c->id,
+                            'first_name' => $c->first_name,
+                            'last_name' => $c->last_name,
+                            'late' => false
+                        ];
 
-                    $final[] = [
-                        'id' => $c->id,
-                        'first_name' => $c->first_name,
-                        'last_name' => $c->last_name,
-                        'late' => false
-                    ];
-
-                    // Nel caso di ricevuta più vecchia dell'anno precedente a quello corrente,
-                    // si ha un socio moroso
-                    if ($data[0]->year < $previousYear) {
-                        $final[$index]['late'] = true;
+                        // Nel caso di ricevuta più vecchia dell'anno precedente a quello corrente,
+                        // si ha un socio moroso
+                        if ($data[0]->year < $previousYear) {
+                            $final[$index]['late'] = true;
+                        }
                     }
                 }
             }
