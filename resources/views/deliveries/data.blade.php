@@ -3,8 +3,8 @@
         <thead class="table-dark">
             <tr>
                 <td>Data</td>
+                <td>Cifra iniziale</td>
                 <td>Cifra consegnata</td>
-                <td>Totale in cassa</td>
                 <td>Rimanente</td>
             </tr>
         </thead>
@@ -12,8 +12,8 @@
             @foreach($deliveries as $delivery)
                 <tr>
                     <td>{{ date("d/m/Y", strtotime($delivery->date)) }}</td>
-                    <td>&euro; {{ $delivery->amount }}</td>
                     <td>&euro; {{ $delivery->total }}</td>
+                    <td>&euro; {{ $delivery->amount }}</td>
                     <td>&euro; {{ $delivery->remaining }}</td>
                 </tr>
             @endforeach
