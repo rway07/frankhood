@@ -29,9 +29,13 @@
                     @endforeach
                 </select>
                 <select id="years" name="years" class="form-control form-control-sm form-select form-select-sm w-auto">
-                    <option value="0" selected>Tutti gli anni</option>
+                    <option value="0">Tutti gli anni</option>
                     @foreach($years as $y)
-                        <option value="{{ $y->year }}">{{ $y->year }}</option>
+                        @if($y->year == $currentYear->year)
+                            <option value="{{ $y->year }}" selected>{{ $y->year }}</option>
+                        @else
+                            <option value="{{ $y->year }}">{{ $y->year }}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>

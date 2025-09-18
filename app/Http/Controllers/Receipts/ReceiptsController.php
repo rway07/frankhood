@@ -39,12 +39,14 @@ class ReceiptsController extends Controller
     public function index(): View
     {
         $years = DataFetcher::getYears();
+        $currentYear = $years[0];
         $paymentTypes = PaymentTypes::all();
 
         return view(
             'receipts/list',
             [
                 'years' => $years,
+                'currentYear' => $currentYear,
                 'types' => $paymentTypes
             ]
         );

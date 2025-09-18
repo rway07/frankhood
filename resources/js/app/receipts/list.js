@@ -12,11 +12,14 @@ const ID_YEAR_END = 4;
 const ID_NUMBER_START = 5;
 
 $(() => {
+    const yearsSelector = $('#years');
+    const currentYear = yearsSelector.val();
+
     const table = new DataTable('#receipts_table', {
         processing: true,
         serverSide: true,
         pageLength: 100,
-        ajax: '/receipts/0/0/data',
+        ajax: `/receipts/${currentYear}/0/data`,
         columns: [
             { data: 'receipt_number', name: 'receipt_number' },
             { data: 'date', name: 'receipts.date' },
@@ -80,7 +83,7 @@ $(() => {
         ],
     });
 
-    $('#years').on('change', () => {
+    yearsSelector.on('change', () => {
         const year = $('#years').val();
         const type = $('#payment_types').val();
         const url = `/receipts/${year}/${type}/data`;
