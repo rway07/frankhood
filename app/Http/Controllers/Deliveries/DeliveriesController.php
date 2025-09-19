@@ -57,29 +57,9 @@ class DeliveriesController extends Controller
             );
         }
 
-        $beginDate = $year . '-01-01';
-        $endDate = $year . '-12-31';
-
         try {
-            $deliveries = DB::select(
-                'select *
-            from deliveries
-            where date between ? and ?',
-                [
-                    $beginDate,
-                    $endDate
-                ]
-            );
-
-            $totalAmount = DB::select(
-                'select sum(amount) as total_amount
-            from deliveries
-            where date between ? and ?;',
-                [
-                    $beginDate,
-                    $endDate
-                ]
-            );
+            $deliveries = DataFetcher::getDeliveriesData($year);
+            $totalAmount = DataFetcher::getDeliveriesTotalAmount($year);
         } catch (Exception $e) {
             return response()->json(
                 [
@@ -101,7 +81,7 @@ class DeliveriesController extends Controller
             [
                 'data' => [
                     'rows' => count($deliveries),
-                    'totalAmount' => ($totalAmount[0]->total_amount != null) ? $totalAmount[0]->total_amount : 0,
+                    'totalAmount' => $totalAmount,
                     'view' => $view
                 ]
             ]

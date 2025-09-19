@@ -71,6 +71,7 @@ class DataFetcher
      */
     public static function getDeliveryCashTotal($date): float
     {
+        // TODO Aggiungere offerte e spese
         $beginDate = date('Y', strtotime($date)) . '-01-01';
         $receiptsTotal = DB::select(
             'select sum(total) as total
@@ -112,5 +113,47 @@ class DataFetcher
         );
 
         return (count($lastDate) > 0) ? $lastDate[0]->date : '';
+    }
+
+    /**
+     * @param $year
+     * @return array
+     */
+    public static function getDeliveriesData($year): array
+    {
+        $beginDate = $year . '-01-01';
+        $endDate = $year . '-12-31';
+
+        return DB::select(
+            'select *
+            from deliveries
+            where date between ? and ?',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+    }
+
+    /**
+     * @param $year
+     * @return int
+     */
+    public static function getDeliveriesTotalAmount($year): int
+    {
+        $beginDate = $year . '-01-01';
+        $endDate = $year . '-12-31';
+
+        $totalAmount = DB::select(
+            'select sum(amount) as total_amount
+            from deliveries
+            where date between ? and ?;',
+            [
+                $beginDate,
+                $endDate
+            ]
+        );
+
+        return ($totalAmount[0]->total_amount != null) ? $totalAmount[0]->total_amount : 0;
     }
 }

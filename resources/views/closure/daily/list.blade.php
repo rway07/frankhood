@@ -134,7 +134,15 @@
         </div>
     </div>
 </div>
-<div id="graph_div" class="d-print-none">
+<div id="deliveries_div">
+    <div class="row pt-3 pb-3 border-bottom">
+        <div class="col-md">
+            <h5> Consegne: </h5>
+            @include('deliveries.closure')
+        </div>
+    </div>
+</div>
+<div id="graph_div" class="d-print-none pt-3">
     <canvas id="test">
     </canvas>
 </div>

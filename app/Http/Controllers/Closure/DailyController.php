@@ -21,10 +21,10 @@ class DailyController extends Controller
     /**
      *  Resituisce la vista iniziale nel quale sono disponibili gli anni in cui è possibile effetturare
      *  la chiusura
-     * 
+     *
      * @return View
      */
-    public function index() : View
+    public function index(): View
     {
         // Ottengo gli anni in cui sono state effettuate delle ricevute
         $years = DataFetcher::getYears();
@@ -142,6 +142,9 @@ class DailyController extends Controller
         // Totale finale [ricevute] + [offerte] + [spese]
         $summary = $final[0]->total + $offersFinal[0]->total - $expensesFinal[0]->total;
 
+        $deliveries = DataFetcher::getDeliveriesData($year);
+        $deliveriesTotal = DataFetcher::getDeliveriesTotalAmount($year);
+
         $view = view(
             'closure.daily.list',
             [
@@ -152,7 +155,9 @@ class DailyController extends Controller
                 'offersFinal' => $offersFinal[0],
                 'expensesData' => $expensesData,
                 'expensesFinal' => $expensesFinal[0],
-                'summary' => $summary
+                'summary' => $summary,
+                'deliveries' => $deliveries,
+                'deliveriesTotal' => $deliveriesTotal,
             ]
         )->render();
 

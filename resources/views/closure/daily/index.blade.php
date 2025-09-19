@@ -17,6 +17,9 @@
                 <button id="show_extra" class="btn btn-success btn-sm text-nowrap">
                     <span id="show_extra_text">Mostra sezione extra nella stampa</span>
                 </button>
+                <button id="show_deliveries" class="btn btn-success btn-sm text-nowrap">
+                    <span id="show_deliveries_text">Mostra consegne nella stampa</span>
+                </button>
                 <select id="years" name="years" class="form-control form-control-sm form-select form-select-sm w-auto">
                     @foreach($years as $y)
                         <option value="{{ $y->year }}">{{ $y->year }}</option>

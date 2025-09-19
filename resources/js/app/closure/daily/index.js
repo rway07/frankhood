@@ -25,41 +25,48 @@ $(() => {
         showExtra();
     });
 
+    $('#show_deliveries').on('click', () => {
+        showDeliveries();
+    })
+
     loadData(years.val());
 });
+
+function showSection(section, message) {
+    const div = $(`#${  section  }_div`);
+    const button = $(`#show_${  section  }`);
+    const text = $(`#show_${  section  }_text`);
+
+    if (div.hasClass('d-print-none')) {
+        div.removeClass('d-print-none');
+        button.removeClass('btn-danger').addClass('btn-success');
+        text.text(`Mostra ${message} nella stampa`);
+    } else {
+        div.addClass('d-print-none');
+        button.removeClass('btn-success').addClass('btn-danger');
+        text.text(`Nascondi ${message} nella stampa`);
+    }
+}
+
+/**
+ *
+ */
+function showDeliveries() {
+    showSection('deliveries', 'consegne');
+}
 
 /**
  * Abilita / Disabilita la sezione extra nella stampa
  */
 function showExtra() {
-    const extraDiv = $('#extra_div');
-
-    if (extraDiv.hasClass('d-print-none')) {
-        extraDiv.removeClass('d-print-none');
-        $('#show_extra').removeClass('btn-danger').addClass('btn-success');
-        $('#show_extra_text').text('Mostra sezione extra nella stampa');
-    } else {
-        extraDiv.addClass('d-print-none');
-        $('#show_extra').removeClass('btn-success').addClass('btn-danger');
-        $('#show_extra_text').text('Nascondi sezione extra nella stampa');
-    }
+    showSection('extra', 'sezione extra');
 }
 
 /**
  * Abilita / Disabilita la visualizzazione del grafico nella stampa
  */
 function showGraph() {
-    const div = $('#graph_div');
-
-    if (div.hasClass('d-print-none')) {
-        div.removeClass('d-print-none');
-        $('#show_graph').removeClass('btn-danger').addClass('btn-success');
-        $('#show_graph_text').text('Mostra grafico nella stampa');
-    } else {
-        div.addClass('d-print-none');
-        $('#show_graph').removeClass('btn-success').addClass('btn-danger');
-        $('#show_graph_text').text('Nascondi grafico nella stampa');
-    }
+    showSection('graph', 'grafico');
 }
 
 /**
