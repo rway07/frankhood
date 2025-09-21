@@ -129,9 +129,18 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('/report/customers/duplicates/index', 'App\Http\Controllers\Report\DuplicatesController@index');
 
-    Route::get('/report/statistics/index', 'App\Http\Controllers\StatisticsController@index');
-    Route::get('/report/statistics/oldest', 'App\Http\Controllers\StatisticsController@listOldestCustomers');
-    Route::get('/report/statistics/deceasedovertime/{begin}/{end}', 'App\Http\Controllers\StatisticsController@listDeceasedOverTime');
+    Route::get('/statistics/payments/index', 'App\Http\Controllers\Statistics\PaymentsController@index');
+    Route::get('/statistics/payments/data', 'App\Http\Controllers\Statistics\PaymentsController@data');
+    Route::get('/statistics/oldest/index', 'App\Http\Controllers\Statistics\OldestController@index');
+    Route::get('/statistics/oldest/data', 'App\Http\Controllers\Statistics\OldestController@data');
+    Route::get(
+        '/statistics/peoplenumber/index',
+        'App\Http\Controllers\Statistics\PeopleNumberOverTimeController@index'
+    );
+    Route::get(
+        '/statistics/peoplenumber/data',
+        'App\Http\Controllers\Statistics\PeopleNumberOverTimeController@data'
+    );
 
     // Closures routes
     Route::get('/closure/daily/index', 'App\Http\Controllers\Closure\DailyController@index');

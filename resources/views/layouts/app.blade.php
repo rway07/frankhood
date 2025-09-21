@@ -105,6 +105,16 @@
                                 <a class="dropdown-item" href="/closure/yearly/index">Chiusure Annuali</a>
                             </div>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Statistiche
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="/statistics/peoplenumber/index">Numero soci</a>
+                                <a class="dropdown-item" href="/statistics/payments/index">Pagamenti</a>
+                                <a class="dropdown-item" href="/statistics/oldest/index">Soci più anziani</a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
                 <span class="nav-link text-light">{{ env('APP_NAME') }} v{{ env('APP_VERSION') }}</span>
