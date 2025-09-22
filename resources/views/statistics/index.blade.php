@@ -1,5 +1,5 @@
 @section('custom_assets')
-    @vite(['resources/js/app/statistics/index.js', 'resources/css/tables.css'])
+    @vite(['resources/js/chart.js', 'resources/js/app/statistics/' . $section . '.js', 'resources/css/tables.css'])
 @endsection
 
 @extends('layouts.app')
@@ -20,6 +20,11 @@
             <div class="row pt-2">
                 <div id="data_container" class="col-md">
 
+                </div>
+            </div>
+            <div class="row pt-2">
+                <div id="chart_container" class="col-md">
+                    <canvas id="myChart"></canvas>
                 </div>
             </div>
         </div>

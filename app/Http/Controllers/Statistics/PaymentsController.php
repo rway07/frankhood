@@ -41,7 +41,7 @@ class PaymentsController extends Controller
         from receipts
         where year > ?
         group by year
-        order by year desc;",
+        order by year;",
             [
                 $this->beginYear
             ]
@@ -57,6 +57,7 @@ class PaymentsController extends Controller
         return response()->json(
             [
                 'data' => [
+                    'data' => $data,
                     'view' => $view
                 ]
             ]

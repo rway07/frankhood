@@ -4,18 +4,13 @@
 
 import { showGuruModal, showModal } from '../common/notifications.js';
 
-$(() => {
-   loadData();
-});
-
 /**
  *
  */
-function loadData() {
-    const section = $('#section').val();
+export function loadData(section) {
     const url = `/statistics/${  section  }/data`;
 
-    fetch(url)
+    return fetch(url)
         .then((response) => {
             if (!response.ok) {
                 return Promise.reject(response);
@@ -26,12 +21,15 @@ function loadData() {
         .then(response => {
             if ('error' in response) {
                 showModal(response.error.message);
-                return;
+                return [];
             }
 
             if ('data' in response) {
                 document.getElementById('data_container').innerHTML = response.data.view;
+                return response.data;
             }
+
+            return [];
         })
         .catch(error => {
             if (error instanceof Response) {

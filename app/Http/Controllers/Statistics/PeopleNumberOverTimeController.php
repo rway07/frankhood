@@ -72,7 +72,7 @@ class PeopleNumberOverTimeController extends Controller
                        sum(revocated_number) as revocated_number
                 from all_years
                 group by year
-                order by year desc;",
+                order by year;",
             [
                 $beginDate,
                 $beginYear,
@@ -89,6 +89,7 @@ class PeopleNumberOverTimeController extends Controller
 
         return response()->json([
             'data' => [
+                'data' => $data,
                 'view' => $view,
             ]
         ]);
