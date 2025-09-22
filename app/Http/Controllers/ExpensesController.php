@@ -75,7 +75,7 @@ class ExpensesController extends Controller
         }
 
         return DataTables::of($expenses)
-            ->editColumn('date', '{{ strftime(\'%d/%m/%Y\', strtotime($date)) }}')
+            ->editColumn('date', '{{ date(\'d/m/Y\', strtotime($date)) }}')
             ->editColumn('amount', '{{ $amount }} €')
             ->addColumn('Stampa', function ($entry) {
                 return view('common.print', ['subject' => 'expenses', 'idSubject' => $entry->id]);
@@ -201,6 +201,7 @@ class ExpensesController extends Controller
      *
      * @param $idExpense
      * @return JsonResponse
+     * @throws \Throwable
      */
     public function destroy($idExpense): JsonResponse
     {
