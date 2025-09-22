@@ -31,19 +31,15 @@ class OldestController extends Controller
      */
     public function data(): JsonResponse
     {
-        $currentYear = date('Y');
-
         $data = DB::select(
             "select row_number() over (order by birth_date) as row_number,
                     first_name, last_name, birth_date,
-                    ? - strftime('%Y', birth_date) as age
+                    (strftime('%Y', 'now') - strftime('%Y', birth_date))
+                        - (strftime('%m-%d', 'now') < strftime('%m-%d', birth_date)) AS age
             from customers
             where death_date = '' and revocation_date = ''
             order by birth_date
-            limit 10",
-            [
-                $currentYear
-            ]
+            limit 10"
         );
 
         $view = view(
