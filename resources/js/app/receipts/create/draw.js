@@ -90,7 +90,7 @@ export function drawPeopleItem(item, escape) {
     return (
         `<div id="${escape(item.id)}" c-name="${escape(item.first_name)} ${escape(
             item.last_name,
-        )}" class="customers">${escape(item.first_name)} ${escape(item.last_name)} ` +
+        )}" class="${escape(classText)}">${escape(item.first_name)} ${escape(item.last_name)} ` +
         ` <a href="/customers/${escape(item.id)}/edit" ` +
         `tabindex="-1" title="profile" target="_blank">` +
         `<i class="fa fa-pencil"></i></a> </div>`
