@@ -17,6 +17,41 @@ class CustomerRequest extends FormRequest
     }
 
     /**
+     * @return void
+     */
+    public function prepareForValidation(): void
+    {
+        $votes = [];
+        $totalVotes = [];
+        foreach ($this->input('votes') as $vote) {
+            if (is_null($vote)) {
+                $vote = 0;
+            }
+
+            $votes[] = $vote;
+        }
+
+        foreach ($this->input('total_votes') as $totalVote) {
+            if (is_null($totalVote)) {
+                $totalVote = 0;
+            }
+
+            $totalVotes[] = $totalVote;
+        }
+
+        $this->merge([
+            'first_name' => ucwords(strtolower($this->input('first_name'))),
+            'last_name' => ucwords(strtolower($this->input('last_name'))),
+            'alias' => ucwords(strtolower($this->input('alias'))),
+            'death_date' => ($this->input('death_date') != null) ? $this->input('death_date') : '',
+            'revocation_date' => ($this->input('revocation_date') != null) ? $this->input('revocation_date') : '',
+            'priorato' => filter_var($this->input('priorato'), FILTER_VALIDATE_BOOLEAN),
+            'votes' => $votes,
+            'total_votes' => $totalVotes
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -42,7 +77,13 @@ class CustomerRequest extends FormRequest
             'enrollment_year' => 'required|digits:4',
             'death_date' => 'date|nullable',
             'revocation_date' => 'date|nullable',
-            'priorato' => 'nullable'
+            'priorato' => 'required',
+            'election_year' => 'required_if:priorato,true|nullable|digits:4',
+            'years' => 'required_if:priorato,true|nullable|digits:1',
+            'votes' => 'array',
+            'votes.*' => 'nullable|numeric|min:0|max:2000',
+            'total_votes' => 'array',
+            'total_votes.*' => 'nullable|numeric|min:0|max:2000',
         ];
     }
 

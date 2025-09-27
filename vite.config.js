@@ -35,6 +35,7 @@ export default defineConfig({
                 'resources/js/app/report/late/index.js',
                 'resources/js/app/report/new/index.js',
                 'resources/js/app/report/revocated/index.js',
+                'resources/js/app/report/priori/index.js',
                 'resources/js/app/statistics/index.js',
                 'resources/js/app/statistics/peoplenumber.js',
                 'resources/js/app/statistics/payments.js',

@@ -65,6 +65,8 @@ function loadChart(graphData)
         type: 'bar',
         data: chartData,
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             layout: {
                 padding: 50
             },

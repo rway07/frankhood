@@ -81,6 +81,7 @@
                                 <a class="dropdown-item" href="/report/customers/revocated/index">Lista Soci Revocati</a>
                                 <a class="dropdown-item" href="/report/customers/late/index">Lista Soci Morosi</a>
                                 <a class="dropdown-item" href="/report/customers/age/index">Lista Soci per Età</a>
+                                <a class="dropdown-item" href="/report/customers/priori/index">Lista Priori</a>
                                 <a class="dropdown-item" href="/report/alternatives/index">Lista Ricevute con Quote Alternative</a>
                                 <a class="dropdown-item" href="/report/customers/estimation/index">Preventivo Nuovi Soci</a>
                                 <a class="dropdown-item" href="/report/customers/duplicates/index">Ricevute Duplicate</a>

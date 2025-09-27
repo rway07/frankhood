@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB as DB;
 use Illuminate\Support\Facades\Redirect as Redirect;
 use Illuminate\View\View as View;
 
-
 /**
  * Class CustomersController
  * @package App\Http\Controllers
@@ -100,11 +99,31 @@ class CustomersController extends Controller
         }
 
         // Ottengo i dati del socio
-        $customers = Customers::where('id', '=', $idCustomer)
-            ->get()
-            ->first();
+        $customers = DB::select(
+            'select *
+                    from customers
+                    left join priori on customers.id = priori.customer_id
+                    where id = ?',
+            [
+                    $idCustomer
+            ]
+        );
 
-        return view('customers/create', ['customers' => $customers]);
+        $votesData = [];
+        $count = count($customers);
+        if ($count > 1) {
+            $votesData['years'] = $count;
+            $votesData['votes'] = array_column($customers, 'votes');
+            $votesData['totalVotes'] = array_column($customers, 'total_votes');
+        }
+
+        return view(
+            'customers/create',
+            [
+                'customers' => $customers[0],
+                'votesData' => ($count > 1) ? $votesData : null,
+            ]
+        );
     }
 
     /**
@@ -113,6 +132,7 @@ class CustomersController extends Controller
      * @param CustomerRequest $request
      * @param $idCustomer
      * @return RedirectResponse
+     * @throws \Throwable
      */
     public function update(CustomerRequest $request, $idCustomer): RedirectResponse
     {
@@ -129,7 +149,7 @@ class CustomersController extends Controller
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return Redirect::to('customers/create')->withErrors($e->getMessage());
+            return Redirect::to('customers/' . $idCustomer . '/edit')->withErrors($e->getMessage());
         }
 
         return redirect('customers/index')->with('status', 'Socio aggiornato.');
@@ -141,17 +161,20 @@ class CustomersController extends Controller
      * @param $data
      * @param $idCustomer
      */
-    private function saveCustomer($data, $idCustomer)
+    private function saveCustomer($data, $idCustomer): void
     {
+        $prioratoChanged = false;
+
         if ($idCustomer == 0) {
             $customer = new Customers();
         } else {
             $customer = Customers::find($idCustomer);
+            $prioratoChanged = $customer->priorato != $data['priorato'];
         }
 
-        $customer->first_name = ucwords(strtolower($data['first_name']));
-        $customer->last_name = ucwords(strtolower($data['last_name']));
-        $customer->alias = ucwords(strtolower($data['alias']));
+        $customer->first_name = $data['first_name'];
+        $customer->last_name = $data['last_name'];
+        $customer->alias = $data['alias'];
         $customer->cf = $data['cf'];
         $customer->birth_date = $data['birth_date'];
         $customer->birth_place = $data['birth_place'];
@@ -165,26 +188,30 @@ class CustomersController extends Controller
         $customer->mobile_phone = $data['mobile_phone'];
         $customer->email = $data['email'];
         $customer->enrollment_year = $data['enrollment_year'];
-        if ($data['death_date'] == null) {
-            $customer->death_date = '';
-        } else {
-            $customer->death_date = $data['death_date'];
-        }
-
-        if ($data['revocation_date'] == null) {
-            $customer->revocation_date = '';
-        } else {
-            $customer->revocation_date = $data['revocation_date'];
-        }
-
-        // FIXME Fix nel middleware
-        if (array_key_exists('priorato', $data)) {
-            $customer->priorato = $data['priorato'];
-        } else {
-            $customer->priorato = false;
-        }
-
+        $customer->death_date = $data['death_date'];
+        $customer->revocation_date = $data['revocation_date'];
+        $customer->priorato = $data['priorato'];
         $customer->save();
+
+        if ($prioratoChanged) {
+            DB::delete('delete from priori where customer_id = ?', [$customer->id]);
+        }
+
+        if ($customer->priorato) {
+            for ($i = 0; $i < $data['years']; $i++) {
+                DB::insert(
+                    '
+                    insert into priori (customer_id, election_year, votes, total_votes)
+                    values (?, ?, ?, ?)',
+                    [
+                        $customer->id,
+                        intval($data['election_year']) + $i,
+                        $data['votes'][$i],
+                        $data['total_votes'][$i]
+                    ]
+                );
+            }
+        }
     }
 
     /**

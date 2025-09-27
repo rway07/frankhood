@@ -101,6 +101,7 @@ function loadChart() {
                 data: numPeople,
                 borderWidth: 2,
                 yAxisID: 'y-axis-1',
+                tension: 0.1,
             },
             {
                 label: 'Totale pagato €',
@@ -110,6 +111,7 @@ function loadChart() {
                 data: totals,
                 borderWidth: 2,
                 yAxisID: 'y-axis-2',
+                tension: 0.1
             },
         ],
     };
@@ -121,6 +123,7 @@ function loadChart() {
             data: chartData,
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 interaction: {
                   mode: 'index',
                   intersect: false,

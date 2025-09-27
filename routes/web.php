@@ -121,6 +121,9 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/report/customers/estimation/index', 'App\Http\Controllers\Report\EstimationController@index');
     Route::post('/report/customers/estimation/print', 'App\Http\Controllers\Report\EstimationController@printReport');
 
+    Route::get('/report/customers/priori/index', 'App\Http\Controllers\Report\PrioriController@index');
+    Route::get('/report/customers/priori/data', 'App\Http\Controllers\Report\PrioriController@getPriori');
+
     Route::get('/report/alternatives/index', 'App\Http\Controllers\Report\AlternativeReceiptsController@index');
     Route::get(
         '/report/alternatives/{year}/list',

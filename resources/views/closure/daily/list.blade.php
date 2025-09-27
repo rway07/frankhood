@@ -142,7 +142,7 @@
         </div>
     </div>
 </div>
-<div id="graph_div" class="d-print-none pt-3">
+<div id="graph_div" class="d-print-none pt-4 chart-container">
     <canvas id="test">
     </canvas>
 </div>

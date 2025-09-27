@@ -3,6 +3,8 @@
  * @author kain - rway07@gmail.com
  */
 
+import { showGuruModal, showModal } from '@/app/common/notifications.js';
+
 /**
  *  Apre il link per editare una risorsa
  *
@@ -48,4 +50,35 @@ export function destroy(subject, idSubject) {
             ajaxDeleteSuccess(data, idSubject);
         },
     });
+}
+
+export function loadView(url) {
+    return fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                return Promise.reject(response);
+            }
+
+            return response.json();
+        })
+        .then(response => {
+            if ('error' in response) {
+                showModal(response.error.message);
+                return [];
+            }
+
+            if ('data' in response) {
+                document.getElementById('data_container').innerHTML = response.data.view;
+                return response.data;
+            }
+
+            return [];
+        })
+        .catch(error => {
+            if (error instanceof Response) {
+                error.json().then(data => {
+                    showGuruModal(error.status, error.statusText, data.error.message);
+                })
+            }
+        });
 }
