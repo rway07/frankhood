@@ -59,9 +59,12 @@ class DailyController extends Controller
         // Dati delle chiusure divisi per data
         $data = DB::select(
             'select date,
+                   count(year) as num_receipts,
                    sum(num_people) as num_total,
                    sum(case when payment_type_id = 1 then num_people else 0 end) as num_cash,
                    sum(case when payment_type_id = 2 then num_people else 0 end) as num_bank,
+                   count(case when payment_type_id = 1 then 1 end) as num_cash_receipts,
+                   count(case when payment_type_id = 2 then 1 end) as num_bank_receipts,
                    sum(case when payment_type_id = 1 then total else 0 end) as total_cash,
                    sum(case when payment_type_id = 2 then total else 0 end) as total_bank,
                    sum(total) as total
@@ -79,8 +82,11 @@ class DailyController extends Controller
         // Somma totale
         $final = DB::select(
             "select sum(num_people) as people,
+                    count(year) as num_receipts,
                     sum(case when payment_type_id = 1 then num_people else 0 end) as people_cash,
                     sum(case when payment_type_id = 2 then num_people else 0 end) as people_bank,
+                    count(case when payment_type_id = 1 then 1 end) as num_cash_receipts,
+                    count(case when payment_type_id = 2 then 1 end) as num_bank_receipts,
                     sum(total) as total,
                     sum(case when payment_type_id = 1 then total else 0 end) as total_cash,
                     sum(case when payment_type_id = 2 then total else 0 end) as total_bank

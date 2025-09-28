@@ -2,9 +2,9 @@
     <thead class="table-dark">
         <tr>
             <th class="w-50"></th>
-            <th class="table-w-ten"> Numero </th>
-            <th class="table-w-twenty"> Entrate </th>
-            <th class="table-w-twenty"> Uscite </th>
+            <th class="w-10"> Numero </th>
+            <th class="w-20"> Entrate </th>
+            <th class="w-20"> Uscite </th>
         </tr>
     </thead>
     <tbody>
