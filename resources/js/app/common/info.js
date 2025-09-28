@@ -26,14 +26,17 @@ export function receiptInfo (number, year) {
         }
         $('#total').text(response.data.receipt.total).append(' &euro;');
         $('#payment').text(response.data.receipt.description);
-        $('#head').text(`${response.data.receipt.first_name} ${response.data.receipt.last_name}`);
+        $('#head').html(`${response.data.receipt.first_name} ${response.data.receipt.last_name}
+            <br><em>[${response.data.receipt.alias}]</em>`);
 
         $('#customers').html('');
         response.data.customers.forEach((element) => {
+            let extraText = '';
+            if (customQuotas === true) {
+                extraText += ` (${element.quota} &euro;)`;
+            }
             $('#customers').append(
-                `<p class="mb-1">${element.first_name} ${element.last_name}${
-                    customQuotas === true ? ` (${element.quota} &euro;)` : ''
-                }</p>`,
+                `<p class="mb-1">${element.first_name} ${element.last_name} <br> <em>[${element.alias}]</em> ${extraText}</p>`,
             );
         });
 

@@ -18,7 +18,7 @@ class OldestController extends Controller
     public function index(): View
     {
         return view(
-            'statistics.index',
+            'statistics.index-nochart',
             [
                 'title' => 'SOCI PIU\' ANZIANI',
                 'section' => 'oldest'

@@ -165,6 +165,7 @@ class ReceiptsServicesController extends Controller
                 'receipts.*',
                 'customers.first_name',
                 'customers.last_name',
+                'customers.alias',
                 'rates.year',
                 'rates.quota',
                 'payment_types.description'
@@ -179,7 +180,7 @@ class ReceiptsServicesController extends Controller
                 ['customers_receipts.year', '=', $receiptYear]
             ])
             ->join('customers', 'customers_receipts.customers_id', '=', 'customers.id')
-            ->select('first_name', 'last_name', 'quota')
+            ->select('first_name', 'last_name', 'alias', 'quota')
             ->get();
 
         return response()->json(

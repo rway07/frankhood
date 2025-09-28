@@ -34,18 +34,12 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col">
-                        <label class="col-form-label-sm"><strong>Destinatario</strong></label>
-                        <p id="head"></p>
-                    </div>
+                    <label class="col-form-label-sm"><strong>Destinatario</strong></label>
+                    <div id="head" class="col"></div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col">
-                        <label class="col-form-label-sm"><strong>Persone</strong></label>
-                        <div id="customers">
-
-                        </div>
-                    </div>
+                    <label class="col-form-label-sm"><strong>Persone</strong></label>
+                    <div id="customers" class="col"></div>
                 </div>
             </div>
             <div class="modal-footer">
