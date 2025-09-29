@@ -113,6 +113,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" href="/statistics/peoplenumber/index">Numero soci</a>
                                 <a class="dropdown-item" href="/statistics/payments/index">Pagamenti</a>
+                                <a class="dropdown-item" href="/statistics/periods/index">Confronto Periodi</a>
                                 <a class="dropdown-item" href="/statistics/oldest/index">Soci più anziani</a>
                             </div>
                         </li>

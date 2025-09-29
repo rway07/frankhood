@@ -5,8 +5,6 @@
 @extends('layouts.app')
 @section('content')
     <main class="container-fluid">
-        @include('common.errors')
-        @include('common.status')
         <input id="section" name="section" type="hidden" value="{{ $section }}">
         <div class="my-3 p-3 bg-body rounded shadow-sm">
             <div class="row pb-2">

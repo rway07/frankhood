@@ -11,3 +11,7 @@ export function loadData(section) {
 
     return loadView(url);
 }
+
+export function loadDataURL(url) {
+    return loadView(url);
+}

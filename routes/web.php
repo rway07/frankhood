@@ -144,7 +144,8 @@ Route::group(['middleware' => 'web'], function () {
         '/statistics/peoplenumber/data',
         'App\Http\Controllers\Statistics\PeopleNumberOverTimeController@data'
     );
-
+    Route::get('/statistics/periods/index', 'App\Http\Controllers\Statistics\PeriodsController@index');
+    Route::get('/statistics/periods/{date}/data', 'App\Http\Controllers\Statistics\PeriodsController@data');
     // Closures routes
     Route::get('/closure/daily/index', 'App\Http\Controllers\Closure\DailyController@index');
     Route::get('/closure/daily/{year}/list', 'App\Http\Controllers\Closure\DailyController@listData');
