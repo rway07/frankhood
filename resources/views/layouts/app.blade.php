@@ -119,7 +119,7 @@
                         </li>
                     </ul>
                 </div>
-                <span class="nav-link text-light">{{ env('APP_NAME') }} v{{ env('APP_VERSION') }}</span>
+                <span class="nav-link text-light">{{ config('app.name') }} v{{ Config::get('app.version') }}</span>
             </div>
         </nav>
     </div>
