@@ -6,10 +6,6 @@
 import { YEAR_START, YEAR_END } from '../../common/util.js';
 import { showModal, showGuruModal } from '../../common/notifications.js';
 
-let dates = [];
-let numPeople = [];
-let totals = [];
-
 $(() => {
     const years = $('#years');
 
@@ -73,17 +69,23 @@ function showGraph() {
  * Carica il grafico
  */
 function loadChart() {
-    dates = [];
+    const dates = [];
     $('.date').each((index, element) => {
         dates.push(element.textContent);
     });
 
-    numPeople = [];
+    const numPeople = [];
     $('.num_total').each((index, element) => {
         numPeople.push(element.textContent);
     });
 
-    totals = [];
+    const numReceipts = [];
+    $('.num_receipts').each((index, element) => {
+        numReceipts.push(element.textContent);
+    });
+
+
+    const totals = [];
     $('.total').each((index, element) => {
         let temp = element.textContent;
         temp = temp.replace('€', '').replace('&euro;', '');
@@ -101,7 +103,17 @@ function loadChart() {
                 data: numPeople,
                 borderWidth: 2,
                 yAxisID: 'y-axis-1',
-                tension: 0.1,
+                tension: 0.2,
+            },
+            {
+                label: 'Numero ricevute',
+                borderColor: 'rgb(9,90,20)',
+                backgroundColor: 'rgb(9,90,20)',
+                fill: false,
+                data: numReceipts,
+                borderWidth: 2,
+                yAxisID: 'y-axis-1',
+                tension: 0.2,
             },
             {
                 label: 'Totale pagato €',
@@ -111,7 +123,7 @@ function loadChart() {
                 data: totals,
                 borderWidth: 2,
                 yAxisID: 'y-axis-2',
-                tension: 0.1
+                tension: 0.2
             },
         ],
     };

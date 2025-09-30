@@ -16,7 +16,7 @@
                 <td class="date w-40">{{ date("d/m/Y", strtotime($d->date))  }}</td>
                 <td class="w-15 text-end"></td>
                 <td class="num_total w-15 text-end">{{ $d->num_total }}</td>
-                <td class="num_total w-15 text-end">{{ $d->num_receipts }}</td>
+                <td class="num_receipts w-15 text-end">{{ $d->num_receipts }}</td>
                 <td class="total w-15 text-end">{{ $d->total }} &euro;</td>
             </tr>
             @if($d->num_bank != 0)
