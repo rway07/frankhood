@@ -8,6 +8,7 @@ use App\Http\Requests\DeliveryRequest;
 use App\Util\DataFetcher;
 use App\Util\DataValidator;
 use App\Util\DeliveriesIntegrityUtil;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -58,6 +59,13 @@ class DeliveriesController extends Controller
         }
 
         try {
+            $totalAvailable = null;
+            $todayDate = Carbon::now()->format('Y-m-d');
+
+            if (Carbon::now()->year == $year) {
+                $totalAvailable = DataFetcher::getDeliveryCashTotal($todayDate);
+            }
+
             $deliveries = DataFetcher::getDeliveriesData($year);
             $totalAmount = DataFetcher::getDeliveriesTotalAmount($year);
         } catch (Exception $e) {
@@ -82,6 +90,8 @@ class DeliveriesController extends Controller
                 'data' => [
                     'rows' => count($deliveries),
                     'totalAmount' => $totalAmount,
+                    'totalAvailable' => $totalAvailable,
+                    'todayDate' => Carbon::today()->format('d/m/Y'),
                     'view' => $view
                 ]
             ]

@@ -38,9 +38,16 @@ function loadDeliveries(year) {
             }
 
             if ('data' in response) {
+                document.getElementById('total_available_element').className = 'd-none';
                 document.getElementById('title_year').innerText = year;
                 document.getElementById('totalAmount').innerText = response.data.totalAmount;
                 document.getElementById('data_container').innerHTML = response.data.view;
+
+                if (response.data.totalAvailable !== null) {
+                    document.getElementById('total_available_element').className = 'd-block';
+                    document.getElementById('todayDate').innerText = response.data.todayDate;
+                    document.getElementById('total_available').innerText = response.data.totalAvailable;
+                }
 
                 if (response.data.rows === 0) {
                     disableButtons();

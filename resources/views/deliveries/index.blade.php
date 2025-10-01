@@ -36,6 +36,9 @@
         </div>
         <div class="row pb-3">
             <h6>Totale consegnato: &euro; <span id="totalAmount">??</span></h6>
+            <h6 id="total_available_element" class="d-none">Totale disponibiile in data <span id="todayDate">--</span>: &euro;
+                <span id="total_available">--</span>
+            </h6>
         </div>
         <div class="row pt-2">
             <div id="data_container" class="col-md">
