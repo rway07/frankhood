@@ -59,7 +59,7 @@ class LateController extends Controller
                 select customers_id
                 from customers_receipts
                 where year = ?
-            )  and enrollment_year <= ?
+            )  and enrollment_year < ?
             and ((death_date = '') or (death_date > ?))
             and ((revocation_date = '') or (revocation_date > ?))
             order by last_name;",
