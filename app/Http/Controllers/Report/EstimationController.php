@@ -57,16 +57,14 @@ class EstimationController extends Controller
             $rate += 0;
         } elseif (($age > 20) && ($age <= 30)) {
             $rate += 10;
-        } elseif (($age > 30) && ($age <=35)) {
+        } elseif (($age > 30) && ($age <= 35)) {
             $rate += 20;
         } elseif (($age > 35) && ($age < 40)) {
             $rate += 30;
         } elseif (($age >= 40) && ($age <= 48)) {
             $total = 1750;
-        } elseif (($age > 48) && ($age <= 59)) {
-            $total = 2150;
-        } elseif ($age > 59) {
-            $total = 2650;
+        } elseif ($age > 48) {
+            $total = 2000;
         }
 
         if ($total == 0) {
