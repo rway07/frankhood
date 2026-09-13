@@ -34,7 +34,7 @@ class DeliveriesIntegrityUtil
 
         $total = DataFetcher::getDeliveryCashTotal($deliveryData['date']);
 
-        if ($total != $deliveryData['total']) {
+        if ($total != floatval($deliveryData['total'])) {
             throw new Exception(
                 'Il totale reale non corrisponde con quello ricevuto.'
             );
