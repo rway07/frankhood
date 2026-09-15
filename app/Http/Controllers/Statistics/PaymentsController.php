@@ -35,6 +35,9 @@ class PaymentsController extends Controller
                sum(num_people) as people,
                sum(case when payment_type_id = 1 then num_people else 0 end) as people_cash,
                sum(case when payment_type_id = 2 then num_people else 0 end) as people_bank,
+               count(receipts.number) as num_receipts,
+               sum(case when payment_type_id = 1 then 1 else 0 end) as num_cash,
+               sum(case when payment_type_id = 2 then 1 else 0 end) as num_bank,
                sum(total) as total,
                sum(case when payment_type_id = 1 then total else 0 end) as total_cash,
                sum(case when payment_type_id = 2 then total else 0 end) as total_bank
